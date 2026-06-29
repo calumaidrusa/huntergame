@@ -30,6 +30,14 @@ jobs:
             public/admin.html \
             root@142.93.3.132:/var/www/hunter/public/admin.html
 
+      - name: 上傳詞彙圖片
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no root@142.93.3.132 \
+            "mkdir -p /var/www/hunter/public/images"
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            public/images/*.png \
+            root@142.93.3.132:/var/www/hunter/public/images/
+
       - name: 上傳後端檔案
         run: |
           scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \

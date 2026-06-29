@@ -96,45 +96,59 @@ try {
   db.exec('ALTER TABLE vocabulary ADD COLUMN audio_path TEXT');
 } catch(e) { /* 欄位已存在，跳過 */ }
 
+// image_path migration — 補上現有詞彙的圖片路徑
+const imgUpdates = [
+  ['qhuni','bgihur','quyux','spriq','tahut','hidaw','idas','rulung','rnaaw','elug',
+   'rapit','rqnux','pada','arung','brihut','rungay','walu','klaway','kjiraw',
+   'bowyak','kumay','ngiyaw','samat','bhniq','tasil']
+];
+const updateImg = db.prepare('UPDATE vocabulary SET image_path = ? WHERE word = ? AND (image_path IS NULL OR image_path = \'\')');
+const runImgMigration = db.transaction(() => {
+  for (const word of imgUpdates[0]) {
+    updateImg.run(`/images/${word}.png`, word);
+  }
+});
+runImgMigration();
+
 // 種入預設詞彙（只在空表時執行）
 const vocabCount = db.prepare('SELECT COUNT(*) as c FROM vocabulary').get();
 if (vocabCount.c === 0) {
   const insert = db.prepare(`
-    INSERT INTO vocabulary (word, chinese, english, category, level, emoji, hint)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO vocabulary (word, chinese, english, category, level, emoji, hint, image_path)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const seed = db.transaction((rows) => {
     for (const r of rows) insert.run(...r);
   });
   seed([
     // Level 1 — 自然
-    ['qhuni',  '樹',   'tree',       'nature', 1, '🌲', 'qhuni'],
-    ['bgihur', '風',   'wind',       'nature', 1, '💨', 'bgihur'],
-    ['quyux',  '雨',   'rain',       'nature', 1, '🌧️', 'quyux'],
-    ['spriq',  '草',   'grass',      'nature', 1, '🌿', 'spriq'],
-    ['tahut',  '火',   'fire',       'nature', 1, '🔥', 'tahut'],
-    ['hidaw',  '太陽', 'sun',        'nature', 1, '☀️', 'hidaw'],
-    ['idas',   '月亮', 'moon',       'nature', 1, '🌙', 'idas'],
-    ['rulung', '雲',   'cloud',      'nature', 1, '☁️', 'rulung'],
-    ['rnaaw',  '山林', 'forest',     'nature', 1, '🏔️', 'rnaaw'],
-    ['elug',   '道路', 'road',       'nature', 1, '🛤️', 'elug'],
+    ['qhuni',  '樹',   'tree',       'nature', 1, '🌲', 'qhuni',  '/images/qhuni.png'],
+    ['bgihur', '風',   'wind',       'nature', 1, '💨', 'bgihur', '/images/bgihur.png'],
+    ['quyux',  '雨',   'rain',       'nature', 1, '🌧️', 'quyux',  '/images/quyux.png'],
+    ['spriq',  '草',   'grass',      'nature', 1, '🌿', 'spriq',  '/images/spriq.png'],
+    ['tahut',  '火',   'fire',       'nature', 1, '🔥', 'tahut',  '/images/tahut.png'],
+    ['hidaw',  '太陽', 'sun',        'nature', 1, '☀️', 'hidaw',  '/images/hidaw.png'],
+    ['idas',   '月亮', 'moon',       'nature', 1, '🌙', 'idas',   '/images/idas.png'],
+    ['rulung', '雲',   'cloud',      'nature', 1, '☁️', 'rulung', '/images/rulung.png'],
+    ['rnaaw',  '山林', 'forest',     'nature', 1, '🏔️', 'rnaaw',  '/images/rnaaw.png'],
+    ['elug',   '道路', 'road',       'nature', 1, '🛤️', 'elug',   '/images/elug.png'],
     // Level 2 — 動物
-    ['rapit',  '飛鼠',   'flying squirrel', 'animal', 2, '🐿️', 'rapit'],
-    ['rqnux',  '水鹿',   'sambar deer',     'animal', 2, '🦌', 'rqnux'],
-    ['pada',   '山羌',   'muntjac',         'animal', 2, '🦌', 'pada'],
-    ['arung',  '穿山甲', 'pangolin',        'animal', 2, '🦔', 'arung'],
-    ['brihut', '松鼠',   'squirrel',        'animal', 2, '🐿️', 'brihut'],
-    ['rungay', '猴子',   'monkey',          'animal', 2, '🐒', 'rungay'],
-    ['walu',   '蜜蜂',   'bee',             'animal', 2, '🐝', 'walu'],
-    ['klaway', '蝴蝶',   'butterfly',       'animal', 2, '🦋', 'klaway'],
-    ['kjiraw', '老鷹',   'eagle',           'animal', 2, '🦅', 'kjiraw'],
+    ['rapit',  '飛鼠',   'flying squirrel', 'animal', 2, '🐿️', 'rapit',  '/images/rapit.png'],
+    ['rqnux',  '水鹿',   'sambar deer',     'animal', 2, '🦌', 'rqnux',  '/images/rqnux.png'],
+    ['pada',   '山羌',   'muntjac',         'animal', 2, '🦌', 'pada',   '/images/pada.png'],
+    ['arung',  '穿山甲', 'pangolin',        'animal', 2, '🦔', 'arung',  '/images/arung.png'],
+    ['brihut', '松鼠',   'squirrel',        'animal', 2, '🐿️', 'brihut', '/images/brihut.png'],
+    ['rungay', '猴子',   'monkey',          'animal', 2, '🐒', 'rungay', '/images/rungay.png'],
+    ['walu',   '蜜蜂',   'bee',             'animal', 2, '🐝', 'walu',   '/images/walu.png'],
+    ['klaway', '蝴蝶',   'butterfly',       'animal', 2, '🦋', 'klaway', '/images/klaway.png'],
+    ['kjiraw', '老鷹',   'eagle',           'animal', 2, '🦅', 'kjiraw', '/images/kjiraw.png'],
     // Level 3 — 獵場
-    ['bowyak', '山豬',   'wild boar',  'hunting', 3, '🐗', 'bowyak'],
-    ['kumay',  '熊',     'bear',       'hunting', 3, '🐻', 'kumay'],
-    ['ngiyaw', '雲豹',   'clouded leopard', 'hunting', 3, '🐆', 'ngiyaw'],
-    ['samat',  '獵物',   'prey',       'hunting', 3, '🎯', 'samat'],
-    ['bhniq',  '弓',     'bow',        'hunting', 3, '🏹', 'bhniq'],
-    ['tasil',  '岩石',   'rock',       'hunting', 3, '🪨', 'tasil'],
+    ['bowyak', '山豬',   'wild boar',       'hunting', 3, '🐗', 'bowyak', '/images/bowyak.png'],
+    ['kumay',  '熊',     'bear',            'hunting', 3, '🐻', 'kumay',  '/images/kumay.png'],
+    ['ngiyaw', '雲豹',   'clouded leopard', 'hunting', 3, '🐆', 'ngiyaw', '/images/ngiyaw.png'],
+    ['samat',  '獵物',   'prey',            'hunting', 3, '🎯', 'samat',  '/images/samat.png'],
+    ['bhniq',  '弓',     'bow',             'hunting', 3, '🏹', 'bhniq',  '/images/bhniq.png'],
+    ['tasil',  '岩石',   'rock',            'hunting', 3, '🪨', 'tasil',  '/images/tasil.png'],
   ]);
 }
 
