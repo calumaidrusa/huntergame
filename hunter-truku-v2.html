@@ -804,7 +804,7 @@ function nextRound() {
   document.getElementById('prey').className = '';
 
   // Update word bubble
-  const display = words.join(' ');
+  const display = G.currentPrey.words.join(' ');
   document.getElementById('wordTarget').textContent = display;
   document.getElementById('wordHint').textContent = '(' + G.currentPrey.hint + ')';
 
