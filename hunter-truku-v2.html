@@ -429,7 +429,7 @@ body {
 .lc-icon { font-size:28px; display:block; margin-bottom:6px; }
 .lc-diff { display:block; margin-top:6px; }
 .diff-e { color:#44ff44; } .diff-m { color:#ffaa00; } .diff-h { color:#ff4444; }
-.title-footer { display:flex; gap:8px; margin-top:4px; }
+.title-footer { display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; justify-content:center; }
 .title-small-btn {
   font-family:'Press Start 2P',monospace; font-size:7px;
   background:transparent; border:1px solid rgba(255,215,0,0.4);
@@ -437,6 +437,58 @@ body {
   cursor:pointer; transition:all 0.2s;
 }
 .title-small-btn:hover { border-color:#ffd700; color:#ffd700; background:rgba(255,215,0,0.1); }
+
+/* ── MODE TOGGLE ── */
+.mode-toggle { display:flex; gap:0; margin-top:8px; border:2px solid rgba(255,215,0,0.4); border-radius:8px; overflow:hidden; }
+.mode-btn {
+  font-family:'Press Start 2P',monospace; font-size:7px;
+  background:transparent; border:none; padding:8px 14px;
+  color:rgba(255,215,0,0.5); cursor:pointer; transition:all 0.2s;
+  border-right:1px solid rgba(255,215,0,0.2);
+}
+.mode-btn:last-child { border-right:none; }
+.mode-btn.active { background:rgba(255,215,0,0.2); color:#ffd700; }
+.mode-btn:hover:not(.active) { color:rgba(255,215,0,0.8); background:rgba(255,215,0,0.08); }
+
+/* ── LISTEN MODE UI ── */
+#listenBtn {
+  display:none;
+  position:absolute;
+  bottom:195px; right:55px;
+  z-index:30;
+  flex-direction:column; align-items:center; gap:8px;
+  min-width:200px;
+}
+#listenPlayBtn {
+  font-size:48px; background:none; border:none;
+  cursor:pointer; transition:transform 0.15s;
+  filter:drop-shadow(0 0 12px rgba(255,215,0,0.6));
+  animation: pulseSpeaker 1.8s ease-in-out infinite;
+}
+#listenPlayBtn:hover { transform:scale(1.15); }
+@keyframes pulseSpeaker {
+  0%,100% { filter:drop-shadow(0 0 8px rgba(255,215,0,0.4)); }
+  50%      { filter:drop-shadow(0 0 20px rgba(255,215,0,0.9)); }
+}
+#listenReplayLabel {
+  font-family:'Press Start 2P',monospace; font-size:7px;
+  color:rgba(255,215,0,0.6); letter-spacing:1px;
+}
+#listenReveal {
+  font-family:'Press Start 2P',monospace; font-size:18px;
+  color:#44ff44; letter-spacing:3px;
+  text-shadow:0 0 12px rgba(68,255,68,0.8);
+  animation:revealPop 0.4s ease;
+  display:none;
+}
+@keyframes revealPop {
+  0% { transform:scale(0.5); opacity:0; }
+  70% { transform:scale(1.2); }
+  100% { transform:scale(1); opacity:1; }
+}
+/* listen mode: 隱藏 wordBubble，顯示問號 */
+body.listen-active #wordBubble { display:none; }
+body.listen-active #listenBtn { display:flex; }
 
 /* ── LEADERBOARD MODAL ── */
 #lbModal {
@@ -527,6 +579,10 @@ body {
         <span class="lc-diff diff-h">★★★ HARD</span>
       </div>
     </div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeNormal" onclick="setMode('normal')">🏹 一般模式</button>
+      <button class="mode-btn" id="modeListen" onclick="setMode('listen')">🔊 聽聲辨字</button>
+    </div>
     <div class="title-footer">
       <button class="title-small-btn" onclick="openLeaderboard()">🏆 排行榜</button>
     </div>
@@ -577,6 +633,13 @@ body {
     <div id="wordBubble">
       <div id="wordTarget">TAFES</div>
       <div id="wordHint">(wild boar)</div>
+    </div>
+
+    <!-- 聽聲辨字 UI -->
+    <div id="listenBtn">
+      <button id="listenPlayBtn" onclick="replayAudio()" title="再聽一次">🔊</button>
+      <div id="listenReplayLabel">CLICK TO REPLAY</div>
+      <div id="listenReveal"></div>
     </div>
 
     <!-- Input display bubble -->
@@ -741,7 +804,8 @@ let G = {
   round: 0, wordIdx: 0, timeLeft: 0, timer: null,
   currentPrey: null, preyQueue: [],
   totalAttempts: 0, hitAttempts: 0,
-  active: false, bannerWaiting: false
+  active: false, bannerWaiting: false,
+  listenMode: false   // 聽聲辨字模式
 };
 
 // ═══════════════════════════════════════════════════
@@ -857,9 +921,15 @@ function shuffle(arr) {
 async function startGame(lvl) {
   document.getElementById('titleScreen').style.display = 'none';
   G.level = lvl;
-  // 預先載入下一關詞彙（背景）
   if (LEVEL_CONFIG[lvl + 1]) loadVocabulary(lvl + 1);
   await loadVocabulary(lvl);
+
+  // 套用模式
+  if (G.listenMode) {
+    document.body.classList.add('listen-active');
+  } else {
+    document.body.classList.remove('listen-active');
+  }
   initLevel();
 }
 
@@ -904,6 +974,13 @@ function nextRound() {
   G.wordIdx = 0;
   G.currentPrey = G.preyQueue[G.round % G.preyQueue.length];
 
+  // 聽聲辨字：跳過沒有音檔的詞彙
+  if (G.listenMode && !G.currentPrey.audio) {
+    const next = G.preyQueue.find(p => p.audio);
+    if (!next) { stageClear(); return; }
+    G.currentPrey = next;
+  }
+
   // Update prey display（有圖用圖，沒圖用 emoji）
   const preyEl = document.getElementById('prey');
   if (G.currentPrey.image) {
@@ -912,16 +989,21 @@ function nextRound() {
     preyEl.textContent = G.currentPrey.emoji;
   }
   preyEl.className = '';
-  playWordAudio(G.currentPrey);
 
-  // Update word bubble
-  const display = G.currentPrey.words.join(' ');
-  document.getElementById('wordTarget').textContent = display;
-  document.getElementById('wordHint').textContent = '(' + G.currentPrey.hint + ')';
+  if (G.listenMode) {
+    // 聽聲辨字：隱藏答案，顯示播放按鈕，自動播音
+    document.getElementById('listenReveal').style.display = 'none';
+    document.getElementById('listenPlayBtn').textContent = '🔊';
+    playWordAudio(G.currentPrey);
+  } else {
+    playWordAudio(G.currentPrey);
+    // Update word bubble
+    const display = G.currentPrey.words.join(' ');
+    document.getElementById('wordTarget').textContent = display;
+    document.getElementById('wordHint').textContent = '(' + G.currentPrey.hint + ')';
+  }
 
-  // Update input display
   updateInputDisplay('');
-
   document.getElementById('realInput').value = '';
   document.getElementById('realInput').focus();
   G.active = true;
@@ -931,7 +1013,8 @@ function nextRound() {
 function startTimer() {
   clearInterval(G.timer);
   const ld = LEVELS[G.level];
-  const totalTime = ld.timePerRound * G.currentPrey.words.length;
+  const base = ld.timePerRound * G.currentPrey.words.length;
+  const totalTime = G.listenMode ? Math.ceil(base * 1.5) : base;
   G.timeLeft = totalTime;
   updateTimerBar(totalTime, totalTime);
 
@@ -1014,6 +1097,12 @@ function submitWord() {
       // CAUGHT
       clearInterval(G.timer);
       G.active = false;
+      if (G.listenMode) {
+        // 答對後顯示正確詞彙 0.8 秒
+        const rev = document.getElementById('listenReveal');
+        rev.textContent = G.currentPrey.words.join(' ');
+        rev.style.display = 'block';
+      }
       caughtPrey();
     }
   } else {
@@ -1195,7 +1284,27 @@ function goTitle() {
   document.getElementById('clearScreen').classList.remove('show');
   clearInterval(G.timer);
   G.active = false;
+  document.body.classList.remove('listen-active');
   document.getElementById('titleScreen').style.display = 'flex';
+}
+
+// ── 模式切換 ─────────────────────────────────────
+function setMode(mode) {
+  G.listenMode = (mode === 'listen');
+  document.getElementById('modeNormal').classList.toggle('active', !G.listenMode);
+  document.getElementById('modeListen').classList.toggle('active', G.listenMode);
+}
+
+let _currentAudio = null;
+function replayAudio() {
+  if (!G.currentPrey?.audio) return;
+  if (_currentAudio) { _currentAudio.pause(); _currentAudio.currentTime = 0; }
+  _currentAudio = new Audio(G.currentPrey.audio);
+  _currentAudio.volume = 0.9;
+  const btn = document.getElementById('listenPlayBtn');
+  btn.textContent = '🔉';
+  _currentAudio.play().catch(() => {});
+  _currentAudio.onended = () => { btn.textContent = '🔊'; };
 }
 
 // Focus input on click anywhere
@@ -1291,9 +1400,15 @@ document.addEventListener('keydown', e => {
 function playWordAudio(prey) {
   if (!prey.audio) return;
   try {
-    const a = new Audio(prey.audio);
-    a.volume = 0.8;
-    a.play().catch(() => {});
+    if (_currentAudio) { _currentAudio.pause(); _currentAudio.currentTime = 0; }
+    _currentAudio = new Audio(prey.audio);
+    _currentAudio.volume = 0.9;
+    _currentAudio.play().catch(() => {});
+    if (G.listenMode) {
+      const btn = document.getElementById('listenPlayBtn');
+      btn.textContent = '🔉';
+      _currentAudio.onended = () => { btn.textContent = '🔊'; };
+    }
   } catch(e) {}
 }
 </script>
