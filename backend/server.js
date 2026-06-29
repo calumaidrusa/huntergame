@@ -9,12 +9,14 @@ const app = express();
 const PORT = 3000;
 const DB_PATH = '/var/www/hunter/backend/hunter.db';
 const IMG_DIR = '/var/www/hunter/public/images';
+const AUDIO_DIR = '/var/www/hunter/public/audio';
 
-// 確保圖片目錄存在
+// 確保目錄存在
 if (!fs.existsSync(IMG_DIR)) fs.mkdirSync(IMG_DIR, { recursive: true });
+if (!fs.existsSync(AUDIO_DIR)) fs.mkdirSync(AUDIO_DIR, { recursive: true });
 
 // ── Multer (圖片上傳) ────────────────────────────
-const storage = multer.diskStorage({
+const imgStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, IMG_DIR),
   filename: (req, file, cb) => {
     const word = req.params.word || 'unknown';
@@ -23,11 +25,28 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  storage: imgStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) cb(null, true);
     else cb(new Error('只接受圖片檔案'));
+  }
+});
+
+const audioStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, AUDIO_DIR),
+  filename: (req, file, cb) => {
+    const word = req.params.word || 'unknown';
+    const ext = path.extname(file.originalname).toLowerCase() || '.mp3';
+    cb(null, word + ext);
+  }
+});
+const uploadAudio = multer({
+  storage: audioStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('audio/')) cb(null, true);
+    else cb(new Error('只接受音檔'));
   }
 });
 
@@ -65,11 +84,17 @@ db.exec(`
     level      INTEGER NOT NULL DEFAULT 1,
     emoji      TEXT DEFAULT '🎯',
     image_path TEXT,
+    audio_path TEXT,
     hint       TEXT,
     active     INTEGER DEFAULT 1,
     created_at TEXT DEFAULT (datetime('now','localtime'))
   );
 `);
+
+// 欄位 migration（舊 DB 補上 audio_path）
+try {
+  db.exec('ALTER TABLE vocabulary ADD COLUMN audio_path TEXT');
+} catch(e) { /* 欄位已存在，跳過 */ }
 
 // 種入預設詞彙（只在空表時執行）
 const vocabCount = db.prepare('SELECT COUNT(*) as c FROM vocabulary').get();
@@ -175,13 +200,44 @@ app.delete('/api/vocabulary/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// POST /api/vocabulary/:word/image — 上傳圖片（用族語單字當檔名）
+// POST /api/vocabulary/:word/image — 上傳圖片
 app.post('/api/vocabulary/:word/image', upload.single('image'), (req, res) => {
   const word = req.params.word;
   if (!req.file) return res.status(400).json({ error: '請上傳圖片' });
   const imagePath = '/images/' + req.file.filename;
   db.prepare('UPDATE vocabulary SET image_path = ? WHERE word = ?').run(imagePath, word);
   res.json({ success: true, image_path: imagePath });
+});
+
+// POST /api/vocabulary/:word/audio — 上傳音檔
+app.post('/api/vocabulary/:word/audio', uploadAudio.single('audio'), (req, res) => {
+  const word = req.params.word;
+  if (!req.file) return res.status(400).json({ error: '請上傳音檔' });
+  const audioPath = '/audio/' + req.file.filename;
+  db.prepare('UPDATE vocabulary SET audio_path = ? WHERE word = ?').run(audioPath, word);
+  res.json({ success: true, audio_path: audioPath });
+});
+
+// DELETE /api/vocabulary/:word/image — 刪除圖片
+app.delete('/api/vocabulary/:word/image', (req, res) => {
+  const row = db.prepare('SELECT image_path FROM vocabulary WHERE word = ?').get(req.params.word);
+  if (row?.image_path) {
+    const file = path.join('/var/www/hunter/public', row.image_path);
+    if (fs.existsSync(file)) fs.unlinkSync(file);
+    db.prepare('UPDATE vocabulary SET image_path = NULL WHERE word = ?').run(req.params.word);
+  }
+  res.json({ success: true });
+});
+
+// DELETE /api/vocabulary/:word/audio — 刪除音檔
+app.delete('/api/vocabulary/:word/audio', (req, res) => {
+  const row = db.prepare('SELECT audio_path FROM vocabulary WHERE word = ?').get(req.params.word);
+  if (row?.audio_path) {
+    const file = path.join('/var/www/hunter/public', row.audio_path);
+    if (fs.existsSync(file)) fs.unlinkSync(file);
+    db.prepare('UPDATE vocabulary SET audio_path = NULL WHERE word = ?').run(req.params.word);
+  }
+  res.json({ success: true });
 });
 
 // ── 排行榜 API ───────────────────────────────────

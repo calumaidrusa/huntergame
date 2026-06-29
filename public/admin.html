@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>山林獵人 · 詞彙管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#0d1117; color:#e6edf3;
+  font-family:'Noto Sans TC',sans-serif;
+  min-height:100vh;
+}
+header {
+  background:linear-gradient(90deg,#0d2010,#1a1a2e);
+  border-bottom:3px solid #ffd700;
+  padding:16px 32px;
+  display:flex; align-items:center; gap:16px;
+}
+header h1 { font-family:'Press Start 2P',monospace; font-size:13px; color:#ffd700; }
+header a { font-size:11px; color:#aaa; text-decoration:none; margin-left:auto; }
+header a:hover { color:#ffd700; }
+.container { max-width:1100px; margin:0 auto; padding:24px 20px; }
+
+/* Tabs */
+.tabs { display:flex; gap:8px; margin-bottom:24px; }
+.tab-btn {
+  font-family:'Press Start 2P',monospace; font-size:8px;
+  padding:10px 18px; cursor:pointer;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,215,0,0.3);
+  border-radius:6px; color:#888; transition:all 0.2s;
+}
+.tab-btn.active, .tab-btn:hover { color:#ffd700; border-color:#ffd700; background:rgba(255,215,0,0.08); }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* Cards */
+.section-title { font-family:'Press Start 2P',monospace; font-size:10px; color:#ffd700; margin-bottom:16px; }
+.vocab-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+.vocab-card {
+  background:#161b22; border:1px solid #30363d;
+  border-radius:10px; padding:16px;
+  transition:border-color 0.2s;
+}
+.vocab-card:hover { border-color:rgba(255,215,0,0.4); }
+.vc-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.vc-emoji { font-size:28px; }
+.vc-info h3 { font-size:15px; color:#ffd700; font-family:'Press Start 2P',monospace; }
+.vc-info p { font-size:11px; color:#888; margin-top:3px; }
+.vc-level { font-size:9px; padding:2px 8px; border-radius:10px; display:inline-block; margin-top:4px; }
+.lv1 { background:rgba(68,255,68,0.15); color:#44ff44; }
+.lv2 { background:rgba(255,170,0,0.15); color:#ffaa00; }
+.lv3 { background:rgba(255,68,68,0.15); color:#ff4444; }
+
+/* Upload zones */
+.upload-row { display:flex; gap:10px; margin-top:10px; }
+.upload-zone {
+  flex:1; border:1.5px dashed #30363d; border-radius:8px;
+  padding:10px 8px; text-align:center; cursor:pointer;
+  transition:all 0.2s; position:relative; overflow:hidden;
+}
+.upload-zone:hover { border-color:#ffd700; background:rgba(255,215,0,0.05); }
+.upload-zone.has-file { border-color:#44ff44; border-style:solid; }
+.upload-zone.has-file .uz-label { color:#44ff44; }
+.uz-icon { font-size:18px; display:block; margin-bottom:4px; }
+.uz-label { font-size:9px; color:#666; }
+.uz-filename { font-size:8px; color:#44ff44; margin-top:3px; word-break:break-all; }
+.upload-zone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.uz-preview { max-width:100%; max-height:60px; border-radius:4px; margin-top:6px; display:none; }
+.uz-audio-name { font-size:8px; color:#44ff44; margin-top:4px; display:none; }
+.upload-btn {
+  width:100%; margin-top:8px;
+  font-family:'Press Start 2P',monospace; font-size:7px;
+  background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.4);
+  color:#ffd700; padding:7px; border-radius:6px; cursor:pointer;
+  transition:all 0.2s;
+}
+.upload-btn:hover { background:rgba(255,215,0,0.2); }
+.upload-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.status-msg { font-size:8px; margin-top:6px; text-align:center; height:14px; }
+.status-ok { color:#44ff44; }
+.status-err { color:#ff4444; }
+
+/* Add vocab form */
+.add-form {
+  background:#161b22; border:1px solid #30363d;
+  border-radius:10px; padding:20px; margin-bottom:24px;
+}
+.form-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
+.form-group label { font-size:9px; color:#888; display:block; margin-bottom:5px; }
+.form-group input, .form-group select {
+  width:100%; background:#0d1117; border:1px solid #30363d;
+  border-radius:6px; padding:8px 10px; color:#e6edf3;
+  font-family:'Noto Sans TC',sans-serif; font-size:13px;
+  transition:border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus {
+  outline:none; border-color:#ffd700;
+}
+.btn-add {
+  font-family:'Press Start 2P',monospace; font-size:9px;
+  background:linear-gradient(180deg,#ffd700,#b8860b);
+  border:2px solid #8b4513; border-radius:6px;
+  padding:10px 20px; color:#3a1a00; cursor:pointer;
+  margin-top:12px;
+}
+.btn-add:hover { opacity:0.9; }
+
+/* Filter bar */
+.filter-bar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.filter-btn {
+  font-size:10px; padding:5px 14px; border-radius:20px; cursor:pointer;
+  background:rgba(255,255,255,0.05); border:1px solid #30363d; color:#888;
+  transition:all 0.15s;
+}
+.filter-btn.active, .filter-btn:hover { background:rgba(255,215,0,0.1); border-color:#ffd700; color:#ffd700; }
+
+/* Delete btn */
+.btn-del {
+  font-size:9px; padding:3px 8px; border-radius:4px; cursor:pointer;
+  background:rgba(255,50,50,0.1); border:1px solid rgba(255,50,50,0.3); color:#ff6666;
+  font-family:'Press Start 2P',monospace; float:right;
+}
+.btn-del:hover { background:rgba(255,50,50,0.25); }
+
+/* Stats bar */
+.stats-bar {
+  display:flex; gap:16px; margin-bottom:20px;
+  background:#161b22; border:1px solid #30363d; border-radius:8px; padding:14px 18px;
+}
+.stat-item { text-align:center; }
+.stat-val { font-family:'Press Start 2P',monospace; font-size:16px; color:#ffd700; }
+.stat-lbl { font-size:10px; color:#666; margin-top:4px; }
+
+/* Leaderboard table */
+.lb-section { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:20px; }
+.lb-filter { display:flex; gap:8px; margin-bottom:16px; }
+table { width:100%; border-collapse:collapse; }
+th { font-size:10px; color:#888; padding:8px 12px; border-bottom:1px solid #30363d; text-align:left; }
+td { font-size:12px; padding:9px 12px; border-bottom:1px solid #161b22; }
+tr:hover td { background:rgba(255,215,0,0.03); }
+.rank-1 td { color:#ffd700; }
+.rank-2 td { color:#c0c0c0; }
+.rank-3 td { color:#cd7f32; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏹 詞彙管理後台</h1>
+  <a href="/">← 回遊戲</a>
+</header>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('vocab',this)">📚 詞彙管理</button>
+    <button class="tab-btn" onclick="switchTab('leaderboard',this)">🏆 排行榜</button>
+  </div>
+
+  <!-- ── 詞彙管理 ── -->
+  <div id="tab-vocab" class="tab-panel active">
+
+    <!-- 新增詞彙 -->
+    <div class="add-form">
+      <div class="section-title">＋ 新增詞彙</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>族語 (word) *</label>
+          <input id="f-word" placeholder="tahut" />
+        </div>
+        <div class="form-group">
+          <label>中文</label>
+          <input id="f-zh" placeholder="火" />
+        </div>
+        <div class="form-group">
+          <label>English</label>
+          <input id="f-en" placeholder="fire" />
+        </div>
+        <div class="form-group">
+          <label>Emoji</label>
+          <input id="f-emoji" placeholder="🔥" />
+        </div>
+        <div class="form-group">
+          <label>關卡 *</label>
+          <select id="f-level">
+            <option value="1">Level 1 — 入山 (自然)</option>
+            <option value="2">Level 2 — 追蹤 (動物)</option>
+            <option value="3">Level 3 — 獵場挑戰</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>分類</label>
+          <select id="f-cat">
+            <option value="nature">nature</option>
+            <option value="animal">animal</option>
+            <option value="hunting">hunting</option>
+            <option value="general">general</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addVocab()">新增詞彙</button>
+      <span id="add-status" class="status-msg"></span>
+    </div>
+
+    <!-- 篩選 -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterVocab(0,this)">全部</button>
+      <button class="filter-btn" onclick="filterVocab(1,this)">🌿 LV1</button>
+      <button class="filter-btn" onclick="filterVocab(2,this)">🌳 LV2</button>
+      <button class="filter-btn" onclick="filterVocab(3,this)">🏔️ LV3</button>
+    </div>
+
+    <!-- 詞彙卡片 -->
+    <div id="vocab-grid" class="vocab-grid">
+      <div style="color:#555;font-size:12px;">載入中...</div>
+    </div>
+  </div>
+
+  <!-- ── 排行榜 ── -->
+  <div id="tab-leaderboard" class="tab-panel">
+    <div id="lb-stats" class="stats-bar">
+      <div class="stat-item"><div class="stat-val" id="s-total">—</div><div class="stat-lbl">總遊戲次數</div></div>
+      <div class="stat-item"><div class="stat-val" id="s-today">—</div><div class="stat-lbl">今日遊戲</div></div>
+      <div class="stat-item"><div class="stat-val" id="s-best">—</div><div class="stat-lbl">最高分</div></div>
+    </div>
+    <div class="lb-section">
+      <div class="lb-filter">
+        <button class="filter-btn active" onclick="loadLb('all',this)">全部</button>
+        <button class="filter-btn" onclick="loadLb(1,this)">🌿 LV1</button>
+        <button class="filter-btn" onclick="loadLb(2,this)">🌳 LV2</button>
+        <button class="filter-btn" onclick="loadLb(3,this)">🏔️ LV3</button>
+      </div>
+      <table>
+        <thead><tr>
+          <th>#</th><th>獵人</th><th>關卡</th><th>分數</th><th>命中</th><th>準確率</th><th>日期</th>
+        </tr></thead>
+        <tbody id="lb-tbody"><tr><td colspan="7" style="color:#555;text-align:center;padding:20px">載入中...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = '';
+let _allVocab = [];
+let _filterLevel = 0;
+
+// ── Tab 切換 ──────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'leaderboard') { loadStats(); loadLb('all', document.querySelector('.lb-filter .filter-btn')); }
+}
+
+// ── 詞彙 ─────────────────────────────────────────
+async function fetchVocab() {
+  const rows = await fetch(`${API}/api/vocabulary?active=all`).then(r => r.json());
+  _allVocab = rows;
+  renderVocabGrid();
+}
+
+function filterVocab(level, btn) {
+  _filterLevel = level;
+  document.querySelectorAll('.filter-bar .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVocabGrid();
+}
+
+function renderVocabGrid() {
+  const rows = _filterLevel ? _allVocab.filter(r => r.level == _filterLevel) : _allVocab;
+  const lvlCls = { 1:'lv1', 2:'lv2', 3:'lv3' };
+  const lvlLabel = { 1:'LV1 入山', 2:'LV2 追蹤', 3:'LV3 獵場' };
+  if (!rows.length) {
+    document.getElementById('vocab-grid').innerHTML = '<div style="color:#555;font-size:12px;">沒有詞彙</div>';
+    return;
+  }
+  document.getElementById('vocab-grid').innerHTML = rows.map(r => `
+    <div class="vocab-card" id="vc-${r.id}">
+      <div class="vc-header">
+        <div class="vc-emoji">${r.emoji||'🎯'}</div>
+        <div class="vc-info">
+          <h3>${r.word}</h3>
+          <p>${r.chinese||''} ${r.english ? '/ '+r.english : ''}</p>
+          <span class="vc-level ${lvlCls[r.level]||''}">${lvlLabel[r.level]||'LV'+r.level}</span>
+        </div>
+        <button class="btn-del" onclick="delVocab(${r.id},'${r.word}')">刪</button>
+      </div>
+
+      <div class="upload-row">
+        <!-- 圖片 -->
+        <div class="upload-zone ${r.image_path?'has-file':''}" id="iz-${r.id}" title="點擊上傳圖片">
+          <span class="uz-icon">🖼️</span>
+          <span class="uz-label">${r.image_path ? '已有圖片' : '上傳圖片'}</span>
+          ${r.image_path ? `<img class="uz-preview" src="${r.image_path}" style="display:block">` : '<img class="uz-preview">'}
+          <input type="file" accept="image/*" onchange="uploadFile('image','${r.word}',${r.id},this)">
+        </div>
+        <!-- 音檔 -->
+        <div class="upload-zone ${r.audio_path?'has-file':''}" id="az-${r.id}" title="點擊上傳音檔">
+          <span class="uz-icon">🔊</span>
+          <span class="uz-label">${r.audio_path ? '已有音檔' : '上傳音檔'}</span>
+          <div class="uz-audio-name" style="${r.audio_path?'display:block':''}">
+            ${r.audio_path ? r.audio_path.split('/').pop() : ''}
+          </div>
+          <input type="file" accept="audio/*" onchange="uploadFile('audio','${r.word}',${r.id},this)">
+        </div>
+      </div>
+      ${r.image_path ? `<div style="display:flex;gap:6px;margin-top:6px">
+        <button class="upload-btn" style="flex:1" onclick="deleteFile('image','${r.word}',${r.id})">🗑 刪圖片</button>
+        ${r.audio_path ? `<button class="upload-btn" style="flex:1" onclick="deleteFile('audio','${r.word}',${r.id})">🗑 刪音檔</button>` : ''}
+      </div>` : r.audio_path ? `<button class="upload-btn" onclick="deleteFile('audio','${r.word}',${r.id})">🗑 刪音檔</button>` : ''}
+      <div class="status-msg" id="st-${r.id}"></div>
+    </div>
+  `).join('');
+}
+
+async function uploadFile(type, word, id, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const st = document.getElementById('st-' + id);
+  st.textContent = '上傳中...'; st.className = 'status-msg';
+  const fd = new FormData();
+  fd.append(type, file);
+  try {
+    const res = await fetch(`${API}/api/vocabulary/${word}/${type}`, { method:'POST', body:fd }).then(r=>r.json());
+    if (res.success) {
+      st.textContent = '✓ 上傳成功'; st.className = 'status-msg status-ok';
+      // 更新 UI
+      const zone = document.getElementById(type === 'image' ? `iz-${id}` : `az-${id}`);
+      zone.classList.add('has-file');
+      if (type === 'image') {
+        zone.querySelector('.uz-label').textContent = '已有圖片';
+        const preview = zone.querySelector('.uz-preview');
+        preview.src = res.image_path + '?t=' + Date.now();
+        preview.style.display = 'block';
+      } else {
+        zone.querySelector('.uz-label').textContent = '已有音檔';
+        const nm = zone.querySelector('.uz-audio-name');
+        nm.textContent = file.name; nm.style.display = 'block';
+      }
+    } else {
+      st.textContent = '✗ 失敗'; st.className = 'status-msg status-err';
+    }
+  } catch(e) {
+    st.textContent = '✗ 連線失敗'; st.className = 'status-msg status-err';
+  }
+}
+
+async function deleteFile(type, word, id) {
+  if (!confirm(`確定刪除 ${word} 的${type==='image'?'圖片':'音檔'}？`)) return;
+  const st = document.getElementById('st-' + id);
+  await fetch(`${API}/api/vocabulary/${word}/${type}`, { method:'DELETE' });
+  st.textContent = '✓ 已刪除'; st.className = 'status-msg status-ok';
+  fetchVocab();
+}
+
+async function addVocab() {
+  const word = document.getElementById('f-word').value.trim();
+  const level = document.getElementById('f-level').value;
+  if (!word) { alert('請填寫族語'); return; }
+  const body = {
+    word, level: parseInt(level),
+    chinese: document.getElementById('f-zh').value,
+    english: document.getElementById('f-en').value,
+    emoji: document.getElementById('f-emoji').value || '🎯',
+    category: document.getElementById('f-cat').value,
+  };
+  const res = await fetch(`${API}/api/vocabulary`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }).then(r=>r.json());
+  const st = document.getElementById('add-status');
+  if (res.success) {
+    st.textContent = '✓ 新增成功 (ID: ' + res.id + ')'; st.className = 'status-msg status-ok';
+    ['f-word','f-zh','f-en','f-emoji'].forEach(id => document.getElementById(id).value = '');
+    fetchVocab();
+  } else {
+    st.textContent = '✗ ' + (res.error||'失敗'); st.className = 'status-msg status-err';
+  }
+}
+
+async function delVocab(id, word) {
+  if (!confirm(`確定刪除「${word}」？`)) return;
+  await fetch(`${API}/api/vocabulary/${id}`, { method:'DELETE' });
+  fetchVocab();
+}
+
+// ── 排行榜 ───────────────────────────────────────
+async function loadStats() {
+  const d = await fetch(`${API}/api/stats`).then(r=>r.json());
+  document.getElementById('s-total').textContent = d.total_games;
+  document.getElementById('s-today').textContent = d.today_games;
+  document.getElementById('s-best').textContent = d.best_score ? d.best_score.score.toLocaleString() : '—';
+}
+
+async function loadLb(level, btn) {
+  document.querySelectorAll('.lb-filter .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const url = level === 'all' ? `/api/leaderboard?limit=50` : `/api/leaderboard?level=${level}&limit=50`;
+  const d = await fetch(API + url).then(r=>r.json());
+  const medals = ['🥇','🥈','🥉'];
+  const lvlName = {1:'LV1 入山',2:'LV2 追蹤',3:'LV3 獵場'};
+  const tbody = document.getElementById('lb-tbody');
+  if (!d.data.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="color:#555;text-align:center;padding:20px">還沒有紀錄</td></tr>';
+    return;
+  }
+  tbody.innerHTML = d.data.map((r, i) => `
+    <tr class="${i<3?'rank-'+(i+1):''}">
+      <td>${medals[i]||i+1}</td>
+      <td>${r.player}</td>
+      <td>${lvlName[r.level]||r.level}</td>
+      <td>${r.score.toLocaleString()}</td>
+      <td>${r.kills}</td>
+      <td>${r.accuracy}%</td>
+      <td style="color:#555;font-size:10px">${r.created_at?.slice(0,10)||''}</td>
+    </tr>`).join('');
+}
+
+// 初始載入
+fetchVocab();
+</script>
+</body>
+</html>

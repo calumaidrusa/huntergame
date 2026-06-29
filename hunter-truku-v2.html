@@ -429,6 +429,73 @@ body {
 .lc-icon { font-size:28px; display:block; margin-bottom:6px; }
 .lc-diff { display:block; margin-top:6px; }
 .diff-e { color:#44ff44; } .diff-m { color:#ffaa00; } .diff-h { color:#ff4444; }
+.title-footer { display:flex; gap:8px; margin-top:4px; }
+.title-small-btn {
+  font-family:'Press Start 2P',monospace; font-size:7px;
+  background:transparent; border:1px solid rgba(255,215,0,0.4);
+  border-radius:4px; padding:6px 12px; color:rgba(255,215,0,0.7);
+  cursor:pointer; transition:all 0.2s;
+}
+.title-small-btn:hover { border-color:#ffd700; color:#ffd700; background:rgba(255,215,0,0.1); }
+
+/* ── LEADERBOARD MODAL ── */
+#lbModal {
+  position:absolute; inset:0; z-index:600;
+  background:rgba(0,0,0,0.85);
+  display:none; flex-direction:column;
+  align-items:center; justify-content:center;
+}
+#lbModal.show { display:flex; }
+#lbBox {
+  background:linear-gradient(180deg,#0d2010,#1a1a2e);
+  border:3px solid #ffd700;
+  border-radius:12px;
+  width:820px; max-height:480px;
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  box-shadow:0 0 40px rgba(255,215,0,0.3);
+}
+#lbHeader {
+  padding:14px 20px;
+  border-bottom:2px solid rgba(255,215,0,0.3);
+  display:flex; align-items:center; justify-content:space-between;
+}
+#lbTitle { font-size:13px; color:#ffd700; }
+#lbClose {
+  font-family:'Press Start 2P',monospace; font-size:10px;
+  background:transparent; border:1px solid rgba(255,215,0,0.4);
+  color:#ffd700; cursor:pointer; padding:6px 10px; border-radius:4px;
+}
+#lbClose:hover { background:rgba(255,0,0,0.3); }
+#lbTabs {
+  display:flex; gap:0;
+  border-bottom:2px solid rgba(255,215,0,0.2);
+}
+.lb-tab {
+  font-family:'Press Start 2P',monospace; font-size:8px;
+  padding:10px 18px; cursor:pointer; color:#888;
+  border-bottom:3px solid transparent;
+  transition:all 0.15s; background:transparent; border-top:none; border-left:none; border-right:none;
+}
+.lb-tab:hover { color:#ffd700; }
+.lb-tab.active { color:#ffd700; border-bottom-color:#ffd700; }
+#lbBody { flex:1; overflow-y:auto; padding:12px 16px; }
+#lbBody::-webkit-scrollbar { width:4px; }
+#lbBody::-webkit-scrollbar-thumb { background:#ffd700; border-radius:2px; }
+.lb-loading { text-align:center; color:#888; font-size:8px; padding:20px; }
+.lb-empty { text-align:center; color:#555; font-size:8px; padding:20px; }
+.lb-table { width:100%; border-collapse:collapse; }
+.lb-table th {
+  font-size:7px; color:#888; padding:6px 8px;
+  border-bottom:1px solid rgba(255,215,0,0.2);
+  text-align:left;
+}
+.lb-table td { font-size:8px; padding:7px 8px; border-bottom:1px solid rgba(255,255,255,0.05); }
+.lb-rank-1 td { color:#ffd700; }
+.lb-rank-2 td { color:#c0c0c0; }
+.lb-rank-3 td { color:#cd7f32; }
+.lb-rank td { color:#aaa; }
+.lb-medal { font-size:14px; }
 </style>
 </head>
 <body>
@@ -459,6 +526,26 @@ body {
         LEVEL 3<br>獵場挑戰
         <span class="lc-diff diff-h">★★★ HARD</span>
       </div>
+    </div>
+    <div class="title-footer">
+      <button class="title-small-btn" onclick="openLeaderboard()">🏆 排行榜</button>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD MODAL -->
+  <div id="lbModal">
+    <div id="lbBox">
+      <div id="lbHeader">
+        <span id="lbTitle">🏆 獵人排行榜</span>
+        <button id="lbClose" onclick="closeLeaderboard()">✕ 關閉</button>
+      </div>
+      <div id="lbTabs">
+        <button class="lb-tab active" onclick="switchLbTab('all',this)">全部</button>
+        <button class="lb-tab" onclick="switchLbTab(1,this)">🌿 LV1 入山</button>
+        <button class="lb-tab" onclick="switchLbTab(2,this)">🌳 LV2 追蹤</button>
+        <button class="lb-tab" onclick="switchLbTab(3,this)">🏔️ LV3 獵場</button>
+      </div>
+      <div id="lbBody"><div class="lb-loading">載入中...</div></div>
     </div>
   </div>
 
@@ -626,6 +713,7 @@ async function loadVocabulary(level) {
       hint: r.hint || r.word,
       emoji: r.emoji || '🎯',
       image: r.image_path || null,
+      audio: r.audio_path || null,
       words: r.word.split(' ')
     }));
     VOCAB_CACHE[level] = prey.length > 0 ? prey : FALLBACK_PREY[level];
@@ -824,6 +912,7 @@ function nextRound() {
     preyEl.textContent = G.currentPrey.emoji;
   }
   preyEl.className = '';
+  playWordAudio(G.currentPrey);
 
   // Update word bubble
   const display = G.currentPrey.words.join(' ');
@@ -1111,7 +1200,8 @@ function goTitle() {
 
 // Focus input on click anywhere
 document.getElementById('gameWrap').addEventListener('click', () => {
-  document.getElementById('realInput').focus();
+  if (!document.getElementById('lbModal').classList.contains('show'))
+    document.getElementById('realInput').focus();
 });
 
 // Enter 鍵快捷：名字輸入框
@@ -1121,6 +1211,91 @@ document.getElementById('goNameInput').addEventListener('keydown', e => {
 document.getElementById('clNameInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') submitAndNext();
 });
+
+// ── 排行榜 ────────────────────────────────────────
+let _lbCurrentTab = 'all';
+const _lbCache = {};
+
+function openLeaderboard() {
+  document.getElementById('lbModal').classList.add('show');
+  loadLbTab(_lbCurrentTab);
+}
+
+function closeLeaderboard() {
+  document.getElementById('lbModal').classList.remove('show');
+}
+
+function switchLbTab(tab, btn) {
+  _lbCurrentTab = tab;
+  document.querySelectorAll('.lb-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadLbTab(tab);
+}
+
+async function loadLbTab(tab) {
+  const body = document.getElementById('lbBody');
+  if (_lbCache[tab]) { body.innerHTML = _lbCache[tab]; return; }
+  body.innerHTML = '<div class="lb-loading">載入中...</div>';
+  try {
+    const url = tab === 'all'
+      ? '/api/leaderboard?limit=20'
+      : `/api/leaderboard?level=${tab}&limit=20`;
+    const data = await fetch(url).then(r => r.json());
+    const html = renderLbTable(data.data, tab);
+    _lbCache[tab] = html;
+    body.innerHTML = html;
+  } catch(e) {
+    body.innerHTML = '<div class="lb-empty">⚠ 無法連線到伺服器</div>';
+  }
+}
+
+function renderLbTable(rows, tab) {
+  if (!rows || rows.length === 0)
+    return '<div class="lb-empty">還沒有紀錄，快去成為第一名！🏹</div>';
+
+  const medals = ['🥇','🥈','🥉'];
+  const lvlName = { 1:'LV1 入山', 2:'LV2 追蹤', 3:'LV3 獵場挑戰' };
+
+  let html = `<table class="lb-table">
+    <thead><tr>
+      <th>#</th>
+      <th>獵人</th>
+      ${tab === 'all' ? '<th>關卡</th>' : ''}
+      <th>分數</th>
+      <th>命中</th>
+      <th>準確率</th>
+    </tr></thead><tbody>`;
+
+  rows.forEach((r, i) => {
+    const cls = i < 3 ? `lb-rank-${i+1}` : 'lb-rank';
+    const medal = medals[i] || `${i+1}`;
+    html += `<tr class="${cls}">
+      <td><span class="lb-medal">${medal}</span></td>
+      <td>${r.player}</td>
+      ${tab === 'all' ? `<td>${lvlName[r.level] || r.level}</td>` : ''}
+      <td>${r.score.toLocaleString()}</td>
+      <td>${r.kills}</td>
+      <td>${r.accuracy}%</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+// ESC 關閉排行榜
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLeaderboard();
+});
+
+// ── 音效播放 ─────────────────────────────────────
+function playWordAudio(prey) {
+  if (!prey.audio) return;
+  try {
+    const a = new Audio(prey.audio);
+    a.volume = 0.8;
+    a.play().catch(() => {});
+  } catch(e) {}
+}
 </script>
 </body>
 </html>

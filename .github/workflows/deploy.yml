@@ -26,6 +26,9 @@ jobs:
           scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
             hunter-truku-v2.html \
             root@142.93.3.132:/var/www/hunter/public/index.html
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            public/admin.html \
+            root@142.93.3.132:/var/www/hunter/public/admin.html
 
       - name: 上傳後端檔案
         run: |
