@@ -582,54 +582,68 @@ body {
 
 <script>
 // ═══════════════════════════════════════════════════
-//  GAME DATA
+//  GAME CONFIG（關卡設定，詞彙從 API 動態載入）
 // ═══════════════════════════════════════════════════
-const LEVELS = {
-  1: {
-    label: 'LEVEL 1: 入山', scene: '🌿 淺山林道',
-    timePerRound: 10, totalRounds: 8, hp: 100, hpLoss: 20,
-    prey: [
-      { zh:'樹 (qhuni)', hint:'qhuni', emoji:'🌲', words:['qhuni'] },
-      { zh:'風 (bgihur)', hint:'bgihur', emoji:'💨', words:['bgihur'] },
-      { zh:'雨 (quyux)', hint:'quyux', emoji:'🌧️', words:['quyux'] },
-      { zh:'草 (spriq)', hint:'spriq', emoji:'🌿', words:['spriq'] },
-      { zh:'火 (tahut)', hint:'tahut', emoji:'🔥', words:['tahut'] },
-      { zh:'太陽 (hidaw)', hint:'hidaw', emoji:'☀️', words:['hidaw'] },
-      { zh:'月亮 (idas)', hint:'idas', emoji:'🌙', words:['idas'] },
-      { zh:'雲 (rulung)', hint:'rulung', emoji:'☁️', words:['rulung'] },
-      { zh:'山林 (rnaaw)', hint:'rnaaw', emoji:'🏔️', words:['rnaaw'] },
-      { zh:'道路 (elug)', hint:'elug', emoji:'🛤️', words:['elug'] },
-    ]
-  },
-  2: {
-    label: 'LEVEL 2: 追蹤', scene: '🌳 深山叢林',
-    timePerRound: 12, totalRounds: 8, hp: 100, hpLoss: 25,
-    prey: [
-      { zh:'飛鼠 (rapit)', hint:'rapit', emoji:'🐿️', words:['rapit'] },
-      { zh:'水鹿 (rqnux)', hint:'rqnux', emoji:'🦌', words:['rqnux'] },
-      { zh:'山羌 (pada)', hint:'pada', emoji:'🦌', words:['pada'] },
-      { zh:'穿山甲 (arung)', hint:'arung', emoji:'🦔', words:['arung'] },
-      { zh:'松鼠 (brihut)', hint:'brihut', emoji:'🐿️', words:['brihut'] },
-      { zh:'猴子 (rungay)', hint:'rungay', emoji:'🐒', words:['rungay'] },
-      { zh:'蜜蜂 (walu)', hint:'walu', emoji:'🐝', words:['walu'] },
-      { zh:'蝴蝶 (klaway)', hint:'klaway', emoji:'🦋', words:['klaway'] },
-      { zh:'老鷹 (kjiraw)', hint:'kjiraw', emoji:'🦅', words:['kjiraw'] },
-      { zh:'百步蛇 (quyu mlhay)', hint:'quyu mlhay', emoji:'🐍', words:['quyu','mlhay'] },
-    ]
-  },
-  3: {
-    label: 'LEVEL 3: 獵場挑戰', scene: '🏔️ 高山巔峰',
-    timePerRound: 14, totalRounds: 6, hp: 100, hpLoss: 34,
-    prey: [
-      { zh:'山豬 (bowyak)', hint:'bowyak', emoji:'🐗', words:['bowyak'] },
-      { zh:'熊 (kumay)', hint:'kumay', emoji:'🐻', words:['kumay'] },
-      { zh:'雲豹 (ngiyaw rklit)', hint:'ngiyaw rklit', emoji:'🐆', words:['ngiyaw','rklit'] },
-      { zh:'獵物 (samat)', hint:'samat', emoji:'🎯', words:['samat'] },
-      { zh:'弓 (bhniq)', hint:'bhniq', emoji:'🏹', words:['bhniq'] },
-      { zh:'岩石 (tasil)', hint:'tasil', emoji:'🪨', words:['tasil'] },
-    ]
-  }
+const API_BASE = '';  // 同源，Nginx proxy 到 /api
+
+const LEVEL_CONFIG = {
+  1: { label: 'LEVEL 1: 入山', scene: '🌿 淺山林道', timePerRound: 10, totalRounds: 8, hp: 100, hpLoss: 20 },
+  2: { label: 'LEVEL 2: 追蹤', scene: '🌳 深山叢林', timePerRound: 12, totalRounds: 8, hp: 100, hpLoss: 25 },
+  3: { label: 'LEVEL 3: 獵場挑戰', scene: '🏔️ 高山巔峰', timePerRound: 14, totalRounds: 6, hp: 100, hpLoss: 34 },
 };
+
+// 靜態 fallback（API 失敗時使用）
+const FALLBACK_PREY = {
+  1: [
+    { zh:'樹', hint:'qhuni', emoji:'🌲', words:['qhuni'] },
+    { zh:'風', hint:'bgihur', emoji:'💨', words:['bgihur'] },
+    { zh:'火', hint:'tahut', emoji:'🔥', words:['tahut'] },
+    { zh:'太陽', hint:'hidaw', emoji:'☀️', words:['hidaw'] },
+  ],
+  2: [
+    { zh:'飛鼠', hint:'rapit', emoji:'🐿️', words:['rapit'] },
+    { zh:'老鷹', hint:'kjiraw', emoji:'🦅', words:['kjiraw'] },
+    { zh:'猴子', hint:'rungay', emoji:'🐒', words:['rungay'] },
+  ],
+  3: [
+    { zh:'山豬', hint:'bowyak', emoji:'🐗', words:['bowyak'] },
+    { zh:'熊', hint:'kumay', emoji:'🐻', words:['kumay'] },
+  ]
+};
+
+// 詞彙快取（避免重複請求）
+const VOCAB_CACHE = {};
+
+async function loadVocabulary(level) {
+  if (VOCAB_CACHE[level]) return VOCAB_CACHE[level];
+  try {
+    const res = await fetch(`${API_BASE}/api/vocabulary?level=${level}`);
+    if (!res.ok) throw new Error('API error');
+    const rows = await res.json();
+    const prey = rows.map(r => ({
+      zh: r.chinese || r.word,
+      english: r.english || '',
+      hint: r.hint || r.word,
+      emoji: r.emoji || '🎯',
+      image: r.image_path || null,
+      words: r.word.split(' ')
+    }));
+    VOCAB_CACHE[level] = prey.length > 0 ? prey : FALLBACK_PREY[level];
+  } catch(e) {
+    console.warn('詞彙 API 無法連線，使用內建詞彙', e.message);
+    VOCAB_CACHE[level] = FALLBACK_PREY[level];
+  }
+  return VOCAB_CACHE[level];
+}
+
+// 相容舊有 LEVELS 呼叫方式
+const LEVELS = new Proxy({}, {
+  get(_, lvl) {
+    const cfg = LEVEL_CONFIG[lvl];
+    if (!cfg) return undefined;
+    return { ...cfg, prey: VOCAB_CACHE[lvl] || FALLBACK_PREY[lvl] || [] };
+  }
+});
 
 // ═══════════════════════════════════════════════════
 //  STATE
@@ -752,9 +766,12 @@ function shuffle(arr) {
   return a;
 }
 
-function startGame(lvl) {
+async function startGame(lvl) {
   document.getElementById('titleScreen').style.display = 'none';
   G.level = lvl;
+  // 預先載入下一關詞彙（背景）
+  if (LEVEL_CONFIG[lvl + 1]) loadVocabulary(lvl + 1);
+  await loadVocabulary(lvl);
   initLevel();
 }
 
@@ -799,9 +816,14 @@ function nextRound() {
   G.wordIdx = 0;
   G.currentPrey = G.preyQueue[G.round % G.preyQueue.length];
 
-  // Update prey display
-  document.getElementById('prey').textContent = G.currentPrey.emoji;
-  document.getElementById('prey').className = '';
+  // Update prey display（有圖用圖，沒圖用 emoji）
+  const preyEl = document.getElementById('prey');
+  if (G.currentPrey.image) {
+    preyEl.innerHTML = `<img src="${G.currentPrey.image}" alt="${G.currentPrey.zh}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">`;
+  } else {
+    preyEl.textContent = G.currentPrey.emoji;
+  }
+  preyEl.className = '';
 
   // Update word bubble
   const display = G.currentPrey.words.join(' ');
