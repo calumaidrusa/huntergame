@@ -646,6 +646,7 @@ body.listen-active #listenBtn { display:flex; }
 
     <!-- Word bubble above prey -->
     <div id="wordBubble">
+      <img id="wordBubbleImg" src="" alt="" style="display:none;width:72px;height:72px;object-fit:contain;margin-bottom:6px;">
       <div id="wordTarget">TAFES</div>
       <div id="wordHint">(wild boar)</div>
     </div>
@@ -779,8 +780,8 @@ const FALLBACK_PREY = {
 // 詞彙快取（避免重複請求）
 const VOCAB_CACHE = {};
 
-async function loadVocabulary(level) {
-  if (VOCAB_CACHE[level]) return VOCAB_CACHE[level];
+async function loadVocabulary(level, forceReload) {
+  if (VOCAB_CACHE[level] && !forceReload) return VOCAB_CACHE[level];
   try {
     const res = await fetch(`${API_BASE}/api/vocabulary?level=${level}`);
     if (!res.ok) throw new Error('API error');
@@ -956,8 +957,8 @@ function shuffle(arr) {
 async function startGame(lvl) {
   document.getElementById('titleScreen').style.display = 'none';
   G.level = lvl;
-  if (LEVEL_CONFIG[lvl + 1]) loadVocabulary(lvl + 1);
-  await loadVocabulary(lvl);
+  if (LEVEL_CONFIG[lvl + 1]) loadVocabulary(lvl + 1, true);
+  await loadVocabulary(lvl, true);
 
   // 套用模式
   if (G.listenMode) {
@@ -1019,9 +1020,21 @@ function nextRound() {
   // Update prey display（有圖用圖，沒圖用 emoji）
   const preyEl = document.getElementById('prey');
   if (G.currentPrey.image) {
-    preyEl.innerHTML = `<img src="${G.currentPrey.image}" alt="${G.currentPrey.zh}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">`;
+    preyEl.innerHTML = `<img src="${G.currentPrey.image}" alt="${G.currentPrey.zh}"
+      style="width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));">`;
   } else {
     preyEl.textContent = G.currentPrey.emoji;
+  }
+
+  // 詞彙泡泡加上圖片縮圖
+  const imgThumb = document.getElementById('wordBubbleImg');
+  if (imgThumb) {
+    if (G.currentPrey.image) {
+      imgThumb.src = G.currentPrey.image;
+      imgThumb.style.display = 'block';
+    } else {
+      imgThumb.style.display = 'none';
+    }
   }
   preyEl.className = '';
 
