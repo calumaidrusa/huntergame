@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hunter Typer: Forest Chase</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #1a0a2e;
+  font-family: 'Press Start 2P', monospace;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── GAME CONTAINER ── */
+#gameWrap {
+  position: relative;
+  width: 900px;
+  height: 540px;
+  border: 4px solid #ffd700;
+  box-shadow: 0 0 0 4px #8b4513, 0 0 40px rgba(255,215,0,0.4);
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+/* ── LAYERED BACKGROUND ── */
+#bgCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+}
+
+/* ── HUD TOP BAR ── */
+#hud {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 52px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 100%);
+  border-bottom: 2px solid rgba(255,215,0,0.4);
+  display: flex; align-items: center;
+  padding: 0 16px;
+  z-index: 50;
+  gap: 0;
+}
+
+.hud-left { display:flex; flex-direction:column; gap:4px; min-width: 180px; }
+.hp-row { display:flex; align-items:center; gap:6px; }
+.hp-label { font-size:9px; color:#ff4444; text-shadow: 1px 1px 0 #000; }
+.hp-val { font-size:11px; color:#ff6666; text-shadow: 1px 1px 0 #000; }
+.hp-bar-wrap { width:90px; height:10px; background:#330000; border:2px solid #660000; border-radius:2px; overflow:hidden; }
+.hp-bar { height:100%; background:linear-gradient(90deg,#ff3333,#ff6666); transition:width 0.4s; box-shadow: 0 0 6px #ff3333; }
+.score-row { font-size:9px; color:#ffd700; text-shadow: 1px 1px 0 #000, 0 0 8px rgba(255,215,0,0.5); }
+
+.hud-center { flex:1; text-align:center; }
+.game-title-hud { font-size:13px; color:#ffd700; text-shadow:2px 2px 0 #8b4513, 0 0 12px rgba(255,215,0,0.6); letter-spacing:1px; }
+.game-sub-hud { font-size:7px; color:#aaddaa; letter-spacing:2px; margin-top:4px; }
+
+.hud-right { min-width:180px; text-align:right; font-size:9px; color:#aaffaa; text-shadow:1px 1px 0 #000; line-height:1.8; }
+
+/* ── GAME STAGE ── */
+#stage {
+  position: absolute;
+  inset: 52px 0 100px 0;
+  z-index: 10;
+  overflow: hidden;
+}
+
+/* Ground */
+#ground {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(180deg, #5a3a1a 0%, #3d2510 100%);
+  border-top: 3px solid #7a5a2a;
+  z-index: 2;
+}
+.ground-detail {
+  position: absolute;
+  bottom: 8px;
+  width: 100%; height: 3px;
+  background: repeating-linear-gradient(90deg, transparent 0px, transparent 18px, rgba(255,255,255,0.08) 18px, rgba(255,255,255,0.08) 20px);
+}
+
+/* Hunter character */
+#hunter {
+  position: absolute;
+  bottom: 60px;
+  left: 80px;
+  width: 100px; height: 130px;
+  z-index: 20;
+  image-rendering: pixelated;
+  font-size: 80px;
+  display: flex; align-items: flex-end; justify-content: center;
+  filter: drop-shadow(3px 3px 0 rgba(0,0,0,0.5));
+}
+
+/* Prey character */
+#prey {
+  position: absolute;
+  bottom: 60px;
+  right: 100px;
+  width: 120px; height: 120px;
+  z-index: 20;
+  font-size: 80px;
+  display: flex; align-items: flex-end; justify-content: center;
+  filter: drop-shadow(3px 3px 0 rgba(0,0,0,0.5));
+  transition: transform 0.3s;
+}
+#prey.shake { animation: preyShake 0.4s ease; }
+@keyframes preyShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(12px)} 75%{transform:translateX(-8px)} }
+#prey.flee { animation: preyFlee 0.6s ease forwards; }
+@keyframes preyFlee { to { transform: translateX(200px) scale(0.3); opacity:0; } }
+#prey.caught { animation: preyCaught 0.5s ease forwards; }
+@keyframes preyCaught { 0%{transform:scale(1)} 50%{transform:scale(1.4) rotate(15deg)} 100%{transform:scale(0); opacity:0;} }
+
+/* Arrow projectile */
+.arrow {
+  position: absolute;
+  font-size: 24px;
+  z-index: 25;
+  bottom: 120px;
+  pointer-events: none;
+  animation: arrowFly 0.4s ease forwards;
+}
+@keyframes arrowFly { from{left:180px; opacity:1} to{left:720px; opacity:0.2} }
+
+/* Hunter running animation */
+#hunter { animation: hunterRun 0.5s steps(2) infinite; }
+@keyframes hunterRun { 0%{bottom:60px} 50%{bottom:65px} 100%{bottom:60px} }
+
+/* ── WORD BUBBLE (above prey) ── */
+#wordBubble {
+  position: absolute;
+  bottom: 195px;
+  right: 55px;
+  background: #f5e8c8;
+  border: 3px solid #8b5e2a;
+  border-radius: 12px;
+  padding: 14px 20px;
+  text-align: center;
+  z-index: 30;
+  min-width: 200px;
+  box-shadow: 3px 3px 0 #4a2a08, 0 0 20px rgba(255,200,50,0.5);
+}
+#wordBubble::after {
+  content: '';
+  position: absolute;
+  bottom: -18px; left: 50%; transform: translateX(-50%);
+  border: 9px solid transparent;
+  border-top-color: #8b5e2a;
+}
+#wordBubble::before {
+  content: '';
+  position: absolute;
+  bottom: -12px; left: 50%; transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: #f5e8c8;
+  z-index: 1;
+}
+
+#wordTarget {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px;
+  color: #3a1a00;
+  letter-spacing: 3px;
+  text-transform: none;
+  line-height: 1.2;
+}
+#wordHint {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px;
+  color: #7a4a1a;
+  margin-top: 8px;
+  font-weight: 700;
+}
+
+/* ── INPUT BUBBLE (below word) ── */
+#inputBubble {
+  position: absolute;
+  bottom: 148px;
+  right: 75px;
+  background: #f0dba0;
+  border: 3px solid #8b5e2a;
+  border-radius: 8px;
+  padding: 8px 14px;
+  z-index: 30;
+  min-width: 160px;
+  text-align: center;
+  box-shadow: 2px 2px 0 #4a2a08;
+}
+#inputDisplay {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+  color: #3a1a00;
+  letter-spacing: 4px;
+  text-transform: none;
+  min-height: 22px;
+}
+.typed-correct { color: #1a7a1a; }
+.typed-wrong { color: #aa1111; }
+
+/* The real input (hidden, focused) */
+#typeInput {
+  position: absolute;
+  opacity: 0; pointer-events: none;
+  width: 1px; height: 1px;
+}
+
+/* ── TIMER BAR ── */
+#timerBarWrap {
+  position: absolute;
+  bottom: 138px; right: 50px;
+  width: 220px; height: 6px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 3px;
+  z-index: 31;
+  overflow: hidden;
+}
+#timerBar {
+  height: 100%;
+  background: linear-gradient(90deg, #44ff44, #ffff00);
+  transition: width 1s linear, background 0.5s;
+  border-radius: 3px;
+}
+
+/* ── BOTTOM INPUT AREA ── */
+#bottomBar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 100px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(20,10,5,0.95) 100%);
+  border-top: 3px solid rgba(255,215,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px;
+  z-index: 50;
+  padding: 0 24px;
+}
+
+.input-wrapper {
+  display: flex; align-items: center;
+  background: #1a0a00;
+  border: 3px solid #8b5e2a;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 16px rgba(255,200,50,0.3), inset 0 2px 8px rgba(0,0,0,0.5);
+  flex: 1; max-width: 400px;
+}
+.input-label {
+  background: #4a2a08;
+  padding: 0 12px;
+  height: 48px;
+  display: flex; align-items: center;
+  font-size: 9px; color: #ffd700;
+  border-right: 2px solid #8b5e2a;
+  white-space: nowrap;
+}
+#realInput {
+  flex: 1;
+  background: transparent;
+  border: none; outline: none;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+  color: #ffd700;
+  padding: 0 14px;
+  height: 48px;
+  letter-spacing: 3px;
+  text-transform: none;
+  caret-color: #ffd700;
+}
+#realInput::placeholder { color: rgba(255,215,0,0.2); font-size:10px; }
+#realInput.err { color: #ff4444; animation: inputShake 0.3s; }
+@keyframes inputShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+.shoot-btn {
+  background: linear-gradient(180deg, #ffd700, #b8860b);
+  border: 3px solid #8b4513;
+  border-radius: 8px;
+  width: 56px; height: 56px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #5a2a00, 0 0 16px rgba(255,200,50,0.4);
+  transition: all 0.1s;
+  display: flex; align-items:center; justify-content:center;
+}
+.shoot-btn:hover { background: linear-gradient(180deg, #ffe740, #d4a00f); transform: translateY(-2px); }
+.shoot-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #5a2a00; }
+
+/* combo meter */
+.combo-area { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.combo-label { font-size:7px; color:#aaa; }
+.combo-val { font-size:14px; color:#ffd700; text-shadow:0 0 8px #ffd700; min-width:40px; text-align:center; }
+.combo-dots { display:flex; gap:4px; }
+.cdot { width:8px; height:8px; border-radius:50%; background:#333; border:1px solid #555; transition:all 0.2s; }
+.cdot.on { background:#ffd700; border-color:#ffd700; box-shadow:0 0 6px #ffd700; }
+
+/* ── HIT EFFECTS ── */
+.hit-txt {
+  position: absolute;
+  font-family:'Press Start 2P', monospace;
+  font-size:18px;
+  pointer-events:none;
+  z-index:100;
+  animation: hitUp 0.9s ease forwards;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.8);
+}
+@keyframes hitUp { 0%{transform:translateY(0) scale(1);opacity:1} 100%{transform:translateY(-70px) scale(0.6);opacity:0} }
+
+/* ── LEVEL TRANSITION ── */
+#levelBanner {
+  position:absolute; inset:0;
+  background: rgba(0,0,0,0.88);
+  z-index:200;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:16px;
+  display:none;
+}
+#levelBanner.show { display:flex; }
+.banner-title { font-size:28px; color:#ffd700; text-shadow:3px 3px 0 #8b4513; animation:blink 0.8s steps(1) infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.banner-sub { font-size:11px; color:#aaffaa; letter-spacing:3px; }
+.banner-desc { font-family:'Noto Sans TC',sans-serif; font-size:16px; color:#ffd700; }
+
+/* ── SCREEN OVERLAYS ── */
+.fullscreen {
+  position:absolute; inset:0; z-index:300;
+  background:rgba(0,0,0,0.92);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:18px;
+  display:none;
+}
+.fullscreen.show { display:flex; }
+.fs-icon { font-size:64px; }
+.name-entry {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  margin: 4px 0 8px;
+}
+.name-label { font-size: 8px; color: var(--color-text-secondary, #aaa); letter-spacing: 2px; margin-bottom: 2px; }
+.name-input {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  background: rgba(0,0,0,0.5);
+  border: 2px solid #ffd700;
+  border-radius: 6px;
+  padding: 8px 14px;
+  color: #ffd700;
+  text-align: center;
+  width: 220px;
+  outline: none;
+  letter-spacing: 2px;
+}
+.name-input::placeholder { color: rgba(255,215,0,0.25); font-size: 9px; }
+.name-input:focus { box-shadow: 0 0 12px rgba(255,215,0,0.35); }
+.rank-result {
+  font-size: 9px; letter-spacing: 2px;
+  min-height: 18px; color: #aaffaa;
+  text-align: center;
+}
+.fs-title { font-size:20px; color:#ffd700; text-shadow:3px 3px 0 #8b4513; }
+.fs-body { font-family:'Noto Sans TC',sans-serif; font-size:14px; color:#aaddaa; text-align:center; line-height:2; }
+.fs-stats { display:flex; gap:20px; }
+.fs-stat { background:rgba(255,215,0,0.1); border:2px solid rgba(255,215,0,0.3); border-radius:8px; padding:12px 20px; text-align:center; }
+.fs-sv { font-size:20px; color:#ffd700; }
+.fs-sl { font-size:7px; color:#aaa; margin-top:4px; }
+.pixel-btn {
+  font-family:'Press Start 2P',monospace;
+  font-size:11px;
+  background:linear-gradient(180deg,#ffd700,#b8860b);
+  border:3px solid #8b4513;
+  border-radius:6px;
+  padding:12px 24px;
+  color:#3a1a00;
+  cursor:pointer;
+  box-shadow:0 4px 0 #5a2a00;
+  transition:all 0.1s;
+  margin:4px;
+}
+.pixel-btn:hover { transform:translateY(-2px); }
+.pixel-btn:active { transform:translateY(2px); box-shadow:0 2px 0 #5a2a00; }
+.pixel-btn.ghost {
+  background:transparent;
+  color:#ffd700;
+  border-color:rgba(255,215,0,0.5);
+  box-shadow:none;
+}
+
+/* ── TITLE SCREEN ── */
+#titleScreen {
+  position:absolute; inset:0; z-index:400;
+  background:linear-gradient(180deg,#0d2010 0%,#1a3a08 50%,#2d1a08 100%);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:14px;
+}
+.title-main {
+  font-size:clamp(20px,3.5vw,28px);
+  color:#ffd700;
+  text-shadow:3px 3px 0 #8b4513,0 0 30px rgba(255,215,0,0.5);
+  text-align:center;
+  line-height:1.5;
+}
+.title-sub { font-size:9px; color:#aaddaa; letter-spacing:3px; }
+.title-hunter { font-size:72px; animation:titleBob 1.5s ease-in-out infinite; }
+@keyframes titleBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.level-chooser { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
+.lc-btn {
+  font-family:'Press Start 2P',monospace;
+  font-size:8px;
+  background:rgba(0,0,0,0.5);
+  border:2px solid #ffd700;
+  border-radius:8px;
+  padding:12px 14px;
+  color:#ffd700;
+  cursor:pointer;
+  text-align:center;
+  min-width:130px;
+  transition:all 0.2s;
+  line-height:1.8;
+}
+.lc-btn:hover { background:rgba(255,215,0,0.15); transform:translateY(-3px); box-shadow:0 6px 16px rgba(255,215,0,0.3); }
+.lc-icon { font-size:28px; display:block; margin-bottom:6px; }
+.lc-diff { display:block; margin-top:6px; }
+.diff-e { color:#44ff44; } .diff-m { color:#ffaa00; } .diff-h { color:#ff4444; }
+</style>
+</head>
+<body>
+
+<div id="gameWrap">
+
+  <!-- BACKGROUND CANVAS -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- TITLE SCREEN -->
+  <div id="titleScreen">
+    <div class="title-hunter">🏹</div>
+    <div class="title-main">HUNTER TYPER</div>
+    <div class="title-sub">太魯閣語學習 · TRUKU VOCABULARY</div>
+    <div class="level-chooser">
+      <div class="lc-btn" onclick="startGame(1)">
+        <span class="lc-icon">🌿</span>
+        LEVEL 1<br>入山
+        <span class="lc-diff diff-e">★ EASY</span>
+      </div>
+      <div class="lc-btn" onclick="startGame(2)">
+        <span class="lc-icon">🌳</span>
+        LEVEL 2<br>追蹤
+        <span class="lc-diff diff-m">★★ MED</span>
+      </div>
+      <div class="lc-btn" onclick="startGame(3)">
+        <span class="lc-icon">🏔️</span>
+        LEVEL 3<br>獵場挑戰
+        <span class="lc-diff diff-h">★★★ HARD</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-left">
+      <div class="hp-row">
+        <span class="hp-label">HP:</span>
+        <span class="hp-val" id="hpNum">100</span>
+        <div class="hp-bar-wrap"><div class="hp-bar" id="hpBar" style="width:100%"></div></div>
+      </div>
+      <div class="score-row">SCORE: <span id="scoreNum">0</span></div>
+    </div>
+    <div class="hud-center">
+      <div class="game-title-hud">ARCADE</div>
+      <div class="game-sub-hud">太魯閣語 · TRUKU LANGUAGE</div>
+    </div>
+    <div class="hud-right" id="levelHud">LEVEL 1: 入山</div>
+  </div>
+
+  <!-- STAGE -->
+  <div id="stage">
+    <div id="ground"><div class="ground-detail"></div></div>
+
+    <div id="hunter">🏹</div>
+    <div id="prey">🐗</div>
+
+    <!-- Word bubble above prey -->
+    <div id="wordBubble">
+      <div id="wordTarget">TAFES</div>
+      <div id="wordHint">(wild boar)</div>
+    </div>
+
+    <!-- Input display bubble -->
+    <div id="inputBubble">
+      <div id="inputDisplay">_____</div>
+    </div>
+
+    <!-- Timer bar -->
+    <div id="timerBarWrap">
+      <div id="timerBar" style="width:100%"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div id="bottomBar">
+    <div class="combo-area">
+      <div class="combo-label">COMBO</div>
+      <div class="combo-val" id="comboNum">x0</div>
+      <div class="combo-dots" id="comboDots">
+        <div class="cdot" id="cd0"></div>
+        <div class="cdot" id="cd1"></div>
+        <div class="cdot" id="cd2"></div>
+        <div class="cdot" id="cd3"></div>
+        <div class="cdot" id="cd4"></div>
+      </div>
+    </div>
+
+    <div class="input-wrapper">
+      <div class="input-label">▶ TYPE</div>
+      <input type="text" id="realInput" placeholder="輸入族語..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+
+    <button class="shoot-btn" onclick="submitWord()" title="發射 (Enter)">🏹</button>
+  </div>
+
+  <!-- LEVEL BANNER -->
+  <div id="levelBanner">
+    <div class="banner-title" id="bannerTitle">LEVEL 1</div>
+    <div class="banner-desc" id="bannerDesc">🌿 入山 — 淺山林道</div>
+    <div class="banner-sub">PRESS ENTER TO START</div>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div class="fullscreen" id="gameOverScreen">
+    <div class="fs-icon">💀</div>
+    <div class="fs-title">GAME OVER</div>
+    <div class="fs-body" id="goBody">獵人倒下了<br>獵物四散而去</div>
+    <div class="fs-stats">
+      <div class="fs-stat"><div class="fs-sv" id="goScore">0</div><div class="fs-sl">SCORE</div></div>
+      <div class="fs-stat"><div class="fs-sv" id="goKills">0</div><div class="fs-sl">KILLS</div></div>
+      <div class="fs-stat"><div class="fs-sv" id="goAcc">0%</div><div class="fs-sl">ACC</div></div>
+    </div>
+    <div class="name-entry" id="goNameArea">
+      <div class="name-label">輸入獵人名號，留下紀錄</div>
+      <input type="text" id="goNameInput" class="name-input" placeholder="獵人名號..." maxlength="12" autocomplete="off">
+      <button class="pixel-btn" id="goSubmitBtn" onclick="submitAndRetry()">記錄 + 重試</button>
+      <div class="rank-result" id="goRankResult"></div>
+    </div>
+    <div>
+      <button class="pixel-btn ghost" onclick="goTitle()">TITLE</button>
+    </div>
+  </div>
+
+  <!-- STAGE CLEAR SCREEN -->
+  <div class="fullscreen" id="clearScreen">
+    <div class="fs-icon" id="clearIcon">🏆</div>
+    <div class="fs-title" id="clearTitle">STAGE CLEAR!</div>
+    <div class="fs-body" id="clearBody">任務完成！</div>
+    <div class="fs-stats">
+      <div class="fs-stat"><div class="fs-sv" id="clScore">0</div><div class="fs-sl">SCORE</div></div>
+      <div class="fs-stat"><div class="fs-sv" id="clKills">0</div><div class="fs-sl">KILLS</div></div>
+      <div class="fs-stat"><div class="fs-sv" id="clAcc">0%</div><div class="fs-sl">ACC</div></div>
+    </div>
+    <div class="name-entry" id="clNameArea">
+      <div class="name-label">輸入獵人名號，登上排行榜！</div>
+      <input type="text" id="clNameInput" class="name-input" placeholder="獵人名號..." maxlength="12" autocomplete="off">
+      <button class="pixel-btn" id="clSubmitBtn" onclick="submitAndNext()">登錄成績</button>
+      <div class="rank-result" id="clRankResult"></div>
+    </div>
+    <div>
+      <button class="pixel-btn" id="nextLvlBtn" onclick="nextLevel()" style="display:none">NEXT STAGE ▶</button>
+      <button class="pixel-btn ghost" onclick="goTitle()">TITLE</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Hidden focus input -->
+<input type="text" id="typeInput" style="position:fixed;opacity:0;pointer-events:none;left:-999px">
+
+<script>
+// ═══════════════════════════════════════════════════
+//  GAME DATA
+// ═══════════════════════════════════════════════════
+const LEVELS = {
+  1: {
+    label: 'LEVEL 1: 入山', scene: '🌿 淺山林道',
+    timePerRound: 10, totalRounds: 8, hp: 100, hpLoss: 20,
+    prey: [
+      { zh:'樹 (qhuni)', hint:'qhuni', emoji:'🌲', words:['qhuni'] },
+      { zh:'風 (bgihur)', hint:'bgihur', emoji:'💨', words:['bgihur'] },
+      { zh:'雨 (quyux)', hint:'quyux', emoji:'🌧️', words:['quyux'] },
+      { zh:'草 (spriq)', hint:'spriq', emoji:'🌿', words:['spriq'] },
+      { zh:'火 (tahut)', hint:'tahut', emoji:'🔥', words:['tahut'] },
+      { zh:'太陽 (hidaw)', hint:'hidaw', emoji:'☀️', words:['hidaw'] },
+      { zh:'月亮 (idas)', hint:'idas', emoji:'🌙', words:['idas'] },
+      { zh:'雲 (rulung)', hint:'rulung', emoji:'☁️', words:['rulung'] },
+      { zh:'山林 (rnaaw)', hint:'rnaaw', emoji:'🏔️', words:['rnaaw'] },
+      { zh:'道路 (elug)', hint:'elug', emoji:'🛤️', words:['elug'] },
+    ]
+  },
+  2: {
+    label: 'LEVEL 2: 追蹤', scene: '🌳 深山叢林',
+    timePerRound: 12, totalRounds: 8, hp: 100, hpLoss: 25,
+    prey: [
+      { zh:'飛鼠 (rapit)', hint:'rapit', emoji:'🐿️', words:['rapit'] },
+      { zh:'水鹿 (rqnux)', hint:'rqnux', emoji:'🦌', words:['rqnux'] },
+      { zh:'山羌 (pada)', hint:'pada', emoji:'🦌', words:['pada'] },
+      { zh:'穿山甲 (arung)', hint:'arung', emoji:'🦔', words:['arung'] },
+      { zh:'松鼠 (brihut)', hint:'brihut', emoji:'🐿️', words:['brihut'] },
+      { zh:'猴子 (rungay)', hint:'rungay', emoji:'🐒', words:['rungay'] },
+      { zh:'蜜蜂 (walu)', hint:'walu', emoji:'🐝', words:['walu'] },
+      { zh:'蝴蝶 (klaway)', hint:'klaway', emoji:'🦋', words:['klaway'] },
+      { zh:'老鷹 (kjiraw)', hint:'kjiraw', emoji:'🦅', words:['kjiraw'] },
+      { zh:'百步蛇 (quyu mlhay)', hint:'quyu mlhay', emoji:'🐍', words:['quyu','mlhay'] },
+    ]
+  },
+  3: {
+    label: 'LEVEL 3: 獵場挑戰', scene: '🏔️ 高山巔峰',
+    timePerRound: 14, totalRounds: 6, hp: 100, hpLoss: 34,
+    prey: [
+      { zh:'山豬 (bowyak)', hint:'bowyak', emoji:'🐗', words:['bowyak'] },
+      { zh:'熊 (kumay)', hint:'kumay', emoji:'🐻', words:['kumay'] },
+      { zh:'雲豹 (ngiyaw rklit)', hint:'ngiyaw rklit', emoji:'🐆', words:['ngiyaw','rklit'] },
+      { zh:'獵物 (samat)', hint:'samat', emoji:'🎯', words:['samat'] },
+      { zh:'弓 (bhniq)', hint:'bhniq', emoji:'🏹', words:['bhniq'] },
+      { zh:'岩石 (tasil)', hint:'tasil', emoji:'🪨', words:['tasil'] },
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let G = {
+  level: 1, hp: 100, score: 0, kills: 0, combo: 0,
+  round: 0, wordIdx: 0, timeLeft: 0, timer: null,
+  currentPrey: null, preyQueue: [],
+  totalAttempts: 0, hitAttempts: 0,
+  active: false, bannerWaiting: false
+};
+
+// ═══════════════════════════════════════════════════
+//  BACKGROUND CANVAS
+// ═══════════════════════════════════════════════════
+(function drawBG() {
+  const canvas = document.getElementById('bgCanvas');
+  const W = 900, H = 540;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Sky gradient
+  const sky = ctx.createLinearGradient(0,0,0,H*0.65);
+  sky.addColorStop(0,'#87ceeb');
+  sky.addColorStop(0.4,'#b0e0f0');
+  sky.addColorStop(1,'#c8f0c0');
+  ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+
+  // Mountains bg
+  ctx.fillStyle = 'rgba(80,140,80,0.5)';
+  [[200,320,120],[400,280,160],[600,310,140],[750,290,100]].forEach(([x,y,r])=>{
+    ctx.beginPath(); ctx.arc(x,y,r,Math.PI,0); ctx.fill();
+  });
+  // Mountain highlights
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  [[400,280,60],[600,310,50]].forEach(([x,y,r])=>{
+    ctx.beginPath(); ctx.arc(x,y,r,Math.PI,0); ctx.fill();
+  });
+
+  // Waterfall (right side)
+  const wf = ctx.createLinearGradient(820,100,820,400);
+  wf.addColorStop(0,'rgba(150,200,255,0.6)');
+  wf.addColorStop(1,'rgba(100,180,255,0.1)');
+  ctx.fillStyle = wf;
+  ctx.fillRect(820, 120, 18, 260);
+  ctx.fillStyle = 'rgba(200,230,255,0.4)';
+  ctx.fillRect(822, 120, 6, 260);
+
+  // Trees - back layer
+  function drawTree(x, h, w, color) {
+    ctx.fillStyle = '#5a3a1a';
+    ctx.fillRect(x-4, H*0.65-h*0.2, 8, h*0.25);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, H*0.65-h);
+    ctx.lineTo(x-w/2, H*0.65-h*0.2);
+    ctx.lineTo(x+w/2, H*0.65-h*0.2);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = color.replace('0.7','0.5');
+    ctx.beginPath();
+    ctx.moveTo(x, H*0.65-h*1.1);
+    ctx.lineTo(x-w*0.4, H*0.65-h*0.5);
+    ctx.lineTo(x+w*0.4, H*0.65-h*0.5);
+    ctx.closePath(); ctx.fill();
+  }
+  [[-20,180,70,'rgba(30,100,30,0.5)'],[50,200,90,'rgba(20,110,20,0.6)'],
+   [150,160,65,'rgba(40,120,40,0.5)'],[700,180,80,'rgba(30,100,30,0.5)'],
+   [780,200,90,'rgba(20,90,20,0.6)'],[860,170,70,'rgba(40,110,40,0.5)'],
+   [920,220,100,'rgba(20,100,20,0.6)']].forEach(([x,h,w,c])=>drawTree(x,h,w,c));
+
+  // Ferns foreground
+  ctx.fillStyle = 'rgba(20,100,20,0.7)';
+  for(let fx=0; fx<W; fx+=30) {
+    const fh = 40+Math.sin(fx*0.3)*15;
+    ctx.beginPath();
+    ctx.ellipse(fx, H-60, 18, fh*0.4, -0.3, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Ground
+  const grd = ctx.createLinearGradient(0,H*0.78,0,H);
+  grd.addColorStop(0,'#7a5a2a'); grd.addColorStop(1,'#3d2510');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, H*0.78, W, H);
+
+  // Ground line
+  ctx.strokeStyle = '#9a7a3a'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(0, H*0.78); ctx.lineTo(W, H*0.78); ctx.stroke();
+
+  // Dirt dots
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  for(let i=0;i<50;i++){
+    ctx.beginPath();
+    ctx.arc(Math.random()*W, H*0.78+Math.random()*30, 3+Math.random()*5, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Birds in sky
+  ctx.fillStyle = 'rgba(50,50,80,0.5)';
+  [[120,80],[200,60],[350,100],[500,70],[650,90]].forEach(([bx,by])=>{
+    ctx.beginPath();
+    ctx.arc(bx,by,4,0,Math.PI,true); ctx.arc(bx+10,by,4,0,Math.PI,true);
+    ctx.stroke();
+  });
+
+  // Vines
+  ctx.strokeStyle = 'rgba(40,100,40,0.4)'; ctx.lineWidth = 3;
+  [[30,0,50,200],[860,0,840,180]].forEach(([x1,y1,x2,y2])=>{
+    ctx.beginPath(); ctx.moveTo(x1,y1);
+    ctx.bezierCurveTo(x1+20,y1+60,x2-20,y2-60,x2,y2); ctx.stroke();
+  });
+})();
+
+// ═══════════════════════════════════════════════════
+//  GAME LOGIC
+// ═══════════════════════════════════════════════════
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function startGame(lvl) {
+  document.getElementById('titleScreen').style.display = 'none';
+  G.level = lvl;
+  initLevel();
+}
+
+function initLevel() {
+  const ld = LEVELS[G.level];
+  G.hp = ld.hp; G.score = 0; G.kills = 0; G.combo = 0;
+  G.round = 0; G.totalAttempts = 0; G.hitAttempts = 0;
+  G.preyQueue = shuffle(ld.prey);
+
+  document.getElementById('levelHud').textContent = ld.label;
+  document.getElementById('hpNum').textContent = G.hp;
+  document.getElementById('hpBar').style.width = '100%';
+  document.getElementById('scoreNum').textContent = 0;
+  document.getElementById('comboNum').textContent = 'x0';
+  updateComboDots();
+
+  // Show level banner
+  document.getElementById('bannerTitle').textContent = ld.label;
+  document.getElementById('bannerDesc').textContent = ld.scene;
+  showBanner(true);
+}
+
+function showBanner(isNew) {
+  const b = document.getElementById('levelBanner');
+  b.classList.add('show');
+  G.bannerWaiting = true;
+  G.active = false;
+  document.getElementById('realInput').focus();
+}
+
+function hideBanner() {
+  document.getElementById('levelBanner').classList.remove('show');
+  G.bannerWaiting = false;
+  nextRound();
+}
+
+function nextRound() {
+  const ld = LEVELS[G.level];
+  if (G.round >= ld.totalRounds) { stageClear(); return; }
+
+  G.round++;
+  G.wordIdx = 0;
+  G.currentPrey = G.preyQueue[G.round % G.preyQueue.length];
+
+  // Update prey display
+  document.getElementById('prey').textContent = G.currentPrey.emoji;
+  document.getElementById('prey').className = '';
+
+  // Update word bubble
+  const display = words.join(' ');
+  document.getElementById('wordTarget').textContent = display;
+  document.getElementById('wordHint').textContent = '(' + G.currentPrey.hint + ')';
+
+  // Update input display
+  updateInputDisplay('');
+
+  document.getElementById('realInput').value = '';
+  document.getElementById('realInput').focus();
+  G.active = true;
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(G.timer);
+  const ld = LEVELS[G.level];
+  const totalTime = ld.timePerRound * G.currentPrey.words.length;
+  G.timeLeft = totalTime;
+  updateTimerBar(totalTime, totalTime);
+
+  G.timer = setInterval(() => {
+    G.timeLeft--;
+    updateTimerBar(G.timeLeft, totalTime);
+    if (G.timeLeft <= 0) {
+      clearInterval(G.timer);
+      missedPrey();
+    }
+  }, 1000);
+}
+
+function updateTimerBar(t, total) {
+  const pct = (t/total)*100;
+  const bar = document.getElementById('timerBar');
+  bar.style.width = pct + '%';
+  if (pct > 50) bar.style.background = 'linear-gradient(90deg,#44ff44,#ffff00)';
+  else if (pct > 25) bar.style.background = 'linear-gradient(90deg,#ffaa00,#ffff00)';
+  else bar.style.background = 'linear-gradient(90deg,#ff3333,#ff8800)';
+}
+
+function updateInputDisplay(typed) {
+  const words = G.currentPrey.words;
+  const target = words[G.wordIdx] || '';
+  let html = '';
+  for(let i=0;i<G.wordIdx;i++){
+    html += `<span class="typed-correct">${words[i]}</span> `;
+  }
+  for(let i=0;i<target.length;i++){
+    if(i < typed.length){
+      const cls = typed[i].toLowerCase()===target[i].toLowerCase() ? 'typed-correct':'typed-wrong';
+      html += `<span class="${cls}">${target[i]}</span>`;
+    } else {
+      html += `<span style="color:#888">${target[i]}</span>`;
+    }
+  }
+  for(let i=G.wordIdx+1;i<words.length;i++){
+    html += ` <span style="color:#555">${words[i]}</span>`;
+  }
+  document.getElementById('inputDisplay').innerHTML = html || '_';
+}
+
+// ─── Input ───────────────────────────────────────────
+document.getElementById('realInput').addEventListener('input', function(e) {
+  if (!G.active) return;
+  const val = e.target.value;
+  updateInputDisplay(val.toLowerCase());
+});
+
+document.getElementById('realInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    if (G.bannerWaiting) { hideBanner(); return; }
+    submitWord();
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (G.bannerWaiting && e.key === 'Enter') hideBanner();
+});
+
+function submitWord() {
+  if (!G.active || !G.currentPrey) return;
+  const inp = document.getElementById('realInput');
+  const val = inp.value.trim().toLowerCase();
+  const target = G.currentPrey.words[G.wordIdx].toLowerCase();
+
+  G.totalAttempts++;
+
+  if (val.toLowerCase() === target.toLowerCase()) {
+    G.hitAttempts++;
+    inp.value = '';
+    G.wordIdx++;
+    updateInputDisplay('');
+
+    // Fire arrow
+    fireArrow();
+
+    if (G.wordIdx >= G.currentPrey.words.length) {
+      // CAUGHT
+      clearInterval(G.timer);
+      G.active = false;
+      caughtPrey();
+    }
+  } else {
+    // MISS
+    inp.classList.add('err');
+    setTimeout(() => inp.classList.remove('err'), 350);
+    inp.value = '';
+    updateInputDisplay('');
+    showHit('MISS!', '#ff4444', false);
+  }
+}
+
+function fireArrow() {
+  const el = document.createElement('div');
+  el.className = 'arrow';
+  el.textContent = '➤';
+  el.style.color = '#ffd700';
+  document.getElementById('stage').appendChild(el);
+  setTimeout(() => el.remove(), 500);
+}
+
+function caughtPrey() {
+  G.kills++;
+  G.combo++;
+  const timePts = G.timeLeft * 3;
+  const comboPts = G.combo > 1 ? G.combo * 15 : 0;
+  const pts = 100 + timePts + comboPts;
+  G.score += pts;
+
+  document.getElementById('prey').classList.add('caught');
+  document.getElementById('scoreNum').textContent = G.score;
+  document.getElementById('comboNum').textContent = 'x' + G.combo;
+  updateComboDots();
+
+  const msg = G.combo >= 3 ? `🔥 COMBO x${G.combo}!` : `+${pts}`;
+  showHit(msg, '#ffd700', true);
+
+  setTimeout(() => nextRound(), 900);
+}
+
+function missedPrey() {
+  G.active = false;
+  G.combo = 0;
+  const ld = LEVELS[G.level];
+  G.hp = Math.max(0, G.hp - ld.hpLoss);
+
+  document.getElementById('prey').classList.add('flee');
+  document.getElementById('hpNum').textContent = G.hp;
+  document.getElementById('hpBar').style.width = G.hp + '%';
+  document.getElementById('comboNum').textContent = 'x0';
+  updateComboDots();
+  showHit('ESCAPED!', '#ff6666', false);
+
+  if (G.hp <= 0) { setTimeout(() => gameOver(), 700); return; }
+  setTimeout(() => nextRound(), 900);
+}
+
+function updateComboDots() {
+  for(let i=0;i<5;i++){
+    document.getElementById('cd'+i).className = 'cdot' + (i < G.combo%6 ? ' on' : '');
+  }
+}
+
+function showHit(msg, color, good) {
+  const el = document.createElement('div');
+  el.className = 'hit-txt';
+  el.textContent = msg;
+  el.style.cssText = `color:${color};left:${350+Math.random()*120}px;top:${100+Math.random()*60}px;`;
+  document.getElementById('stage').appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+// ─── API ─────────────────────────────────────────
+const API = 'http://142.93.3.132/api';
+
+async function submitScore(playerName) {
+  const acc = G.totalAttempts > 0 ? Math.round(G.hitAttempts/G.totalAttempts*100) : 0;
+  try {
+    const res = await fetch(`${API}/scores`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        player:   playerName || '匿名獵人',
+        level:    G.level,
+        score:    G.score,
+        kills:    G.kills,
+        accuracy: acc,
+        combo:    G.combo
+      })
+    });
+    const data = await res.json();
+    return data; // { success, rank }
+  } catch(e) {
+    return null; // 網路失敗時靜默處理
+  }
+}
+
+// ─── End States ─────────────────────────────────────
+function gameOver() {
+  clearInterval(G.timer);
+  const acc = G.totalAttempts > 0 ? Math.round(G.hitAttempts/G.totalAttempts*100) : 0;
+  document.getElementById('goScore').textContent = G.score;
+  document.getElementById('goKills').textContent = G.kills;
+  document.getElementById('goAcc').textContent = acc + '%';
+  document.getElementById('goRankResult').textContent = '';
+  document.getElementById('goNameInput').value = '';
+  document.getElementById('goSubmitBtn').disabled = false;
+  document.getElementById('goSubmitBtn').textContent = '記錄 + 重試';
+  document.getElementById('gameOverScreen').classList.add('show');
+  setTimeout(() => document.getElementById('goNameInput').focus(), 100);
+}
+
+function stageClear() {
+  clearInterval(G.timer);
+  const acc = G.totalAttempts > 0 ? Math.round(G.hitAttempts/G.totalAttempts*100) : 0;
+  const stars = acc >= 90 && G.combo >= 3 ? '⭐⭐⭐' : acc >= 70 ? '⭐⭐' : '⭐';
+  document.getElementById('clScore').textContent = G.score;
+  document.getElementById('clKills').textContent = G.kills;
+  document.getElementById('clAcc').textContent = acc + '%';
+  document.getElementById('clearIcon').textContent = '🏆';
+  document.getElementById('clearTitle').textContent = 'STAGE CLEAR! ' + stars;
+  document.getElementById('clearBody').textContent = LEVELS[G.level].label + ' 完成！';
+  document.getElementById('nextLvlBtn').style.display = 'none';
+  document.getElementById('clRankResult').textContent = '';
+  document.getElementById('clNameInput').value = '';
+  document.getElementById('clSubmitBtn').disabled = false;
+  document.getElementById('clSubmitBtn').textContent = '登錄成績';
+  document.getElementById('clearScreen').classList.add('show');
+  setTimeout(() => document.getElementById('clNameInput').focus(), 100);
+}
+
+async function submitAndRetry() {
+  const btn = document.getElementById('goSubmitBtn');
+  const name = document.getElementById('goNameInput').value.trim();
+  btn.disabled = true;
+  btn.textContent = '送出中...';
+  const result = await submitScore(name);
+  if (result && result.rank) {
+    document.getElementById('goRankResult').textContent = `✓ 第 ${result.rank} 名！成績已記錄`;
+  } else {
+    document.getElementById('goRankResult').textContent = result ? '✓ 成績已記錄' : '（離線模式，未記錄）';
+  }
+  setTimeout(() => {
+    document.getElementById('gameOverScreen').classList.remove('show');
+    restartLevel();
+  }, 1200);
+}
+
+async function submitAndNext() {
+  const btn = document.getElementById('clSubmitBtn');
+  const name = document.getElementById('clNameInput').value.trim();
+  btn.disabled = true;
+  btn.textContent = '送出中...';
+  const result = await submitScore(name);
+  if (result && result.rank) {
+    document.getElementById('clRankResult').textContent = `🏹 本關第 ${result.rank} 名！`;
+  } else {
+    document.getElementById('clRankResult').textContent = result ? '✓ 成績已記錄' : '（離線模式，未記錄）';
+  }
+  // 顯示下一關按鈕
+  const hasNext = G.level < 3;
+  document.getElementById('nextLvlBtn').style.display = hasNext ? 'inline-block' : 'none';
+  btn.textContent = '✓ 已登錄';
+}
+
+function nextLevel() {
+  document.getElementById('clearScreen').classList.remove('show');
+  G.level++;
+  initLevel();
+}
+
+function restartLevel() {
+  document.getElementById('gameOverScreen').classList.remove('show');
+  initLevel();
+}
+
+function goTitle() {
+  document.getElementById('gameOverScreen').classList.remove('show');
+  document.getElementById('clearScreen').classList.remove('show');
+  clearInterval(G.timer);
+  G.active = false;
+  document.getElementById('titleScreen').style.display = 'flex';
+}
+
+// Focus input on click anywhere
+document.getElementById('gameWrap').addEventListener('click', () => {
+  document.getElementById('realInput').focus();
+});
+
+// Enter 鍵快捷：名字輸入框
+document.getElementById('goNameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitAndRetry();
+});
+document.getElementById('clNameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitAndNext();
+});
+});
+</script>
+</body>
+</html>
