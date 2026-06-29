@@ -19,16 +19,16 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H 142.93.3.132 >> ~/.ssh/known_hosts
 
       - name: 上傳 HTML 到主機
         run: |
           scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
             hunter-truku-v2.html \
-            root@${{ secrets.SERVER_IP }}:/var/www/hunter/public/index.html
+            root@142.93.3.132:/var/www/hunter/public/index.html
 
       - name: 確認部署成功
         run: |
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-            root@${{ secrets.SERVER_IP }} \
+            root@142.93.3.132 \
             "echo '✅ 部署完成：' && ls -lh /var/www/hunter/public/"
