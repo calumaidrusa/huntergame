@@ -21,14 +21,34 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H 142.93.3.132 >> ~/.ssh/known_hosts
 
-      - name: 上傳 HTML 到主機
+      - name: 上傳前端 HTML
         run: |
           scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
             hunter-truku-v2.html \
             root@142.93.3.132:/var/www/hunter/public/index.html
 
+      - name: 上傳後端檔案
+        run: |
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            backend/server.js backend/package.json \
+            root@142.93.3.132:/var/www/hunter/backend/
+
+      - name: 安裝依賴並重啟 API
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no root@142.93.3.132 "
+            cd /var/www/hunter/backend
+            npm install --production --silent
+            mkdir -p /var/www/hunter/public/images
+            if pm2 list | grep -q hunter-api; then
+              pm2 restart hunter-api
+            else
+              pm2 start server.js --name hunter-api --log /var/log/hunter/api.log
+              pm2 save
+            fi
+            echo 'API restarted OK'
+          "
+
       - name: 確認部署成功
         run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-            root@142.93.3.132 \
-            "echo '✅ 部署完成：' && ls -lh /var/www/hunter/public/"
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no root@142.93.3.132 \
+            "pm2 list | grep hunter-api && curl -s http://127.0.0.1:3000/api/health"
