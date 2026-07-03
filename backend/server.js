@@ -4,12 +4,18 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const TRUKU_SEED = require('./vocab_seed');
 
 const app = express();
-const PORT = 3000;
-const DB_PATH = '/var/www/hunter/backend/hunter.db';
-const IMG_DIR = '/var/www/hunter/public/images';
-const AUDIO_DIR = '/var/www/hunter/public/audio';
+const PORT = process.env.PORT || 3000;
+const DB_PATH = process.env.DB_PATH || '/var/www/hunter/backend/hunter.db';
+const IMG_DIR = process.env.IMG_DIR || '/var/www/hunter/public/images';
+const AUDIO_DIR = process.env.AUDIO_DIR || '/var/www/hunter/public/audio';
+// 正式環境務必在伺服器上設定 JWT_SECRET 環境變數；本機測試用假預設值即可
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-insecure-secret-change-me';
+const MAX_LEVEL = 4;
 
 // 確保目錄存在
 if (!fs.existsSync(IMG_DIR)) fs.mkdirSync(IMG_DIR, { recursive: true });
@@ -54,6 +60,17 @@ const uploadAudio = multer({
 app.use(cors());
 app.use(express.json());
 
+// 本機開發用：SERVE_STATIC=1 時額外提供靜態檔案（模擬 Nginx），正式環境不會設定此變數
+if (process.env.SERVE_STATIC) {
+  const PROJECT_ROOT = path.join(__dirname, '..');
+  app.use('/images', express.static(path.join(PROJECT_ROOT, 'public', 'images'))); // repo 內既有圖片
+  app.use('/images', express.static(IMG_DIR)); // 上傳測試用（可能與上面同一目錄）
+  app.use('/audio', express.static(path.join(PROJECT_ROOT, 'public', 'audio')));
+  app.use('/audio', express.static(AUDIO_DIR));
+  app.use(express.static(path.join(PROJECT_ROOT, 'public'))); // admin.html 等
+  app.use(express.static(PROJECT_ROOT)); // hunter-truku-v2.html（此 repo 版面放在專案根目錄）
+}
+
 // ── Database 初始化 ─────────────────────────────
 const db = new Database(DB_PATH);
 
@@ -89,67 +106,47 @@ db.exec(`
     active     INTEGER DEFAULT 1,
     created_at TEXT DEFAULT (datetime('now','localtime'))
   );
+
+  CREATE TABLE IF NOT EXISTS players (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    username      TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    display_name  TEXT NOT NULL,
+    created_at    TEXT DEFAULT (datetime('now','localtime'))
+  );
+
+  CREATE TABLE IF NOT EXISTS admins (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    username      TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    created_at    TEXT DEFAULT (datetime('now','localtime'))
+  );
 `);
 
-// 欄位 migration（舊 DB 補上 audio_path）
+// 欄位 migration（舊 DB 補上新欄位；欄位已存在時 catch 掉錯誤即可，不影響既有資料）
 try {
   db.exec('ALTER TABLE vocabulary ADD COLUMN audio_path TEXT');
 } catch(e) { /* 欄位已存在，跳過 */ }
 
-// image_path migration — 補上現有詞彙的圖片路徑
-const imgUpdates = [
-  ['qhuni','bgihur','quyux','spriq','tahut','hidaw','idas','rulung','rnaaw','elug',
-   'rapit','rqnux','pada','arung','brihut','rungay','walu','klaway','kjiraw',
-   'bowyak','kumay','ngiyaw','samat','bhniq','tasil']
-];
-const updateImg = db.prepare('UPDATE vocabulary SET image_path = ? WHERE word = ? AND (image_path IS NULL OR image_path = \'\')');
-const runImgMigration = db.transaction(() => {
-  for (const word of imgUpdates[0]) {
-    updateImg.run(`/images/${word}.png`, word);
-  }
-});
-runImgMigration();
+try {
+  db.exec('ALTER TABLE scores ADD COLUMN player_id INTEGER');
+} catch(e) { /* 欄位已存在，跳過 */ }
 
-// 種入預設詞彙（只在空表時執行）
+try {
+  db.exec('ALTER TABLE scores ADD COLUMN cleared INTEGER DEFAULT 0');
+} catch(e) { /* 欄位已存在，跳過 */ }
+
+// 種入預設詞彙（只在空表時執行）— 太魯閣語 2026 學習詞表，共 1092 筆，四級難度
 const vocabCount = db.prepare('SELECT COUNT(*) as c FROM vocabulary').get();
 if (vocabCount.c === 0) {
   const insert = db.prepare(`
-    INSERT INTO vocabulary (word, chinese, english, category, level, emoji, hint, image_path)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO vocabulary (word, chinese, english, category, level, emoji, hint, image_path, audio_path)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const seed = db.transaction((rows) => {
     for (const r of rows) insert.run(...r);
   });
-  seed([
-    // Level 1 — 自然
-    ['qhuni',  '樹',   'tree',       'nature', 1, '🌲', 'qhuni',  '/images/qhuni.png'],
-    ['bgihur', '風',   'wind',       'nature', 1, '💨', 'bgihur', '/images/bgihur.png'],
-    ['quyux',  '雨',   'rain',       'nature', 1, '🌧️', 'quyux',  '/images/quyux.png'],
-    ['spriq',  '草',   'grass',      'nature', 1, '🌿', 'spriq',  '/images/spriq.png'],
-    ['tahut',  '火',   'fire',       'nature', 1, '🔥', 'tahut',  '/images/tahut.png'],
-    ['hidaw',  '太陽', 'sun',        'nature', 1, '☀️', 'hidaw',  '/images/hidaw.png'],
-    ['idas',   '月亮', 'moon',       'nature', 1, '🌙', 'idas',   '/images/idas.png'],
-    ['rulung', '雲',   'cloud',      'nature', 1, '☁️', 'rulung', '/images/rulung.png'],
-    ['rnaaw',  '山林', 'forest',     'nature', 1, '🏔️', 'rnaaw',  '/images/rnaaw.png'],
-    ['elug',   '道路', 'road',       'nature', 1, '🛤️', 'elug',   '/images/elug.png'],
-    // Level 2 — 動物
-    ['rapit',  '飛鼠',   'flying squirrel', 'animal', 2, '🐿️', 'rapit',  '/images/rapit.png'],
-    ['rqnux',  '水鹿',   'sambar deer',     'animal', 2, '🦌', 'rqnux',  '/images/rqnux.png'],
-    ['pada',   '山羌',   'muntjac',         'animal', 2, '🦌', 'pada',   '/images/pada.png'],
-    ['arung',  '穿山甲', 'pangolin',        'animal', 2, '🦔', 'arung',  '/images/arung.png'],
-    ['brihut', '松鼠',   'squirrel',        'animal', 2, '🐿️', 'brihut', '/images/brihut.png'],
-    ['rungay', '猴子',   'monkey',          'animal', 2, '🐒', 'rungay', '/images/rungay.png'],
-    ['walu',   '蜜蜂',   'bee',             'animal', 2, '🐝', 'walu',   '/images/walu.png'],
-    ['klaway', '蝴蝶',   'butterfly',       'animal', 2, '🦋', 'klaway', '/images/klaway.png'],
-    ['kjiraw', '老鷹',   'eagle',           'animal', 2, '🦅', 'kjiraw', '/images/kjiraw.png'],
-    // Level 3 — 獵場
-    ['bowyak', '山豬',   'wild boar',       'hunting', 3, '🐗', 'bowyak', '/images/bowyak.png'],
-    ['kumay',  '熊',     'bear',            'hunting', 3, '🐻', 'kumay',  '/images/kumay.png'],
-    ['ngiyaw', '雲豹',   'clouded leopard', 'hunting', 3, '🐆', 'ngiyaw', '/images/ngiyaw.png'],
-    ['samat',  '獵物',   'prey',            'hunting', 3, '🎯', 'samat',  '/images/samat.png'],
-    ['bhniq',  '弓',     'bow',             'hunting', 3, '🏹', 'bhniq',  '/images/bhniq.png'],
-    ['tasil',  '岩石',   'rock',            'hunting', 3, '🪨', 'tasil',  '/images/tasil.png'],
-  ]);
+  seed(TRUKU_SEED);
 }
 
 // ── Helper ──────────────────────────────────────
@@ -157,11 +154,128 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// 算出某玩家目前解鎖到第幾關：該玩家 cleared=1 的最高 level + 1，上限鎖在 MAX_LEVEL，
+// 沒有任何過關紀錄的新玩家從 1 開始。單一事實來源就是 scores 表本身，不額外存欄位。
+function getUnlockedLevel(playerId) {
+  const row = db.prepare(
+    'SELECT COALESCE(MAX(level), 0) AS maxLevel FROM scores WHERE player_id = ? AND cleared = 1'
+  ).get(playerId);
+  return Math.min(MAX_LEVEL, (row.maxLevel || 0) + 1);
+}
+
+// ── 身分驗證 ────────────────────────────────────
+
+function signToken(payload) {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' });
+}
+
+function requirePlayerAuth(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ error: '請先登入' });
+  let payload;
+  try {
+    payload = jwt.verify(token, JWT_SECRET);
+  } catch (e) {
+    return res.status(401).json({ error: '登入已過期，請重新登入' });
+  }
+  if (payload.role !== 'player') return res.status(403).json({ error: '權限不足' });
+  const player = db.prepare('SELECT id, username, display_name FROM players WHERE id = ?').get(payload.id);
+  if (!player) return res.status(401).json({ error: '帳號不存在' });
+  req.player = player;
+  next();
+}
+
+function requireAdminAuth(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ error: '請先登入管理員帳號' });
+  let payload;
+  try {
+    payload = jwt.verify(token, JWT_SECRET);
+  } catch (e) {
+    return res.status(401).json({ error: '登入已過期，請重新登入' });
+  }
+  if (payload.role !== 'admin') return res.status(403).json({ error: '權限不足' });
+  const admin = db.prepare('SELECT id, username FROM admins WHERE id = ?').get(payload.id);
+  if (!admin) return res.status(401).json({ error: '帳號不存在' });
+  req.admin = admin;
+  next();
+}
+
 // ── Routes ──────────────────────────────────────
 
 // GET /api/health
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
+});
+
+// ── 玩家帳號 API ────────────────────────────────
+
+// POST /api/auth/register — { username, password, display_name }
+app.post('/api/auth/register', (req, res) => {
+  const { username, password, display_name } = req.body || {};
+  if (!username || !password || !display_name) {
+    return res.status(400).json({ error: '缺少帳號 / 密碼 / 顯示名稱' });
+  }
+  const uname = String(username).trim();
+  const dname = String(display_name).trim().slice(0, 20);
+  if (uname.length < 3) return res.status(400).json({ error: '帳號至少需要 3 個字元' });
+  if (String(password).length < 4) return res.status(400).json({ error: '密碼至少需要 4 個字元' });
+  if (!dname) return res.status(400).json({ error: '顯示名稱不可為空' });
+
+  const existing = db.prepare('SELECT id FROM players WHERE username = ?').get(uname);
+  if (existing) return res.status(409).json({ error: '這個帳號已經被使用了' });
+
+  const hash = bcrypt.hashSync(String(password), 10);
+  const result = db.prepare(
+    'INSERT INTO players (username, password_hash, display_name) VALUES (?, ?, ?)'
+  ).run(uname, hash, dname);
+
+  const token = signToken({ id: result.lastInsertRowid, role: 'player' });
+  res.json({ success: true, token });
+});
+
+// POST /api/auth/login — { username, password }
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password) return res.status(400).json({ error: '缺少帳號 / 密碼' });
+  const player = db.prepare('SELECT * FROM players WHERE username = ?').get(String(username).trim());
+  if (!player || !bcrypt.compareSync(String(password), player.password_hash)) {
+    return res.status(401).json({ error: '帳號或密碼錯誤' });
+  }
+  const token = signToken({ id: player.id, role: 'player' });
+  res.json({ success: true, token });
+});
+
+// GET /api/auth/me — 需登入
+app.get('/api/auth/me', requirePlayerAuth, (req, res) => {
+  const unlockedLevel = getUnlockedLevel(req.player.id);
+  const totalRow = db.prepare(`
+    SELECT COALESCE(SUM(best.score), 0) AS totalScore FROM (
+      SELECT level, MAX(score) AS score FROM scores WHERE player_id = ? GROUP BY level
+    ) best
+  `).get(req.player.id);
+  res.json({
+    username: req.player.username,
+    display_name: req.player.display_name,
+    unlockedLevel,
+    totalScore: totalRow.totalScore
+  });
+});
+
+// ── 管理員 API ──────────────────────────────────
+
+// POST /api/admin/login — { username, password }
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password) return res.status(400).json({ error: '缺少帳號 / 密碼' });
+  const admin = db.prepare('SELECT * FROM admins WHERE username = ?').get(String(username).trim());
+  if (!admin || !bcrypt.compareSync(String(password), admin.password_hash)) {
+    return res.status(401).json({ error: '帳號或密碼錯誤' });
+  }
+  const token = signToken({ id: admin.id, role: 'admin' });
+  res.json({ success: true, token });
 });
 
 // ── 詞彙 API ────────────────────────────────────
@@ -185,7 +299,7 @@ app.get('/api/vocabulary/:id', (req, res) => {
 });
 
 // POST /api/vocabulary — 新增詞彙
-app.post('/api/vocabulary', (req, res) => {
+app.post('/api/vocabulary', requireAdminAuth, (req, res) => {
   const { word, chinese, english, category, level, emoji, hint } = req.body;
   if (!word || !level) return res.status(400).json({ error: '缺少 word / level' });
   const r = db.prepare(`
@@ -196,7 +310,7 @@ app.post('/api/vocabulary', (req, res) => {
 });
 
 // PUT /api/vocabulary/:id — 更新詞彙
-app.put('/api/vocabulary/:id', (req, res) => {
+app.put('/api/vocabulary/:id', requireAdminAuth, (req, res) => {
   const { word, chinese, english, category, level, emoji, hint, active } = req.body;
   db.prepare(`
     UPDATE vocabulary SET
@@ -209,13 +323,13 @@ app.put('/api/vocabulary/:id', (req, res) => {
 });
 
 // DELETE /api/vocabulary/:id
-app.delete('/api/vocabulary/:id', (req, res) => {
+app.delete('/api/vocabulary/:id', requireAdminAuth, (req, res) => {
   db.prepare('DELETE FROM vocabulary WHERE id = ?').run(req.params.id);
   res.json({ success: true });
 });
 
 // POST /api/vocabulary/:word/image — 上傳圖片
-app.post('/api/vocabulary/:word/image', upload.single('image'), (req, res) => {
+app.post('/api/vocabulary/:word/image', requireAdminAuth, upload.single('image'), (req, res) => {
   const word = req.params.word;
   if (!req.file) return res.status(400).json({ error: '請上傳圖片' });
   const imagePath = '/images/' + req.file.filename;
@@ -224,7 +338,7 @@ app.post('/api/vocabulary/:word/image', upload.single('image'), (req, res) => {
 });
 
 // POST /api/vocabulary/:word/audio — 上傳音檔
-app.post('/api/vocabulary/:word/audio', uploadAudio.single('audio'), (req, res) => {
+app.post('/api/vocabulary/:word/audio', requireAdminAuth, uploadAudio.single('audio'), (req, res) => {
   const word = req.params.word;
   if (!req.file) return res.status(400).json({ error: '請上傳音檔' });
   const audioPath = '/audio/' + req.file.filename;
@@ -233,7 +347,7 @@ app.post('/api/vocabulary/:word/audio', uploadAudio.single('audio'), (req, res) 
 });
 
 // DELETE /api/vocabulary/:word/image — 刪除圖片
-app.delete('/api/vocabulary/:word/image', (req, res) => {
+app.delete('/api/vocabulary/:word/image', requireAdminAuth, (req, res) => {
   const row = db.prepare('SELECT image_path FROM vocabulary WHERE word = ?').get(req.params.word);
   if (row?.image_path) {
     const file = path.join('/var/www/hunter/public', row.image_path);
@@ -244,7 +358,7 @@ app.delete('/api/vocabulary/:word/image', (req, res) => {
 });
 
 // DELETE /api/vocabulary/:word/audio — 刪除音檔
-app.delete('/api/vocabulary/:word/audio', (req, res) => {
+app.delete('/api/vocabulary/:word/audio', requireAdminAuth, (req, res) => {
   const row = db.prepare('SELECT audio_path FROM vocabulary WHERE word = ?').get(req.params.word);
   if (row?.audio_path) {
     const file = path.join('/var/www/hunter/public', row.audio_path);
@@ -256,34 +370,57 @@ app.delete('/api/vocabulary/:word/audio', (req, res) => {
 
 // ── 排行榜 API ───────────────────────────────────
 
-// POST /api/scores
-app.post('/api/scores', (req, res) => {
-  const { player, level, score, kills, accuracy, combo } = req.body;
+// POST /api/scores — 需登入。玩家名稱一律取自登入身分（req.player.display_name），
+// 不再從前端 body 接受 player 字串，避免冒名。
+app.post('/api/scores', requirePlayerAuth, (req, res) => {
+  const { level, score, kills, accuracy, combo, cleared } = req.body;
   if (!level || !score) return res.status(400).json({ error: '缺少必要欄位 level / score' });
-  const name = (player || '匿名獵人').slice(0, 12);
+
+  const lvl = parseInt(level);
+  // 防呆：拒絕交比目前解鎖進度更高的關卡分數，避免有人繞過前端直接打 API 造假
+  const unlockedLevel = getUnlockedLevel(req.player.id);
+  if (lvl > unlockedLevel) {
+    return res.status(403).json({ error: `LEVEL ${lvl} 尚未解鎖，目前只能玩到 LEVEL ${unlockedLevel}` });
+  }
+
+  const name = req.player.display_name.slice(0, 12);
   const result = db.prepare(`
-    INSERT INTO scores (player, level, score, kills, accuracy, combo)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(name, level, score, kills||0, accuracy||0, combo||0);
+    INSERT INTO scores (player, level, score, kills, accuracy, combo, player_id, cleared)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(name, lvl, score, kills||0, accuracy||0, combo||0, req.player.id, cleared ? 1 : 0);
   db.prepare(`
     INSERT INTO daily_stats (date, games) VALUES (?, 1)
     ON CONFLICT(date) DO UPDATE SET games = games + 1
   `).run(today());
-  const rank = db.prepare('SELECT COUNT(*) as rank FROM scores WHERE level = ? AND score > ?').get(level, score);
-  res.json({ success: true, id: result.lastInsertRowid, rank: rank.rank + 1 });
+  const rank = db.prepare('SELECT COUNT(*) as rank FROM scores WHERE level = ? AND score > ?').get(lvl, score);
+  res.json({
+    success: true,
+    id: result.lastInsertRowid,
+    rank: rank.rank + 1,
+    unlockedLevel: getUnlockedLevel(req.player.id)
+  });
 });
 
-// GET /api/leaderboard?level=1&limit=10
+// GET /api/leaderboard?limit=10 — 單一榜單：累計總分數
+// = 每個玩家在每一關的最佳成績加總（不是把每次遊玩紀錄全部加總，避免狂刷簡單關卡洗分數）。
+// 只計入有 player_id（登入身分）的分數，舊的匿名分數不會出現在這裡。
 app.get('/api/leaderboard', (req, res) => {
-  const level = parseInt(req.query.level) || null;
   const limit = Math.min(parseInt(req.query.limit) || 10, 50);
-  let rows;
-  if (level) {
-    rows = db.prepare('SELECT player, level, score, kills, accuracy, combo, created_at FROM scores WHERE level = ? ORDER BY score DESC LIMIT ?').all(level, limit);
-  } else {
-    rows = db.prepare('SELECT player, MAX(score) as score, level, kills, accuracy, combo, created_at FROM scores GROUP BY player ORDER BY score DESC LIMIT ?').all(limit);
-  }
-  res.json({ level: level || 'all', data: rows });
+  const rows = db.prepare(`
+    SELECT p.display_name AS player,
+           SUM(best.score) AS score,
+           COUNT(DISTINCT best.level) AS levels_played
+    FROM (
+      SELECT player_id, level, MAX(score) AS score
+      FROM scores WHERE player_id IS NOT NULL
+      GROUP BY player_id, level
+    ) best
+    JOIN players p ON p.id = best.player_id
+    GROUP BY best.player_id
+    ORDER BY score DESC
+    LIMIT ?
+  `).all(limit);
+  res.json({ data: rows });
 });
 
 // GET /api/leaderboard/top3?level=1
