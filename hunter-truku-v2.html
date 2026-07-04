@@ -65,31 +65,34 @@ body {
   justify-content: center;
 }
 
-/* ── SCALE STAGE ──
-   #gameWrap 內部所有子元素都是針對 900×540 這個基準畫的絕對定位座標，
-   不能直接改 width/height 數值（會讓子元素全部跑位）。
-   改用 transform: scale() 整體縮放，縮放比例由 JS 依視窗大小動態算出、
-   寫進 --game-scale 這個 CSS 變數（見 <script> 區塊開頭的 updateGameScale()）。
-   #gameStage 撐出「縮放後的實際佔用空間」讓 body 的 flex 置中對齊正確，
-   避免 transform 不影響 layout box 導致置中偏移或被裁切。 */
+/* ── FULL-VIEWPORT STAGE ──
+   外層金框已移除（使用者要求）：遊戲畫面直接鋪滿整個視窗，不再置中加框。
+   縮放策略＝「以視窗高度等比縮放、寬度流動」：
+   - --game-scale = window.innerHeight / 540，由 JS updateGameScale() 寫入
+     （見 <script> 區塊開頭）。等比縮放 → 素材不變形。
+   - #gameWrap 高度固定 540px（內部座標系不變，子元素的 top/bottom 定位、
+     hunterRun keyframe、#ground 60px 全部照舊），寬度 = 100vw / scale
+     → transform 縮放後剛好填滿視窗寬度。左右錨定的元素（HUD flex、
+     右上詞彙卡 right:*、獵物錨點 right:*）自動跟著視窗寬度重新分佈；
+     獵人移動與 fireArrow() 都用 getBoundingClientRect() 即時計算，不受影響。
+   - 背景圖 #bgCanvas 維持 object-fit:cover，非 5:3 視窗下裁切可接受。 */
 :root {
   --game-scale: 1;
 }
 
 #gameStage {
-  width: calc(900px * var(--game-scale));
-  height: calc(540px * var(--game-scale));
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #1A4010; /* 遮住縮放取整可能留下的邊緣 1px 縫隙 */
 }
 
 /* ── GAME CONTAINER ── */
 #gameWrap {
   position: relative;
-  width: 900px;
+  width: calc(100vw / var(--game-scale));
   height: 540px;
-  border: 4px solid #1A5C10;
-  box-shadow: 0 0 0 3px #0A3008, 0 0 0 7px #F5A623, 0 12px 50px rgba(0,0,0,0.7);
   overflow: hidden;
-  border-radius: 8px;
   background: #1A4010;
   transform: scale(var(--game-scale));
   transform-origin: top left;
@@ -116,7 +119,9 @@ body {
 }
 
 .hud-left { display:flex; flex-direction:column; gap:4px; min-width: 180px; }
-.hp-row { display:flex; align-items:center; gap:6px; }
+/* .hp-row 的上下 padding 幫 ::before 畫出來的木框（凸出 wrap 上 9.3px / 下 9px）
+   保留垂直空間，讓下方 SCORE 文字不會壓到木框底緣 */
+.hp-row { display:flex; align-items:center; gap:6px; padding:10px 0 9px; }
 /* HP label + numeric value hidden: the v2 frame carries its own heart icon and
    the red groove bar communicates remaining HP visually. JS still updates
    #hpNum.textContent — it's just not displayed, so nothing breaks. */
@@ -126,33 +131,48 @@ body {
    JS-driven `.hp-bar { width: <hp>% }` maps 1:1 onto the groove. The wood
    frame + heart (v2-hp-bar-frame-hollow.png, 1200x400) is drawn by ::before,
    scaled up around the wrap and offset so its groove aligns with this box.
-   Frame render width 128px; groove = x21.25%..86.83%, y29%..72% of frame. */
-.hp-bar-wrap { position:relative; width:84px; height:18px; overflow:visible; }
+   實測素材幾何（像素座標）：凹槽 = x252..1042、y158..240（即 x21.0%..86.8%、
+   y39.5%..60.0%）；框體可見範圍 y96..300。框渲染尺寸 180×60（維持 3:1 原比例）
+   → 凹槽渲染 = 118×12.3px、相對框左上 (37.8, 23.7)。
+   margin-left:38px 讓框圖左緣對齊 .hud-left 起點（愛心不會被裁出畫面外）。 */
+.hp-bar-wrap { position:relative; width:118px; height:12.3px; margin-left:38px; overflow:visible; }
 .hp-bar-wrap::before {
   content:''; position:absolute;
-  width:128px; height:42.7px;
-  left:-27.2px; top:-12.4px;
+  width:180px; height:60px;
+  left:-37.8px; top:-23.7px;
   background:url('/images/ui/v2-hp-bar-frame-hollow.png') center/100% 100% no-repeat;
   pointer-events:none; z-index:0;
 }
 /* red fill sits on TOP of the frame inside the groove track. The groove in the
    PNG is an opaque dark channel, so the bar must overlay it (z-index above the
    frame ::before) rather than sit behind it. Wrap box == groove, so overflow is
-   contained. */
-.hp-bar { position:relative; z-index:10; height:100%; background:linear-gradient(90deg,#FF3333,#FF7744); transition:width 0.4s; border-radius:2px; }
+   contained. border-radius 6px ≈ 素材凹槽圓角，紅條縮短時左右端不會戳出圓角。 */
+.hp-bar { position:relative; z-index:10; height:100%; background:linear-gradient(90deg,#FF3333,#FF7744); transition:width 0.4s; border-radius:6px; }
 .score-row { font-size:10px; color:#FFD700; font-family:'Fredoka One',sans-serif; }
 
 .hud-center { flex:1; text-align:center; }
 .game-title-hud { font-size:14px; color:#FFD700; font-family:'Fredoka One',sans-serif; letter-spacing:1px; text-shadow:2px 2px 0 #8B4500, 0 0 16px rgba(245,166,35,0.5); }
 .game-sub-hud { font-size:9px; color:#88DD88; font-family:'Noto Sans TC',sans-serif; letter-spacing:2px; margin-top:2px; }
 
+/* LEVEL 木牌：素材 v2-level-badge.png (1200×800) 上半是吊桿+鍊條，木牌板面
+   約在 y290..660、可寫字的綠色帶約 x270..850 / y346..574（右側被葉子裝飾佔用）。
+   這裡不用 contain 縮整張圖（牌面會小到裝不下字），改用 background-size 放大到
+   150×100 後用負位移裁掉上方吊桿，讓「木牌板面」剛好填滿 52px 高的 HUD 帶。
+   綠帶對映元素座標 x27.75..100.25（寬 72.5px）。字級 9px + padding 左 36/右 58
+   把內容區縮到 56px 寬、置中在綠帶內：任何級名「LEVEL X: 中文」都會在空格處
+   固定折成兩行（LEVEL X: ~46px / 中文級名 ≤27px，各自 <56px），置中顯示、
+   不會貼到綠帶外的木框；兩行 × line-height 1.25 ≈ 22.5px 仍在綠帶高 29px 內。
+   （原 10px + 內容區 72px 時「LEVEL 1: 初級」單行 ~78px 會壓到木框上。）
+   word-break:keep-all 保證中文級名不被拆行。 */
 .hud-right {
-  min-width:180px; text-align:center;
-  font-size:10px; color:#FFE9B0; font-family:'Fredoka One',sans-serif; line-height:1.2;
-  background: url('/images/ui/v2-level-badge.png') center/contain no-repeat;
-  height: 52px;
+  width: 150px; height: 52px; text-align:center;
+  font-size:9px; color:#FFE9B0; font-family:'Fredoka One',sans-serif; line-height:1.25;
+  word-break: keep-all;
+  background: url('/images/ui/v2-level-badge.png') no-repeat;
+  background-size: 150px 100px;
+  background-position: -6px -31px;
   display: flex; align-items: center; justify-content: center;
-  padding: 6px 34px 6px;
+  padding: 12px 58px 11px 36px;
   text-shadow: 1px 1px 0 #4A2800, 0 0 6px rgba(0,0,0,0.4);
   flex-shrink: 0;
 }
@@ -165,13 +185,17 @@ body {
   overflow: hidden;
 }
 
-/* Ground */
+/* Ground
+   高度 60px 不能動（#hunter/#prey 的 bottom:60 和 hunterRun keyframe 都以
+   這條地面線為基準）。改成半透明綠色漸層，讓精緻的背景圖透出來，
+   取代原本大片不透明純綠色帶（跟背景圖質感落差太大）；
+   邊界線也改半透明，保留「地面線」的視覺提示但不生硬。 */
 #ground {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   height: 60px;
-  background: linear-gradient(180deg, #3A7A10 0%, #1E4A08 100%);
-  border-top: 3px solid #5AA020;
+  background: linear-gradient(180deg, rgba(46,100,14,0.30) 0%, rgba(16,44,6,0.62) 100%);
+  border-top: 2px solid rgba(122,190,60,0.28); /* 地面線提示：再壓低透明度，避免整條亮綠硬線橫貫畫面 */
   z-index: 2;
 }
 .ground-detail {
@@ -201,16 +225,25 @@ body {
   transition: left 0.5s ease-out;
 }
 
-/* Prey character */
+/* Prey anchor（隱形定位盒）
+   箭靶視覺已移除（使用者要求「箭靶不要」）：#prey 不再顯示 emoji/圖片，
+   只保留「定位盒」功能——fireArrow() 的箭矢終點、moveHunterTowardPrey()
+   的逼近基準、命中閃光的出現位置，都是 getBoundingClientRect() 讀這個盒子，
+   所以用 visibility:hidden（保留 layout box、rect 照常可讀），不能用
+   display:none。JS 照舊往裡面塞 emoji / 加 shake/flee/caught class，只是
+   看不見，遊戲邏輯零改動。
+   right:280 讓箭的落點避開右上詞彙卡的水平範圍（卡片 right:40、寬 216
+   → 佔 right 40..256）：命中閃光 z-index 26 < 卡片 30，錨點若留在原本的
+   right:70 會整個被卡片蓋住看不到。 */
 #prey {
   position: absolute;
   bottom: 60px;
-  right: 100px;
-  width: 120px; height: 120px;
+  right: 280px;
+  width: 88px; height: 88px;
   z-index: 20;
-  font-size: 80px;
+  font-size: 60px;
+  visibility: hidden;
   display: flex; align-items: flex-end; justify-content: center;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
   transition: transform 0.3s;
 }
 #prey.shake { animation: preyShake 0.4s ease; }
@@ -243,10 +276,14 @@ body {
 #hunter { animation: hunterRun 0.5s steps(2) infinite; }
 @keyframes hunterRun { 0%{bottom:60px} 50%{bottom:65px} 100%{bottom:60px} }
 
-/* ── WORD BUBBLE ── */
+/* ── WORD BUBBLE（右上羊皮紙詞彙卡）──
+   改用 top 錨定、往下移：距 #stage 上緣（= HUD 下緣）24px，捲軸木桿頂端
+   完整露出（舊 bottom:168 錨定時卡片實際高度超過可用空間，頂端被 #stage
+   overflow:hidden 裁掉約 93px）。右欄現在只剩這張卡——輸入顯示與計時條
+   已移到底部輸入列（見 .input-wrapper 區塊）。 */
 #wordBubble {
   position: absolute;
-  bottom: 168px;
+  top: 24px;
   right: 40px;
   background: url('/images/ui/v2-word-card-frame.png') center/100% 100% no-repeat;
   border: none;
@@ -366,29 +403,41 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* ── INPUT BUBBLE (below word) ── */
+/* ── INPUT DISPLAY（移入底部木框輸入列）──
+   #inputBubble/#inputDisplay 從 #stage 搬進底部輸入列 .input-wrapper 內
+   （使用者要求：打的字直接顯示在底部輸入列）。它是蓋在 #realInput 正上方
+   的透明覆蓋層：#realInput 照舊接鍵盤輸入（文字/游標設為透明，見下方），
+   玩家看到的是這層由 updateInputDisplay() 產生的「目標詞幽靈字 + 已打字元
+   綠/紅比對」，多字詞整句輸入的逐字元顯示照舊運作，只是換了位置。
+   left/right 對映 .input-wrapper 的內槽 padding（17% / 9%，素材內槽
+   x200..1102/1200），字剛好落在木框內槽裡。pointer-events:none 讓點擊
+   穿透到底下的 realInput 聚焦。 */
 #inputBubble {
   position: absolute;
-  bottom: 148px;
-  right: 75px;
-  background: rgba(255,253,232,0.9);
-  border: 3px solid #2D8A1A;
-  border-radius: 12px;
-  padding: 8px 14px;
-  z-index: 30;
-  min-width: 160px;
-  text-align: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  top: 0; bottom: 0;
+  left: 17%; right: 9%;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  pointer-events: none;
+  z-index: 2;
 }
 #inputDisplay {
   font-family: 'Fredoka One', sans-serif;
   font-size: 18px;
-  color: #1A4A08;
-  letter-spacing: 4px;
-  min-height: 24px;
+  color: rgba(255,229,102,0.5); /* 空值佔位 "_"（無 span 包裹）用這個底色 */
+  letter-spacing: 3px;
+  white-space: nowrap;
+  overflow: hidden;
 }
-.typed-correct { color: #1A7A1A; }
-.typed-wrong { color: #CC2222; }
+/* 比對配色改亮版：底下是深色木框內槽，原本羊皮紙用的深綠/深紅看不清。
+   沿用 Style Guide 亮綠 #88DD88 / 警示紅 #FF6B6B。 */
+.typed-correct { color: #88DD88; }
+.typed-wrong { color: #FF6B6B; }
+/* 尚未打到的目標字元：updateInputDisplay()（小工程的 JS）是用 inline
+   style="color:#888" 寫死的；深色內槽上 #888 太暗 → 用 !important 蓋掉
+   inline 值改成幽靈金（不動 JS 邏輯）。 */
+#inputDisplay span:not(.typed-correct):not(.typed-wrong) { color: rgba(255,229,102,0.4) !important; }
 
 /* The real input (hidden, focused) */
 #typeInput {
@@ -397,15 +446,19 @@ body {
   width: 1px; height: 1px;
 }
 
-/* ── TIMER BAR ── */
+/* ── TIMER BAR（輸入列上方）──
+   跟著輸入顯示一起移到底部輸入列：貼在木框輸入欄正上緣（top:-13 →
+   浮在框頂上方 13px，仍在 #bottomBar 100px 高的範圍內），寬度對齊內槽
+   （left 17% / right 9%），玩家打字時視線不用離開輸入列就能看到倒數。 */
 #timerBarWrap {
   position: absolute;
-  bottom: 138px; right: 50px;
-  width: 220px; height: 8px;
+  top: -13px;
+  left: 17%; right: 9%;
+  height: 8px;
   background: rgba(0,0,0,0.4);
   border: 2px solid rgba(255,255,255,0.2);
   border-radius: 8px;
-  z-index: 31;
+  z-index: 2;
   overflow: hidden;
 }
 #timerBar {
@@ -428,40 +481,42 @@ body {
   padding: 0 24px;
 }
 
+/* 素材 v2-input-field.png (1200×515) 的深色可輸入內槽約在 x200..1102（左右是
+   厚木框+藤蔓裝飾）。padding 用百分比對映內槽（17%≈x200/1200、9%≈右緣），
+   讓輸入顯示層與計時條都落在內槽裡，不會壓在木框裝飾上/貼邊。
+   「▶ TYPE」標籤已移除（使用者要求）；position:relative 給移進來的
+   #inputBubble / #timerBarWrap 當絕對定位基準。max-width 從 400 放寬到 520
+   ——標籤拿掉 + 畫面改鋪滿視窗後，長詞彙（多字整句）需要更多顯示寬度。 */
 .input-wrapper {
+  position: relative;
   display: flex; align-items: center;
   background: url('/images/ui/v2-input-field.png') center/100% 100% no-repeat;
   border: none;
   border-radius: 14px;
-  flex: 1; max-width: 400px;
+  flex: 1; max-width: 520px;
   height: 64px;
-  padding: 0 20px;
+  padding: 0 9% 0 17%;
   filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
 }
-.input-label {
-  background: transparent;
-  padding: 0 12px 0 0;
-  height: 48px;
-  display: flex; align-items: center;
-  font-family: 'Fredoka One', sans-serif;
-  font-size: 12px; color: #FFD740;
-  text-shadow: 1px 1px 0 #3A2000;
-  white-space: nowrap;
-}
+/* #realInput 照舊接鍵盤輸入與 focus，但文字/游標/placeholder 全透明：
+   玩家看到的字由上層 #inputDisplay 呈現（含目標詞幽靈字與對錯配色），
+   避免同一段字顯示兩次。 */
 #realInput {
   flex: 1;
   background: transparent;
   border: none; outline: none;
   font-family: 'Fredoka One', sans-serif;
   font-size: 18px;
-  color: #FFE566;
+  color: transparent;
   padding: 0 14px;
   height: 48px;
   letter-spacing: 3px;
-  caret-color: #F5A623;
+  caret-color: transparent;
 }
-#realInput::placeholder { color: rgba(255,229,102,0.25); font-size:12px; }
-#realInput.err { color: #FF6666; animation: inputShake 0.3s; }
+#realInput::placeholder { color: transparent; }
+/* 打錯搖晃：JS 把 .err 加在 #realInput 上（不動 JS），但它的文字已透明，
+   改用相鄰選擇器搖上層的顯示層（#inputBubble 緊跟在 input 之後）。 */
+#realInput.err + #inputBubble { animation: inputShake 0.3s; }
 @keyframes inputShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
 .shoot-btn {
@@ -1051,17 +1106,20 @@ body.listen-active #listenBtn { display:flex; }
     <div class="hud-right" id="levelHud">LEVEL 1: 入山</div>
   </div>
 
-  <!-- STAGE — #stage. 戰鬥場景本體：#hunter(獵人)、#prey(獵物)、#wordBubble(詞彙提示)、
-       #inputBubble(輸入回饋)、#timerBarWrap(倒數計時條)。內容由 nextRound()/submitWord()
-       等函式即時更新；fireArrow() 產生的 .arrow 箭矢元素也是動態 append 到這裡，
-       定位以 #stage 的 position:absolute 作為座標基準。 -->
+  <!-- STAGE — #stage. 戰鬥場景本體：#hunter(獵人)、#prey(隱形獵物錨點)、
+       #wordBubble(詞彙提示)。內容由 nextRound()/submitWord() 等函式即時更新；
+       fireArrow() 產生的 .arrow 箭矢元素也是動態 append 到這裡，
+       定位以 #stage 的 position:absolute 作為座標基準。
+       （#inputBubble 輸入回饋、#timerBarWrap 倒數計時條已移到 #bottomBar
+       的 .input-wrapper 內——使用者要求打的字直接顯示在底部輸入列。） -->
+
   <div id="stage">
     <div id="ground"><div class="ground-detail"></div></div>
 
     <img id="hunter" src="/images/ui/v2-hunter-truku-h2.png" alt="獵人">
     <div id="prey">🐗</div>
 
-    <!-- Word bubble above prey — 羊皮紙詞彙卡（由上到下階層：主視覺 / 族語詞 /
+    <!-- Word bubble（畫面右上）— 羊皮紙詞彙卡（由上到下階層：主視覺 / 族語詞 /
          裝飾分隔線 / 中文 / 分類標籤 / 發音列）。內容由 nextRound() 依詞彙類型填入。 -->
     <div id="wordBubble">
       <!-- 主視覺區：數字類→大數字，有插畫→插畫，否則→emoji（三者擇一，由 JS 切換） -->
@@ -1092,16 +1150,6 @@ body.listen-active #listenBtn { display:flex; }
       <div id="listenReveal"></div>
     </div>
 
-    <!-- Input display bubble -->
-    <div id="inputBubble">
-      <div id="inputDisplay">_____</div>
-    </div>
-
-    <!-- Timer bar -->
-    <div id="timerBarWrap">
-      <div id="timerBar" style="width:100%"></div>
-    </div>
-
     <!-- 答對慶祝橫幅 — 平時隱藏，caughtPrey() 觸發 showCorrectBanner() 時
          加上 .show 短暫顯示（進場/出場動畫皆由 CSS keyframes 控制，JS 只負責
          加/移除 class 跟填內容）。緞帶背景目前純 CSS 漸層模擬，之後小畫家
@@ -1118,7 +1166,8 @@ body.listen-active #listenBtn { display:flex; }
     </div>
   </div>
 
-  <!-- BOTTOM BAR — #bottomBar. COMBO 顯示、打字輸入框(#realInput)、發射按鈕(submitWord())。
+  <!-- BOTTOM BAR — #bottomBar. COMBO 顯示、打字輸入列（#realInput 接鍵盤 +
+       #inputBubble/#inputDisplay 顯示層 + #timerBarWrap 計時條）、發射按鈕(submitWord())。
        一直存在於遊戲主畫面內，不做整塊顯示/隱藏切換。 -->
   <div id="bottomBar">
     <div class="combo-area">
@@ -1134,8 +1183,18 @@ body.listen-active #listenBtn { display:flex; }
     </div>
 
     <div class="input-wrapper">
-      <div class="input-label">▶ TYPE</div>
       <input type="text" id="realInput" placeholder="輸入族語..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <!-- 輸入顯示層（從 #stage 搬進來）：updateInputDisplay() 填入
+           「目標詞幽靈字 + 已打字元綠/紅比對」，蓋在 realInput 正上方。
+           ⚠️ 必須緊跟在 #realInput 之後（CSS 用 #realInput.err + #inputBubble
+           做打錯搖晃）。 -->
+      <div id="inputBubble">
+        <div id="inputDisplay">_____</div>
+      </div>
+      <!-- 倒數計時條（從 #stage 搬進來）：貼在輸入欄上緣 -->
+      <div id="timerBarWrap">
+        <div id="timerBar" style="width:100%"></div>
+      </div>
     </div>
 
     <button class="shoot-btn" onclick="submitWord()" title="發射 (Enter)"><img src="/images/ui/icon-bow.jpg" alt="發射"></button>
@@ -1418,23 +1477,18 @@ _initVolBtnIcon();
 window.addEventListener('load', _initVolBtnIcon);
 
 // ═══════════════════════════════════════════════════
-//  RWD 排版輔助：依視窗大小動態縮放 #gameWrap
-//  （純排版用途，不涉及計分/判定/API 等遊戲邏輯）
-//  #gameWrap 內部所有子元素都是針對 900×540 基準畫的絕對定位座標，
-//  這裡只用 CSS transform: scale() 整體縮放視覺呈現，不改動內部座標。
+//  RWD 排版輔助：全螢幕鋪滿（純排版用途，不涉及計分/判定/API 等遊戲邏輯）
+//  外層金框已移除，遊戲畫面直接填滿視窗：
+//  以「視窗高度 / 540」為統一縮放比（等比、素材不變形），寫進 --game-scale；
+//  #gameWrap 的 CSS 寬度 = 100vw / scale，transform 縮放後剛好填滿視窗寬度。
+//  內部座標系高度固定 540px，子元素 top/bottom 定位全部照舊（見 CSS
+//  「FULL-VIEWPORT STAGE」區塊的完整說明）。
 // ═══════════════════════════════════════════════════
-const GAME_BASE_W = 900;
 const GAME_BASE_H = 540;
-const GAME_SCALE_MIN = 0.5;   // 極小視窗下限，避免小到看不清楚
-const GAME_SCALE_MAX = 1.6;   // 大螢幕上限，避免放大到字糊/間距失衡
 
 function updateGameScale() {
-  const marginRatio = 0.94; // 視窗四周留一點呼吸空間，避免貼邊
-  const availW = window.innerWidth * marginRatio;
-  const availH = window.innerHeight * marginRatio;
-  const scale = Math.min(availW / GAME_BASE_W, availH / GAME_BASE_H);
-  const clamped = Math.max(GAME_SCALE_MIN, Math.min(GAME_SCALE_MAX, scale));
-  document.documentElement.style.setProperty('--game-scale', clamped);
+  const scale = window.innerHeight / GAME_BASE_H;
+  document.documentElement.style.setProperty('--game-scale', scale);
 }
 
 window.addEventListener('resize', updateGameScale);
@@ -2045,6 +2099,18 @@ function resetHunterPosition() {
   document.getElementById('hunter').style.left = HUNTER_START_LEFT + 'px';
 }
 
+// ── 排版接線（小排版）：螢幕座標 → #stage 內部座標的單位換算 ──
+// #gameWrap 用 transform:scale(var(--game-scale)) 做全螢幕縮放後，
+// getBoundingClientRect() 回傳的是「縮放後的螢幕 px」，而 style.left/top
+// 吃的是 #stage 內部「未縮放」的 CSS px——兩者差一個縮放係數。
+// fireArrow() / moveHunterTowardPrey() 用 rect 差值算位置時必須除回這個
+// 係數，否則 scale≠1 時箭矢/命中閃光/獵人逼近位置整體向右下偏移
+// （實測 1400×700 下閃光會偏進右上詞彙卡底下）。純座標單位換算，
+// 不含任何計分/判定邏輯。
+function getGameScale() {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--game-scale')) || 1;
+}
+
 // Move the hunter a step closer to the prey, in proportion to how far the
 // player is through the *level*: at round 1 the hunter stands at
 // HUNTER_START_LEFT, and by the final round it has closed the whole gap
@@ -2064,7 +2130,9 @@ function moveHunterTowardPrey() {
 
   // Target left position: just short of the prey's left edge, leaving
   // HUNTER_PREY_GAP px of clearance so the hunter never stands on the prey.
-  const maxLeft = (preyRect.left - stageRect.left) - hunterRect.width - HUNTER_PREY_GAP;
+  // rect 差值是「縮放後螢幕 px」，除回 --game-scale 換成 style.left 用的
+  // 未縮放 CSS px（見上方 getGameScale() 註解）。
+  const maxLeft = (preyRect.left - stageRect.left - hunterRect.width) / getGameScale() - HUNTER_PREY_GAP;
 
   // (G.round - 1) completed rounds out of (totalRounds - 1) steps, so the
   // last round lands exactly at maxLeft (closest approach, gap preserved).
@@ -2088,13 +2156,16 @@ function fireArrow() {
   // Start point: roughly the hunter's "hands" (upper-front of the hunter sprite),
   // relative to #stage's own coordinate system (since .arrow is absolutely
   // positioned inside #stage, which is itself `position:absolute`).
-  const startX = hunterRect.right - stageRect.left - 10;
-  const startY = hunterRect.top - stageRect.top + hunterRect.height * 0.35;
+  // rect 差值是「縮放後螢幕 px」，除回 --game-scale 換成 style.left/top 用的
+  // 未縮放 CSS px（見 getGameScale() 註解），否則全螢幕縮放下落點整體偏移。
+  const scale = getGameScale();
+  const startX = (hunterRect.right - stageRect.left) / scale - 10;
+  const startY = (hunterRect.top - stageRect.top + hunterRect.height * 0.35) / scale;
 
   // End point: prey's actual visual center, wherever it currently is and
   // whatever size its image/emoji happens to be (varies per vocab item).
-  const endX = preyRect.left + preyRect.width / 2 - stageRect.left;
-  const endY = preyRect.top + preyRect.height / 2 - stageRect.top;
+  const endX = (preyRect.left + preyRect.width / 2 - stageRect.left) / scale;
+  const endY = (preyRect.top + preyRect.height / 2 - stageRect.top) / scale;
 
   const dx = endX - startX;
   const dy = endY - startY;
