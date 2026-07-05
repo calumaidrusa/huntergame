@@ -536,6 +536,39 @@ body.blank-active #answerArea {
 }
 /* 多字詞斷字間隔（不佔格，只留空隙讓分組清楚） */
 .answer-gap { display: inline-block; width: 16px; }
+/* ── L3 聽打：沿用同一個 #answerArea 木框答案格面板，但位置改「靠中央」，
+   避開右側播放面板(#listenBtn right:55)與左側獵人；範例小字換成音節/長度示意點列。 */
+body.listen-active #answerArea {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  position: absolute; left: 44%; top: calc(50% - 4px); transform: translate(-50%,-50%);
+  bottom: auto;
+  z-index: 40;
+  min-width: 300px; max-width: 470px;
+  padding: 24px 46px 26px;
+  background: url('/images/ui/v2-choice-panel-frame.png') center/100% 100% no-repeat;
+  border: none; border-radius: 0;
+  filter: drop-shadow(0 5px 12px rgba(0,0,0,0.45));
+}
+body.listen-active #answerExample { display: none; }   /* L3 用音節點，不用 L2 的範例小字 */
+body.blank-active  #syllableDots  { display: none; }    /* L2 用範例小字，不用音節點 */
+/* 音節/長度示意點列（單字提示：● — ● ●）。誠實定位＝「長度提示」（每字母一點、
+   多字詞用短線分組），非精確音節切分（真音節需語言學資料，另案）。 */
+#syllableDots { display: none; }
+body.listen-active #syllableDots {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px;
+  margin-top: 2px; min-height: 16px;
+}
+.syl-label {
+  font-family: 'Noto Sans TC', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; color: rgba(255,233,176,0.85); margin-right: 4px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+.syl-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #FFE9A8, #C79A3A 70%, #8B5500);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.syl-dash { color: rgba(255,220,150,0.7); font-weight: 900; margin: 0 3px; }
 /* 範例小字「例如：a-m-a-s-a-m」 */
 #answerExample {
   font-family: 'Fredoka One', 'Noto Sans TC', 'Segoe UI', 'Charis SIL',
@@ -2465,6 +2498,8 @@ body.choice-active #stage { bottom: 0; }
       <div id="answerAreaLabel">填入答案</div>
       <div id="answerCells"></div>
       <div id="answerExample"></div>
+      <!-- L3 聽打「單字提示」音節/長度示意點列（renderSyllableDots 填；僅 listen-active 顯示） -->
+      <div id="syllableDots"></div>
     </div>
 
     <img id="hunter" src="/images/ui/v2-hunter-truku-h2.png" alt="獵人">
@@ -4174,8 +4209,13 @@ function renderTypingRound(ld) {
   //   故此屬性目前偏無障礙/語意用途；空狀態的可見提示視覺留給小排版。
   inp.placeholder = G.listenMode ? '請輸入你聽到的單字'
                   : (G.mode === 'blank' ? '補上完整單字' : '輸入族語...');
+  // 中央答案格面板標題動態：L2 填空「填入答案」、L3 聽打「請輸入你聽到的單字」。
+  const alabel = document.getElementById('answerAreaLabel');
+  if (alabel) alabel.textContent = G.listenMode ? '請輸入你聽到的單字' : '填入答案';
   // 填空關（L2）：進題時把「例如 a-m-a-s-a-m」範例算一次（不隨打字變）。
   if (G.mode === 'blank') renderAnswerExample();
+  // 聽打關（L3）：進題時把「單字提示」音節/長度示意點列算一次（依本題答案長度）。
+  if (G.listenMode) renderSyllableDots();
   updateInputDisplay('');
   // §特殊字元列：桌機打字關（L2/L3/L5）顯示當前語別的難打字元按鈕（可點插入）。
   renderSpecialCharBar();
@@ -4409,6 +4449,21 @@ function renderAnswerExample() {
   el.textContent = ANSWER_EXAMPLE_TEXT;
 }
 
+// §聽打（L3）「單字提示」音節/長度示意點列：依完整答案字母數排一列金點，
+// 多字詞用短線「—」分組。⚠ 誠實定位＝「長度提示」（每字母一點），非精確音節切分
+// （太魯閣語真音節切分需語言學資料，屬另案）。不露字母本身，只給長度/分組結構。
+function renderSyllableDots() {
+  const host = document.getElementById('syllableDots');
+  if (!host) return;
+  const answer = displayWordOf(G.currentPrey) || '';
+  const parts = answer.split(/\s+/).filter(Boolean); // 多字詞分組
+  const groups = parts.map(w =>
+    Array.from(w).map(() => '<span class="syl-dot"></span>').join('')
+  );
+  host.innerHTML = '<span class="syl-label">單字提示：</span>'
+    + groups.join('<span class="syl-dash">—</span>');
+}
+
 function updateInputDisplay(typed) {
   // 填空（L2 新設計）：右卡片只顯示提示字母磚（renderHintLetters，進題時渲染一次）；
   //   玩家打的字逐字母填進「底部答案格」（renderAnswerCells），這才是作答區。
@@ -4417,9 +4472,18 @@ function updateInputDisplay(typed) {
     renderAnswerCells(typed);
     return;
   }
-  // 盲打（L5）／聽打（L3）：不顯示目標幽靈字（會洩漏完整詞與長度），
-  //   只把玩家實際打的字原樣顯示（中性色），憑記憶/聽力輸入。
-  if (G.mode === 'blind' || G.listenMode) {
+  // 聽打（L3）新版：中央答案格面板 + 底部輸入框都反映玩家打的字。答案格會露出
+  //   單字長度（幾格）＝提示——使用者拍板可露（露長度當友善提示）。
+  if (G.listenMode) {
+    renderAnswerCells(typed);
+    const safeL = (typed || '').replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
+    document.getElementById('inputDisplay').innerHTML = safeL
+      ? `<span style="color:#FFE566">${safeL}</span>` : '_';
+    return;
+  }
+  // 盲打（L5）：不顯示目標幽靈字也不給長度提示（無答案格），只把玩家實際打的字
+  //   原樣顯示（中性色），純憑記憶輸入。
+  if (G.mode === 'blind') {
     const safe = (typed || '').replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
     document.getElementById('inputDisplay').innerHTML = safe
       ? `<span style="color:#FFE566">${safe}</span>` : '_';
