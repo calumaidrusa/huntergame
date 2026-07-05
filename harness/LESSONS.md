@@ -19,6 +19,7 @@
 - L-012 外部平台（如 chatgpt.com）的臨時檔案連結對外部工具無存取權限
 - L-013 部署（scp）與 GitHub 同步（commit/push）是兩件事，只做前者會讓版控嚴重落後
 - L-014 `index.html` 從「桌機複製檔」變成「裝置路由檔」後，部署清單要跟著改
+- L-015 Hooks/settings.json 裝在主專案分支，worktree session 完全看不到——promote 問題在 hook 層重演
 
 ---
 
@@ -112,6 +113,13 @@
 - 正解：部署完成後，若使用者要保持版控同步，主動問一次「要不要順手 commit + push」；已建立慣例：每次大批部署後緊接著做一次 git commit（先擴充 .gitignore 濾掉 `*.bak`/`__pycache__`/暫存產物）+ push
 - 通則：**「部署上線」與「進版控」永遠要分開檢查，不要假設其中一個做了另一個就自動跟上**；在會用 scp/rsync 之類繞過 git 的部署流程裡，這條特別容易被忽略
 - 關聯：CLAUDE.md 部署節
+
+### L-015 · Hooks/settings.json 裝在主專案分支，worktree session 完全看不到——promote 問題在 hook 層重演 · 2026-07-05
+- 症狀：裝好 `.claude/settings.json` + `.claude/hooks/*.sh`（Agent 工具的 journal 提醒 hook）後，第一次真實呼叫 subagent 測試，完全沒收到提醒；查 state 檔發現連 `PreToolUse` 都沒被執行過，代表 hook 根本沒被載入
+- 根因：這次對話所在的 git worktree 是另一條分支（`claude/nervous-kare-81ae61`），跟主專案當時所在的 `feat/v2-overhaul-accounts-ui-vocab` 是完全獨立的 checkout；`.claude/settings.json` 是直接寫進主專案目錄的，worktree 的 `.claude/` 完全不知道它存在。而且更深一層：**新建 worktree 預設 `worktree.baseRef="fresh"`，會從 `origin/main` 分支出去**，而 `origin/main` 連 PR #2（那條分支的全部內容）都還沒合併，所以任何新 worktree 一開始就會缺少這整批東西，不只是這次的 hook
+- 正解：把 `settings.json`/`hooks/`/相關 `harness/` 檔手動鏡射進當次 worktree 之後，重新測試才確認 hook 機制本身完全正確（真實呼叫 Agent 工具，提醒正確灌回 model context）。長久修法不是模型能自己決定的架構題，列了三個選項回報給 User：merge PR #2 進 main／改 `worktree.baseRef` 成 `"head"`／每次開新 worktree 手動重新 promote
+- 通則：**任何「裝在專案裡的持久機制」（CLAUDE.md、harness、hooks、settings.json）都要用「這次 session 實際的 project root 在哪」去驗證，不能只驗證「檔案存在於我以為的主專案路徑」**。在會用 worktree-per-session 的工作模式下，這條特別重要——寫完基礎設施類的東西，若要證明「未來 session 真的會生效」，至少要跑一次真實驗證（不是只做 pipe-test/語法檢查），而且要注意 worktree 的分支基準點是不是真的包含這些檔案
+- 關聯：[[L-009]]（同一種 promote 問題，這次發生在 hook 層而非文件層）/ harness/appendix-recommended-hooks.md 護欄 D
 
 ### L-014 · `index.html` 從「桌機複製檔」變成「裝置路由檔」後，部署清單要跟著改 · 2026-07-05
 - 症狀：手機版上線後，`index.html` 的角色從「桌機 `hunter-truku-v2.html` 的複製品」改成「依裝置特徵判斷導向桌機或手機版的薄路由檔」。如果部署時沿用舊習慣把桌機 HTML 覆蓋到 `index.html`，會直接讓所有使用者（含手機）都看到桌機版，路由整個失效

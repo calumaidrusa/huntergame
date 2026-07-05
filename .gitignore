@@ -17,3 +17,4 @@ image_gen_progress.json
 # Python 快取
 __pycache__/
 *.pyc
+.claude/.journal-hook-state.json

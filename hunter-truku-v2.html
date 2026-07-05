@@ -2314,6 +2314,27 @@ body.choice-active #stage { bottom: 0; }
 }
 .lb-del-btn:hover { background:rgba(180,30,30,0.6); color:#fff; }
 .lb-del-btn:active { transform:scale(0.92); }
+/* ── 提示鈕（每關通用）── 木質金邊小藥丸，固定在 stage 左側中下，避開獵人/詞卡/面板。 */
+#hintBtn {
+  /* 左上側、在獵人(打字關全尺寸 top≈223)上方的空區；選項關面板在中央偏右(x≥300)、
+     獵人縮小走底部，左上同樣淨空 → 兩類版面都不重疊。 */
+  position:absolute; left:14px; bottom:330px; z-index:45;
+  display:flex; align-items:center; gap:5px;
+  padding:7px 13px; border-radius:999px; cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif; font-size:12px; font-weight:900; letter-spacing:1px;
+  color:#3A2410;
+  background:linear-gradient(180deg,#FFD86A,#E8A22C);
+  border:2px solid #8B5500;
+  box-shadow:0 3px 0 #5A3000, inset 0 1px 0 rgba(255,245,200,0.5);
+  text-shadow:0 1px 0 rgba(255,240,200,0.5);
+  transition:transform .1s, filter .1s, opacity .15s;
+}
+#hintBtn .hint-ic { font-size:14px; line-height:1; }
+#hintBtn:hover:not(:disabled) { filter:brightness(1.08); transform:translateY(-1px); }
+#hintBtn:active:not(:disabled) { transform:translateY(2px); box-shadow:0 1px 0 #5A3000; }
+#hintBtn:disabled { opacity:0.5; cursor:default; filter:grayscale(0.3); }
+/* 選項關被提示刪掉的錯誤選項：淡出、不可點 */
+.choice-opt.hint-removed { opacity:0.18; pointer-events:none; filter:grayscale(0.8); transition:opacity .25s, filter .25s; }
 </style>
 </head>
 <body>
@@ -2495,6 +2516,14 @@ body.choice-active #stage { bottom: 0; }
     <!-- 各模式任務說明（打字關 L2/L3/L5 用；選項關 L1/L4 用面板頂 #choiceCueTop）。
          文字由 updateModeTaskHint() 依 G.mode + 當前語別動態填入。穩定 id 交小排版美化。 -->
     <div id="modeTaskHint"></div>
+
+    <!-- 提示鈕（每關通用）：遊戲中顯示，點了給該模式適合的提示（選項關刪一個錯選項、
+         打字關揭露下一個正確字母），每題最多 HINT_MAX 次、每次扣分（G.hintPenalty）。
+         由 useHint() 處理；顯示/隱藏由 setHintVisible()。定位在 stage 左側中下、避開
+         獵人(bottom-left)、詞卡(top-right)、面板(中央)。 -->
+    <button id="hintBtn" onclick="useHint()" title="提示（會扣分）" style="display:none">
+      <span class="hint-ic">💡</span><span id="hintBtnLabel">提示</span>
+    </button>
 
     <!-- 填入答案區（L2 填空關專用）— 中央下方一排空答案格：玩家打字時字母依序
          填進 #answerCells（一字母一格，多字詞間隔分組），旁邊沿用底部 .shoot-btn
@@ -3848,6 +3877,7 @@ function initLevel() {
 }
 
 function showBanner(isNew) {
+  setHintVisible(false); // 說明看板/過場時收起提示鈕
   const b = document.getElementById('levelBanner');
   const mg = document.getElementById('modeInstructionOverlay');
   // 五模式一律走海報式「遊戲說明看板」#modeInstructionOverlay（原本只有 L1；使用者定案
@@ -4150,6 +4180,11 @@ function nextRound() {
   G.round++;
   G.wordIdx = 0;
   G.choiceLock = false;
+  // §提示：每題重置提示次數/扣分，並顯示可用的提示鈕。
+  G.hintStage = 0;
+  G.hintPenalty = 0;
+  setHintVisible(true);
+  updateHintBtn();
 
   // 聽聲辨字（L3）：理論上本關池已 hasAudio，仍防呆跳過無音檔的詞
   if (G.listenMode && !G.currentPrey.audio) {
@@ -4307,6 +4342,69 @@ function renderChoiceButtons(opts) {
 function hideChoicePanel() {
   const box = document.getElementById('choiceOptions');
   if (box) box.innerHTML = '';
+}
+
+// ═══ 提示系統（每關通用・有代價・分級）═══════════════════════════
+// 每題最多 HINT_MAX 次提示；每次扣 HINT_COST 分（累加 G.hintPenalty，caughtPrey
+// 結算時從該題得分扣除、有下限）。選項關(L1/L4)＝刪一個錯選項；打字關(L2/L3/L5)＝
+// 揭露下一個正確字母（自動打進輸入框，玩家可續打）。使用者定案：每關都有、有代價。
+const HINT_MAX = 2;
+const HINT_COST = 40;
+function setHintVisible(show) {
+  const b = document.getElementById('hintBtn');
+  if (b) b.style.display = show ? 'flex' : 'none';
+}
+function updateHintBtn() {
+  const b = document.getElementById('hintBtn');
+  const lbl = document.getElementById('hintBtnLabel');
+  if (!b) return;
+  const left = HINT_MAX - (G.hintStage || 0);
+  // 只依「本題提示是否用完」決定 disabled；不 gate G.active（button 非作答中本就
+  // setHintVisible(false) 隱藏了，且 nextRound 顯示鈕時 G.active 尚未設 true，
+  // 若 gate !G.active 會讓鈕一開場就變灰不可點）。
+  b.disabled = left <= 0;
+  if (lbl) lbl.textContent = left > 0 ? `提示 −${HINT_COST}分` : '提示用完';
+}
+function useHint() {
+  if (!G.active || !G.currentPrey) return;
+  if ((G.hintStage || 0) >= HINT_MAX) return;
+  const helped = G.isChoice ? hintRemoveWrongOption() : hintRevealNextLetter();
+  if (!helped) { G.hintStage = HINT_MAX; updateHintBtn(); return; } // 已無可提示
+  G.hintStage = (G.hintStage || 0) + 1;
+  G.hintPenalty = (G.hintPenalty || 0) + HINT_COST;
+  if (window.Sfx) Sfx.sfxClick();
+  updateHintBtn();
+}
+// 選項關：隨機刪一個「還在的錯選項」，但至少保留一個錯的（否則只剩正解太送分）。
+function hintRemoveWrongOption() {
+  const box = document.getElementById('choiceOptions');
+  if (!box) return false;
+  const wrong = [...box.querySelectorAll('.choice-opt')]
+    .filter(el => el.dataset.correct === '0' && !el.classList.contains('hint-removed'));
+  if (wrong.length <= 1) return false;
+  const pick = wrong[Math.floor(Math.random() * wrong.length)];
+  pick.classList.add('hint-removed', 'disabled');
+  pick.onclick = null;
+  return true;
+}
+// 打字關：把輸入框設成「正確前綴＋下一個正確字元」＝揭露下一個字母（含跨空白）。
+// 以 displayWordOf 為目標，normalizeAnswer 逐字元比對玩家已打對的前綴（撇號/大小寫不算異）。
+function hintRevealNextLetter() {
+  const ri = document.getElementById('realInput');
+  if (!ri) return false;
+  const answer = displayWordOf(G.currentPrey) || '';
+  if (!answer) return false;
+  const typed = ri.value || '';
+  let k = 0;
+  while (k < answer.length && k < typed.length
+         && normalizeAnswer(answer[k]) === normalizeAnswer(typed[k])) k++;
+  if (k >= answer.length) return false; // 已全部揭露
+  let revealLen = k + 1;
+  if (/\s/.test(answer[k]) && k + 1 < answer.length) revealLen = k + 2; // 跨過空白
+  ri.value = answer.slice(0, revealLen);
+  ri.dispatchEvent(new Event('input', { bubbles: true }));
+  ri.focus();
+  return true;
 }
 
 // 重播 audio cue（L1 音選詞的大播放鈕）
@@ -4916,9 +5014,11 @@ function showHunterBubble(text, kind) {
 function caughtPrey() {
   G.kills++;
   G.combo++;
+  setHintVisible(false); // 答對後收起提示鈕（下一題 nextRound 再顯示）
   const timePts = G.timeLeft * 3;
   const comboPts = G.combo > 1 ? G.combo * 15 : 0;
-  const pts = 100 + timePts + comboPts;
+  // §提示代價：本題用過提示則從得分扣 G.hintPenalty，但保底 20 分（仍鼓勵作答）。
+  const pts = Math.max(20, 100 + timePts + comboPts - (G.hintPenalty || 0));
   G.score += pts;
 
   document.getElementById('prey').classList.add('caught');
@@ -4978,6 +5078,7 @@ function showCorrectBanner() {
 function missedPrey(fromChoice) {
   G.active = false;
   G.combo = 0;
+  setHintVisible(false); // 答錯/逃走後收起提示鈕
   const ld = LEVELS[G.level];
   G.hp = Math.max(0, G.hp - ld.hpLoss);
 
@@ -5205,6 +5306,7 @@ function confirmBackToTitle() {
 
 function goTitle() {
   if (window.Sfx) Sfx.sfxClick(); // #12 回標題（純導覽按鈕）
+  setHintVisible(false); // 回首頁收起提示鈕
   document.getElementById('gameOverScreen').classList.remove('show');
   document.getElementById('clearScreen').classList.remove('show');
   clearInterval(G.timer);
