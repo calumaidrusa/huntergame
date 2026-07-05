@@ -1,0 +1,41 @@
+# 特殊字元 / 清理報表 — 德鹿谷語 (dialectId=17, lang_code=sdq-truku)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1093,
+  "skipped_placeholder": 1,
+  "levels": {
+    "1": 255,
+    "2": 237,
+    "3": 299,
+    "4": 302
+  },
+  "cleaned": 0,
+  "with_image": 602,
+  "with_audio": 1093,
+  "apostrophe_words": 0,
+  "slash_words": 7,
+  "caret_words": 0,
+  "special_chars": {
+    "/": 7,
+    ")": 6,
+    "(": 6,
+    "…": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 01-06	六	'mtoru / mtru'	正式拼寫特殊字:/
+[FORMAL] 01-16	十六	'maxal mtoru / maxal mtru'	正式拼寫特殊字:/
+[FORMAL] 01-30	六十	'mtoru kmxalan / mtru kmxalan'	正式拼寫特殊字:/
+[MEMO?] 02-08	我們的	'(n)nami'	疑似備註字元:()
+[MEMO?] 02-09	他們的	'(n)ndhiya'	疑似備註字元:()
+[MEMO?] 02-15	咱們的	'(n)nita'	疑似備註字元:()
+[MEMO?] 02-20	(像)這樣	'(saw) nii'	疑似備註字元:()
+[MEMO?] 03-08	是誰的	'(n)nima'	疑似備註字元:()
+[FORMAL] 03-14	為什麼	'ma/malux'	正式拼寫特殊字:/
+[FORMAL] 04-07	配偶(先生/太太)	'snaw/qrijil'	正式拼寫特殊字:/
+[FORMAL] 05-13	長官	'qbsuran/bukung'	正式拼寫特殊字:/
+[FORMAL] 07-31	田鼠	'sngiya/roma'	正式拼寫特殊字:/
+[MEMO?] 14-02	在某處	'gaga…'	疑似備註字元:…
+[MEMO?] 26-06	玩(球)	'hmrapas(boro)'	疑似備註字元:()

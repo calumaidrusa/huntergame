@@ -6,3 +6,14 @@ image_gen_progress.json
 .localtools/
 .localtest/
 .claude/settings.local.json
+.claude/worktrees/
+
+# 編輯備份 / 部署備份 / 取消的暫存檔（不進版控）
+*.bak
+*.bak-*
+*.backup-*
+*.partial-cancelled-*
+
+# Python 快取
+__pycache__/
+*.pyc

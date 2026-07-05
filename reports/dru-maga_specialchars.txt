@@ -1,0 +1,683 @@
+# 特殊字元 / 清理報表 — 茂林魯凱語 (dialectId=31, lang_code=dru-maga)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1093,
+  "skipped_placeholder": 1,
+  "levels": {
+    "1": 256,
+    "2": 237,
+    "3": 298,
+    "4": 302
+  },
+  "cleaned": 3,
+  "with_image": 602,
+  "with_audio": 1093,
+  "apostrophe_words": 0,
+  "slash_words": 36,
+  "caret_words": 0,
+  "special_chars": {
+    "ɨ": 560,
+    "é": 171,
+    "/": 36,
+    ";": 1,
+    ")": 1,
+    "(": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 01-01	一	'drɨga/sessa'	正式拼寫特殊字:/ɨ
+[FORMAL] 01-04	四	'patɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 01-06	六	'nɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 01-09	九	'vngatɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 01-11	十一	'mɨngesɨle kɨsesanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 01-12	十二	'mɨngesɨle kɨdrusa'	正式拼寫特殊字:ɨ
+[FORMAL] 01-13	十三	'mɨngesɨle kɨtulru'	正式拼寫特殊字:ɨ
+[FORMAL] 01-14	十四	'mɨngesɨle kɨthipɨte'	正式拼寫特殊字:ɨ
+[FORMAL] 01-15	十五	'mɨngesɨle kɨlrima'	正式拼寫特殊字:ɨ
+[FORMAL] 01-16	十六	'mɨngesɨle kenɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 01-17	十七	'mɨngesɨle kɨpitu'	正式拼寫特殊字:ɨ
+[FORMAL] 01-18	十八	'mɨngesɨle kɨvaru'	正式拼寫特殊字:ɨ
+[FORMAL] 01-19	十九	'mɨngesɨle kɨvangte'	正式拼寫特殊字:ɨ
+[FORMAL] 01-20	二十	'mɨposɨle'	正式拼寫特殊字:ɨ
+[FORMAL] 01-21	二十一	'mɨposɨle kɨsesanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 01-22	二十二	'mɨposɨle kɨdrusa'	正式拼寫特殊字:ɨ
+[FORMAL] 01-23	二十三	'mɨposɨle kɨtulru'	正式拼寫特殊字:ɨ
+[FORMAL] 01-24	二十四	'mɨposɨle kɨthipɨte'	正式拼寫特殊字:ɨ
+[FORMAL] 01-25	二十五	'mɨposɨle kirima'	正式拼寫特殊字:ɨ
+[FORMAL] 01-27	三十一	'mutulrulu kɨsesanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 01-28	四十	'mɨthépɨtele'	正式拼寫特殊字:éɨ
+[FORMAL] 01-29	五十	'mɨrémɨle'	正式拼寫特殊字:éɨ
+[FORMAL] 01-30	六十	'mɨnɨmlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 01-31	七十	'mɨpitulu'	正式拼寫特殊字:ɨ
+[FORMAL] 01-32	八十	'mɨvarlu'	正式拼寫特殊字:ɨ
+[FORMAL] 01-33	九十	'mɨvangte'	正式拼寫特殊字:ɨ
+[FORMAL] 01-34	百	'ɨdé'	正式拼寫特殊字:éɨ
+[FORMAL] 01-35	一百	'sessa na ɨdé'	正式拼寫特殊字:éɨ
+[FORMAL] 01-36	兩百	'drusa na ɨdé'	正式拼寫特殊字:éɨ
+[FORMAL] 01-39	一次	'kuvalɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 02-02	我	'kɨkɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 02-05	我們	'kɨnamɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 02-08	我們的	'inamɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 02-13	我們(排除式)	'nɨma'	正式拼寫特殊字:ɨ
+[FORMAL] 02-15	咱們的	'inamɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 02-16	那個	'kɨdroo'	正式拼寫特殊字:ɨ
+[FORMAL] 02-17	這個	'kɨné'	正式拼寫特殊字:éɨ
+[FORMAL] 02-20	(像)這樣	'tuménia'	正式拼寫特殊字:é
+[FORMAL] 03-03	如何:怎麼樣	'tumanɨdra'	正式拼寫特殊字:ɨ
+[FORMAL] 03-04	何時(未發生)	'nugɨne'	正式拼寫特殊字:ɨ
+[MEMO?] 03-10	多少(歲)	'pini ; pidra'	疑似備註字元:;
+[FORMAL] 03-11	多少(程度大小)	'thanɨdra'	正式拼寫特殊字:ɨ
+[FORMAL] 03-12	什麼地方	'ikatékadra'	正式拼寫特殊字:é
+[FORMAL] 03-13	何時(已發生)	'ugɨne'	正式拼寫特殊字:ɨ
+[FORMAL] 04-01	爸爸	'mao/mama'	正式拼寫特殊字:/
+[FORMAL] 04-02	媽媽	'nao/nina'	正式拼寫特殊字:/
+[FORMAL] 04-03	堂、表兄弟姐妹	'lematakɨtaka'	正式拼寫特殊字:ɨ
+[FORMAL] 04-06	親戚	'lɨmengne'	正式拼寫特殊字:ɨ
+[FORMAL] 04-07	配偶	'sɨpakamɨnia'	正式拼寫特殊字:ɨ
+[FORMAL] 04-08	女婿	'usirinia vɨlakɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 04-13	孫子/孫女；子孫子嗣	'aganɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 04-15	丈夫/妻子	'usirikua/asirali'	正式拼寫特殊字:/
+[FORMAL] 04-16	姻親	'pɨthédanɨ'	正式拼寫特殊字:éɨ
+[FORMAL] 04-17	兄弟姊妹	'lematakɨtaka'	正式拼寫特殊字:ɨ
+[FORMAL] 04-20	姊姊	'kaka abéya'	正式拼寫特殊字:é
+[FORMAL] 04-21	哥哥	'kaka sovɨlé'	正式拼寫特殊字:éɨ
+[FORMAL] 04-23	弟弟	'gili sovɨlé'	正式拼寫特殊字:éɨ
+[FORMAL] 04-24	妹妹	'gili abéya'	正式拼寫特殊字:é
+[FORMAL] 05-01	名字	'aracɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 05-02	男孩	'vɨlavɨlakɨ sovɨlé'	正式拼寫特殊字:éɨ
+[FORMAL] 05-03	女孩	'vɨlavɨlakɨ abéya'	正式拼寫特殊字:éɨ
+[FORMAL] 05-04	朋友	'lɨsé / lali'	正式拼寫特殊字:/éɨ
+[FORMAL] 05-05	孩童	'valɨvalɨke'	正式拼寫特殊字:ɨ
+[FORMAL] 05-06	老人家	'marudrɨnge'	正式拼寫特殊字:ɨ
+[FORMAL] 05-07	女性	'abéya'	正式拼寫特殊字:é
+[FORMAL] 05-08	男性	'sovɨlé'	正式拼寫特殊字:éɨ
+[FORMAL] 05-10	醫生	'kuisangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 05-12	敵人	'bɨra'	正式拼寫特殊字:ɨ
+[FORMAL] 05-13	長官	'otatɨrasɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 05-15	警察	'késacu'	正式拼寫特殊字:é
+[FORMAL] 05-17	客家人	'kangtokuzing / haka'	正式拼寫特殊字:/
+[FORMAL] 05-18	校長	'kociw séngsé'	正式拼寫特殊字:é
+[FORMAL] 05-20	男青年	'thabɨthabɨre'	正式拼寫特殊字:ɨ
+[FORMAL] 05-25	學生	'séto'	正式拼寫特殊字:é
+[FORMAL] 06-03	眼睛	'mɨca'	正式拼寫特殊字:ɨ
+[FORMAL] 06-04	臉	'tɨmaca'	正式拼寫特殊字:ɨ
+[FORMAL] 06-06	頭	'auru/oru'	正式拼寫特殊字:/
+[FORMAL] 06-09	身體(人)	'tabotɨna'	正式拼寫特殊字:ɨ
+[FORMAL] 06-12	牙齒	'vɨlésé'	正式拼寫特殊字:éɨ
+[FORMAL] 06-15	肉	'buetɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-17	肚子	'bɨrangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-19	小腿肚	'tubosɨbosa'	正式拼寫特殊字:ɨ
+[FORMAL] 06-21	下巴	'bɨthéngé'	正式拼寫特殊字:éɨ
+[FORMAL] 06-26	女性生殖器	'sɨpasingo'	正式拼寫特殊字:ɨ
+[FORMAL] 06-30	口水	'ngɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 06-32	傷口	'tɨkacukwara/tɨkadula'	正式拼寫特殊字:/ɨ
+[FORMAL] 06-35	痰	'rekɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-36	甲狀腺腫	'kɨradré'	正式拼寫特殊字:éɨ
+[FORMAL] 06-37	油脂	'sɨma'	正式拼寫特殊字:ɨ
+[FORMAL] 06-38	肋骨	'bukuesɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-40	拇指	'tatɨma'	正式拼寫特殊字:ɨ
+[FORMAL] 06-42	舌頭	'rɨdamɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-43	腰部	'tapɨdra'	正式拼寫特殊字:ɨ
+[FORMAL] 06-46	汗水	'ribibuenɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-47	脖子	'ɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-48	鼻涕	'bekɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-50	臀部	'loru/dɨkɨlɨ'	正式拼寫特殊字:/ɨ
+[FORMAL] 06-51	腳掌	'kɨpangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-52	頸子；領子	'ɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-53	腋窩	'tɨkerekerena'	正式拼寫特殊字:ɨ
+[FORMAL] 06-54	腎臟	'rɨpadɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 06-56	體毛	'ubalɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-02	豬	'bɨkɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-06	鳥	'raramɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-07	魚	'akangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-08	雞	'tɨroka'	正式拼寫特殊字:ɨ
+[FORMAL] 07-10	牛	'nuengɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-12	青蛙	'tɨkoropangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-13	貓頭鷹	'tɨralupu'	正式拼寫特殊字:ɨ
+[FORMAL] 07-14	穿山甲	'kɨrara'	正式拼寫特殊字:ɨ
+[FORMAL] 07-15	山豬	'vilisɨne'	正式拼寫特殊字:ɨ
+[FORMAL] 07-17	蟲(統稱)	'akalɨnge'	正式拼寫特殊字:ɨ
+[FORMAL] 07-20	飛鼠	'rɨva'	正式拼寫特殊字:ɨ
+[FORMAL] 07-23	熊	'cumé'	正式拼寫特殊字:é
+[FORMAL] 07-24	山羌	'thɨkɨcɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-25	蟑螂	'tabɨnge'	正式拼寫特殊字:ɨ
+[FORMAL] 07-27	蝴蝶	'sɨvongvongo'	正式拼寫特殊字:ɨ
+[FORMAL] 07-28	蜘蛛	'tukulɨsé'	正式拼寫特殊字:éɨ
+[FORMAL] 07-29	雄性動物生殖器官	'kɨlathɨre'	正式拼寫特殊字:ɨ
+[FORMAL] 07-31	田鼠	'kɨtamuthuana'	正式拼寫特殊字:ɨ
+[FORMAL] 07-32	蚊子	'tatɨmolo'	正式拼寫特殊字:ɨ
+[FORMAL] 07-34	蒼蠅	'arɨgɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-35	蜜蜂	'vɨlo'	正式拼寫特殊字:ɨ
+[FORMAL] 07-36	雄性(動物)	'bɨlasɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-37	乳豬	'kulukulubɨkɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-41	土蜂	'tubongacɨle'	正式拼寫特殊字:ɨ
+[FORMAL] 07-42	蝦	'tɨkasuludru'	正式拼寫特殊字:ɨ
+[FORMAL] 07-46	螃蟹	'apasɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-47	蟬	'lɨselɨse'	正式拼寫特殊字:ɨ
+[FORMAL] 07-48	百步蛇	'surapɨlɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-49	翅膀	'sɨpakɨpakɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-50	蝙蝠	'tɨbaro'	正式拼寫特殊字:ɨ
+[FORMAL] 07-51	蝸牛	'mumuelɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-52	麻雀	'kuruluengɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-54	老鷹	'tɨlovalri'	正式拼寫特殊字:ɨ
+[FORMAL] 07-57	水鳥	'raramɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-59	虎頭蜂	'tɨdriyulu'	正式拼寫特殊字:ɨ
+[FORMAL] 07-60	跳蚤	'tapɨthakɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 07-61	眼鏡蛇	'tɨrara'	正式拼寫特殊字:ɨ
+[FORMAL] 07-62	烏鴉	'tɨgaga'	正式拼寫特殊字:ɨ
+[FORMAL] 07-65	蚱蜢	'tɨnasiekɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 08-01	香蕉	'bɨlɨbɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 08-02	稻穀	'pɨgé'	正式拼寫特殊字:éɨ
+[FORMAL] 08-04	芋頭	'até'	正式拼寫特殊字:é
+[FORMAL] 08-08	柑橘	'mɨkatamɨné'	正式拼寫特殊字:éɨ
+[FORMAL] 08-09	花朵	'vɨngɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 08-10	南瓜	'tɨngetɨnge'	正式拼寫特殊字:ɨ
+[FORMAL] 08-12	玉米	'lɨpané'	正式拼寫特殊字:éɨ
+[FORMAL] 08-13	檳榔	'thɨvéké'	正式拼寫特殊字:éɨ
+[FORMAL] 08-14	竹子	'bɨlebɨle'	正式拼寫特殊字:ɨ
+[FORMAL] 08-19	鳳梨	'pungudrɨle'	正式拼寫特殊字:ɨ
+[FORMAL] 08-21	藤類	'uvé'	正式拼寫特殊字:é
+[FORMAL] 08-23	李子	'vɨnedɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 08-24	水果	'mudrodra sierɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 08-25	樹頭	'tɨngadra'	正式拼寫特殊字:ɨ
+[FORMAL] 08-29	野百合	'tubolɨngatu'	正式拼寫特殊字:ɨ
+[FORMAL] 08-33	胡蘿蔔	'tétho'	正式拼寫特殊字:é
+[FORMAL] 08-34	蔬菜(通稱)	'lɨcenge'	正式拼寫特殊字:ɨ
+[FORMAL] 08-35	長豆	'kɨlɨpɨlɨpa'	正式拼寫特殊字:ɨ
+[FORMAL] 08-36	綠豆	'lɨpɨlɨpɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 08-37	麥	'mɨdé'	正式拼寫特殊字:éɨ
+[FORMAL] 08-38	蔥	'tɨngarɨva'	正式拼寫特殊字:ɨ
+[FORMAL] 08-41	山藥	'tɨlacɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 08-44	種子	'cɨpɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 08-45	野草莓	'tɨmamɨnge'	正式拼寫特殊字:ɨ
+[FORMAL] 08-46	梅子	'vɨnethɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 08-49	咬人貓	'lepagɨse'	正式拼寫特殊字:ɨ
+[FORMAL] 08-51	樹豆	'kɨredrɨnge'	正式拼寫特殊字:ɨ
+[FORMAL] 08-52	柚子	'vétungu'	正式拼寫特殊字:é
+[FORMAL] 08-54	辣椒(通稱)	'tɨngavulu'	正式拼寫特殊字:ɨ
+[FORMAL] 08-55	棉花	'tɨdrakɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-01	書	'sulatɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-02	錢	'pésu'	正式拼寫特殊字:é
+[FORMAL] 09-03	球	'babangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-04	桌子	'cukué'	正式拼寫特殊字:é
+[FORMAL] 09-05	電話	'déngva'	正式拼寫特殊字:é
+[FORMAL] 09-09	電腦	'téngɨnaw'	正式拼寫特殊字:éɨ
+[FORMAL] 09-10	雨傘	'thɨkebe'	正式拼寫特殊字:ɨ
+[FORMAL] 09-11	手錶	'toké'	正式拼寫特殊字:é
+[FORMAL] 09-12	鐘錶	'toké'	正式拼寫特殊字:é
+[FORMAL] 09-13	鉤子	'sɨkivikivɨla'	正式拼寫特殊字:ɨ
+[FORMAL] 09-14	細線	'vɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 09-15	繩索	'tési'	正式拼寫特殊字:é
+[FORMAL] 09-16	針	'numé'	正式拼寫特殊字:é
+[FORMAL] 09-19	篩子	'bɨraku'	正式拼寫特殊字:ɨ
+[FORMAL] 09-20	小刀	'salɨdru'	正式拼寫特殊字:ɨ
+[FORMAL] 09-21	船隻	'avangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-23	木炭	'rɨngele'	正式拼寫特殊字:ɨ
+[FORMAL] 09-25	釣竿	'sɨnagɨpia'	正式拼寫特殊字:ɨ
+[FORMAL] 09-27	電燈	'déngki/tɨnaki'	正式拼寫特殊字:/éɨ
+[FORMAL] 09-29	(竹製的)刮麻具	'sɨkisɨkidri'	正式拼寫特殊字:ɨ
+[FORMAL] 09-32	棉被	'cebɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-34	網子	'aré'	正式拼寫特殊字:é
+[FORMAL] 09-35	飯鍋	'turulɨsi'	正式拼寫特殊字:ɨ
+[FORMAL] 09-37	紙張	'sulatɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-39	釣具	'sɨnagɨnagɨpiya'	正式拼寫特殊字:ɨ
+[FORMAL] 09-43	夾子	'sɨkacɨkacɨpia'	正式拼寫特殊字:ɨ
+[FORMAL] 09-44	床舖	'tɨbabarɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-47	工具	'makasarɨkiké'	正式拼寫特殊字:éɨ
+[FORMAL] 09-52	菜盤	'pɨcɨnga / sara'	正式拼寫特殊字:/ɨ
+[FORMAL] 09-54	肥皂	'sékingi'	正式拼寫特殊字:é
+[FORMAL] 09-57	肩帶(裝飾)	'tɨlaredrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-59	湯鍋	'pɨlongo'	正式拼寫特殊字:ɨ
+[FORMAL] 09-60	水瓢(舀水用)	'sɨkadrɨkadrɨrua'	正式拼寫特殊字:ɨ
+[FORMAL] 09-61	冰箱	'pingsiangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-62	電視	'téngsɨ'	正式拼寫特殊字:éɨ
+[FORMAL] 09-63	水管	'reléngé'	正式拼寫特殊字:é
+[FORMAL] 09-66	鐵釘	'sɨtɨtɨsɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-67	卡在牙縫之物	'motɨngasɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 09-68	菜刀	'skɨkɨta'	正式拼寫特殊字:ɨ
+[FORMAL] 09-69	魚網	'aré'	正式拼寫特殊字:é
+[FORMAL] 09-71	簍子	'kuloduru / suboro'	正式拼寫特殊字:/
+[FORMAL] 10-01	道路	'dadɨranɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 10-02	山林	'rɨgɨrɨgɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 10-03	小溪	'rɨna'	正式拼寫特殊字:ɨ
+[FORMAL] 10-04	風	'bɨsɨbɨsɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 10-05	沙子	'ɨné'	正式拼寫特殊字:éɨ
+[FORMAL] 10-07	河流	'drɨkerele'	正式拼寫特殊字:ɨ
+[FORMAL] 10-08	湖泊	'tébulangɨ'	正式拼寫特殊字:éɨ
+[FORMAL] 10-09	森林	'tɨparongu'	正式拼寫特殊字:ɨ
+[FORMAL] 10-12	山腳下	'cɨsakorudra'	正式拼寫特殊字:ɨ
+[FORMAL] 10-16	溫泉	'ongséng'	正式拼寫特殊字:é
+[FORMAL] 10-17	峽谷	'tɨgasɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 10-18	山洞	'mobungu rɨgɨrɨgɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 10-19	岩石	'lɨpelɨpe'	正式拼寫特殊字:ɨ
+[FORMAL] 10-20	瀑布	'ulithithiekɨ clé'	正式拼寫特殊字:éɨ
+[FORMAL] 10-21	獨立的小山頭	'rɨgɨrɨgɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 10-22	崇山峻嶺	'matatɨle na rɨgɨrɨgɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-01	下雨	'udalɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-02	太陽	'avé'	正式拼寫特殊字:é
+[FORMAL] 11-03	月亮	'drɨmarɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-04	天空	'tɨbɨlɨnga'	正式拼寫特殊字:ɨ
+[FORMAL] 11-05	星星	'cacɨngalɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-06	雨	'udalɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-08	冬天	'kɨlakɨcɨra'	正式拼寫特殊字:ɨ
+[FORMAL] 11-09	夏天	'kɨlapana'	正式拼寫特殊字:ɨ
+[FORMAL] 11-10	雷	'drɨdrɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-11	露水	'lɨngaso'	正式拼寫特殊字:ɨ
+[FORMAL] 11-13	煙	'ubɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-14	閃電	'drɨrapɨse'	正式拼寫特殊字:ɨ
+[FORMAL] 11-16	陰天	'madɨlɨrmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-18	冰	'yela / koori'	正式拼寫特殊字:/
+[FORMAL] 11-20	影子	'ɨrɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-21	颱風	'sɨbɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-25	春天	'kɨlatingingisa'	正式拼寫特殊字:ɨ
+[FORMAL] 11-26	海邊	'tɨbaru tibila'	正式拼寫特殊字:ɨ
+[FORMAL] 11-27	秋天	'kɨlapɨgara'	正式拼寫特殊字:ɨ
+[FORMAL] 11-28	彩虹	'thɨelévava'	正式拼寫特殊字:éɨ
+[FORMAL] 11-29	日落	'urɨdɨpɨ avé'	正式拼寫特殊字:éɨ
+[FORMAL] 11-32	刮颱風	'usɨbɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 11-33	日出	'urosu avé'	正式拼寫特殊字:é
+[FORMAL] 12-01	家	'danɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 12-02	窗戶	'tangvɨa'	正式拼寫特殊字:ɨ
+[FORMAL] 12-06	屋頂	'ulibi/cɨravi'	正式拼寫特殊字:/ɨ
+[FORMAL] 12-07	橋樑	'tɨlodro'	正式拼寫特殊字:ɨ
+[FORMAL] 12-08	工寮	'tovɨna'	正式拼寫特殊字:ɨ
+[FORMAL] 12-10	柱子	'pɨlaka'	正式拼寫特殊字:ɨ
+[FORMAL] 12-11	石砌	'tɨporadra'	正式拼寫特殊字:ɨ
+[FORMAL] 12-14	庭院	'tɨbɨtɨba'	正式拼寫特殊字:ɨ
+[FORMAL] 12-15	牆壁	'sɨbolɨngibing'	正式拼寫特殊字:ɨ
+[FORMAL] 12-16	穀倉	'tɨsɨkɨla'	正式拼寫特殊字:ɨ
+[FORMAL] 12-17	蓋屋頂	'ulibi/ticɨvari'	正式拼寫特殊字:/ɨ
+[FORMAL] 12-18	搭建圍籬	'orɨvadrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 12-19	後院	'danɨ kodrɨnga'	正式拼寫特殊字:ɨ
+[FORMAL] 13-01	明年	'cavɨlinga'	正式拼寫特殊字:ɨ
+[FORMAL] 13-06	早上	'mierɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 13-07	白天	'uliliepɨ vienɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 13-08	前天	'pelɨla'	正式拼寫特殊字:ɨ
+[FORMAL] 13-09	清晨	'ubililiesɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 13-11	傍晚	'masɨmɨsɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 13-13	半夜	'bɨcicieka'	正式拼寫特殊字:ɨ
+[FORMAL] 13-14	當時(下)	'drienɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 13-18	亮光	'drɨrapɨse'	正式拼寫特殊字:ɨ
+[FORMAL] 13-19	後天	'pelɨlanga'	正式拼寫特殊字:ɨ
+[FORMAL] 13-20	上午	'ikivévanɨla'	正式拼寫特殊字:éɨ
+[FORMAL] 13-21	未來	'yenɨnga'	正式拼寫特殊字:ɨ
+[FORMAL] 13-23	年輕時	'icɨngɨcɨngɨdra'	正式拼寫特殊字:ɨ
+[FORMAL] 13-24	一下子	'isipielɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 13-25	下午	'vévanɨnga'	正式拼寫特殊字:éɨ
+[FORMAL] 13-28	年	'cɨvélé'	正式拼寫特殊字:éɨ
+[FORMAL] 13-29	天天	'makavienɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 13-30	現在	'kɨnénga'	正式拼寫特殊字:éɨ
+[FORMAL] 13-31	生日	'kétɨvalɨkɨ na vienɨ'	正式拼寫特殊字:éɨ
+[FORMAL] 14-02	在某處	'ikétékadra'	正式拼寫特殊字:é
+[FORMAL] 14-03	上面	'garɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 14-06	中間	'bɨcerɨka'	正式拼寫特殊字:ɨ
+[FORMAL] 14-07	外面	'bɨlatɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 14-08	旁邊	'tɨbila'	正式拼寫特殊字:ɨ
+[FORMAL] 14-10	右邊	'vɨnanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 14-11	左邊	'virienɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 14-14	經過	'ongké/orɨbatɨ'	正式拼寫特殊字:/éɨ
+[FORMAL] 14-16	從某處	'salɨkédria'	正式拼寫特殊字:éɨ
+[FORMAL] 15-02	犁田	'pakɨdroro'	正式拼寫特殊字:ɨ
+[FORMAL] 15-05	穀物乾燥蓆	'sɨpavavé na sɨpa'	正式拼寫特殊字:éɨ
+[FORMAL] 15-06	犁	'sɨpakɨdrokɨdroro'	正式拼寫特殊字:ɨ
+[FORMAL] 15-07	鐮刀	'tɨkoko'	正式拼寫特殊字:ɨ
+[FORMAL] 15-08	鋤頭	'kɨva'	正式拼寫特殊字:ɨ
+[FORMAL] 15-09	倉庫	'tɨsɨkɨla'	正式拼寫特殊字:ɨ
+[FORMAL] 15-10	開墾	'akɨmolo'	正式拼寫特殊字:ɨ
+[FORMAL] 15-12	篩穀用具	'sɨtapɨtapɨsa'	正式拼寫特殊字:ɨ
+[FORMAL] 15-13	催熟(果實)	'parɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 15-14	稻草	'sɨngopɨgara'	正式拼寫特殊字:ɨ
+[FORMAL] 16-02	矛	'sɨbakɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 16-03	箭矢	'rɨvélé'	正式拼寫特殊字:éɨ
+[FORMAL] 16-04	餌	'penɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 16-05	槍	'kuengɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 16-07	直形獵刀	'lɨvasɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 16-09	石壓式陷阱	'tenɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 16-10	套頸式繩索陷阱	'tɨrɨbɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 17-03	巫術	'usurapɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 17-05	祖靈祭	'tɨpakɨdrarua'	正式拼寫特殊字:ɨ
+[FORMAL] 17-06	播種祭	'kɨlaprabuana'	正式拼寫特殊字:ɨ
+[FORMAL] 17-07	鬼魂	'pɨlɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 18-05	耳環	'bɨlacɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 18-06	頸鍊	'kɨdrɨkɨdrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 18-07	男用半片褲	'kɨcéngé'	正式拼寫特殊字:éɨ
+[FORMAL] 18-09	女用頭飾	'kɨravɨthe'	正式拼寫特殊字:ɨ
+[FORMAL] 18-11	腰帶	'tɨbɨthɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 18-12	苧麻	'dennɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 18-13	染色	'lɨmɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 18-15	褲子	'kɨcéngé'	正式拼寫特殊字:éɨ
+[FORMAL] 18-16	苧麻線	'dennɨ vɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 18-17	布匹	'mamɨne'	正式拼寫特殊字:ɨ
+[FORMAL] 18-18	妝扮飾物	'sɨpavuruenɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 18-19	傳統女上衣	'lɨbéngé'	正式拼寫特殊字:éɨ
+[FORMAL] 18-20	傳統女裙	'lɨbéngé kunu'	正式拼寫特殊字:éɨ
+[FORMAL] 18-23	毛線	'vɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 18-25	男用遮陰布	'lɨbété'	正式拼寫特殊字:éɨ
+[FORMAL] 18-26	男用背負網袋	'tɨlethɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 18-27	男用遮布；掛肩	'imé'	正式拼寫特殊字:é
+[FORMAL] 18-28	袖子	'taimanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 18-31	織布用的細線	'vɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 19-01	女用揹網袋	'kɨdé'	正式拼寫特殊字:éɨ
+[FORMAL] 19-02	圓形竹簍	'sɨboro'	正式拼寫特殊字:ɨ
+[FORMAL] 20-02	腳踏車	'rɨngɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 20-03	車站	'tésiaba'	正式拼寫特殊字:é
+[FORMAL] 20-04	輪胎	'tɨréngténgé'	正式拼寫特殊字:éɨ
+[FORMAL] 20-05	船	'avangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 20-06	車子	'sɨdosia'	正式拼寫特殊字:ɨ
+[FORMAL] 21-02	水	'acɨlé'	正式拼寫特殊字:éɨ
+[FORMAL] 21-03	白米	'buesɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 21-04	菜餚	'sɨdamɨra'	正式拼寫特殊字:ɨ
+[FORMAL] 21-05	青菜	'lɨcenge'	正式拼寫特殊字:ɨ
+[FORMAL] 21-06	酒	'bɨva'	正式拼寫特殊字:ɨ
+[FORMAL] 21-08	蜜	'ɨsɨbɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 21-10	油	'sɨsɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 21-11	味道	'obɨrabɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 21-13	豆類	'lɨpɨlɨpɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 21-14	白蘿蔔	'tétho'	正式拼寫特殊字:é
+[FORMAL] 21-17	粥	'thɨlɨdɨ/okayu'	正式拼寫特殊字:/ɨ
+[FORMAL] 21-18	小米	'bɨcɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 21-21	麵	'méngtiau'	正式拼寫特殊字:é
+[FORMAL] 21-23	在來米	'pusiemɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 21-24	米糠	'ɨca'	正式拼寫特殊字:ɨ
+[FORMAL] 22-02	黑色	'tɨmacɨcɨrɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 22-03	紅色	'diliengɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 22-04	紫色	'kɨdɨlenga'	正式拼寫特殊字:ɨ
+[FORMAL] 22-06	咖啡色	'padɨlenganɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 22-07	灰色	'pingtapupulienɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 22-08	綠色	'tɨmalɨsɨlɨsɨkɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 22-09	顏色	'rɨcacakɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 23-01	狗吠	'ɨlelɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 23-02	歌	'thɨné'	正式拼寫特殊字:éɨ
+[FORMAL] 24-01	聽說	'ubiciringi bɨka'	正式拼寫特殊字:ɨ
+[FORMAL] 24-02	獨自一人	'tangɨngɨsa'	正式拼寫特殊字:ɨ
+[FORMAL] 24-03	相同	'matumé'	正式拼寫特殊字:é
+[FORMAL] 24-04	部落	'cɨkɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 24-05	日子	'vienɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 24-07	語言	'babɨka'	正式拼寫特殊字:ɨ
+[FORMAL] 24-08	力量/關節	'kɨcɨnga'	正式拼寫特殊字:ɨ
+[FORMAL] 24-09	目標	'nungvéthani'	正式拼寫特殊字:é
+[FORMAL] 24-13	各色各樣	'masikiululanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 24-14	價格	'sɨkakɨcɨngédra'	正式拼寫特殊字:éɨ
+[FORMAL] 24-15	用途	'saraké'	正式拼寫特殊字:é
+[FORMAL] 24-16	婚姻	'sapɨlangne'	正式拼寫特殊字:ɨ
+[FORMAL] 25-01	關上	'ɨlɨba'	正式拼寫特殊字:ɨ
+[FORMAL] 25-02	賣	'longé'	正式拼寫特殊字:é
+[FORMAL] 25-04	打開	'walɨba'	正式拼寫特殊字:ɨ
+[FORMAL] 25-06	買	'olngé'	正式拼寫特殊字:é
+[FORMAL] 25-08	來	'nanga / mukunia'	正式拼寫特殊字:/
+[FORMAL] 25-09	借	'kɨsédɨme'	正式拼寫特殊字:éɨ
+[FORMAL] 25-10	走路	'dodavɨce'	正式拼寫特殊字:ɨ
+[FORMAL] 25-11	走(離開)	'gia/sévɨgé'	正式拼寫特殊字:/éɨ
+[FORMAL] 25-13	跑 (祈使)	'pidɨka'	正式拼寫特殊字:ɨ
+[FORMAL] 25-14	抵達	'amuanga / makénga'	正式拼寫特殊字:/é
+[FORMAL] 25-15	送(客人)	'setɨdrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-16	逃跑	'abɨbɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-18	（物品）翻倒	'mobangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-19	帶	'ɨmɨcɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-23	讓開	'piribɨta'	正式拼寫特殊字:ɨ
+[FORMAL] 25-24	贈送(禮物)	'obé'	正式拼寫特殊字:é
+[FORMAL] 25-25	沿著山巒	'angɨtuluru rɨgɨrɨgɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-27	(往)上坡	'mobɨlɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-28	接(人)	'mɨramɨra'	正式拼寫特殊字:ɨ
+[FORMAL] 25-29	越溪而過	'mosovakɨle'	正式拼寫特殊字:ɨ
+[FORMAL] 25-30	向人家要(東西)	'kébibé/tanga'	正式拼寫特殊字:/é
+[FORMAL] 25-32	走(向某個方向)	'angvétha'	正式拼寫特殊字:é
+[FORMAL] 25-33	(藤類植物)攀爬	'kopɨkapɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-34	逛一逛	'bɨrɨlɨlɨlé'	正式拼寫特殊字:éɨ
+[FORMAL] 25-35	追	'solɨra'	正式拼寫特殊字:ɨ
+[FORMAL] 25-36	趕上	'udɨthɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-38	分開	'mavagé'	正式拼寫特殊字:é
+[FORMAL] 25-39	攜帶(如帶傘)	'mɨlémɨcɨ'	正式拼寫特殊字:éɨ
+[FORMAL] 25-42	出現	'mubuelɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-44	站著	'ingɨdɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-45	關(門；窗)	'ɨlɨbɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-46	要來	'nukunéma'	正式拼寫特殊字:é
+[FORMAL] 25-49	爬行	'ugolugolɨne'	正式拼寫特殊字:ɨ
+[FORMAL] 25-50	看起來	'cɨnglɨmɨdɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 25-51	拜訪	'mɨlava'	正式拼寫特殊字:ɨ
+[FORMAL] 25-52	出去	'mɨbalɨte'	正式拼寫特殊字:ɨ
+[FORMAL] 26-01	跳躍	'ribuelɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-05	掛	'kɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 26-06	玩球	'obabangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-07	拿取	'mɨra'	正式拼寫特殊字:ɨ
+[FORMAL] 26-09	刺	'sobɨke'	正式拼寫特殊字:ɨ
+[FORMAL] 26-10	射擊	'opɨna/udingidingi'	正式拼寫特殊字:/ɨ
+[FORMAL] 26-12	踢	'kodɨnge'	正式拼寫特殊字:ɨ
+[FORMAL] 26-14	砍伐	'thovɨthavi'	正式拼寫特殊字:ɨ
+[FORMAL] 26-15	搖動	'vɨlɨvɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-17	發抖	'ulɨgɨlɨgɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-18	抓癢	'gocɨgacɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-19	爬上(去)	'kopɨkapɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-20	躺	'ébɨrarɨ'	正式拼寫特殊字:éɨ
+[FORMAL] 26-22	敲碎	'ponguru pisɨre'	正式拼寫特殊字:ɨ
+[FORMAL] 26-23	扛	'sungielɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-24	翻動	'bɨrese'	正式拼寫特殊字:ɨ
+[FORMAL] 26-25	滾落	'mobabangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-27	抱著	'kopɨli'	正式拼寫特殊字:ɨ
+[FORMAL] 26-30	切	'kɨtɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-31	游泳	'lungulungé'	正式拼寫特殊字:é
+[FORMAL] 26-32	藏起來	'bolé'	正式拼寫特殊字:é
+[FORMAL] 26-34	砍	'thiebɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-35	揹負(物品)	'kovicɨ/udu'	正式拼寫特殊字:/ɨ
+[FORMAL] 26-36	分(東西)	'pɨvalɨvala'	正式拼寫特殊字:ɨ
+[FORMAL] 26-37	剖切	'cukɨre'	正式拼寫特殊字:ɨ
+[FORMAL] 26-38	綁住	'kɨrɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-40	劈(木材)	'colɨpe'	正式拼寫特殊字:ɨ
+[FORMAL] 26-43	握著	'rɨcɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-44	捆綁	'ɨbɨkɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-45	按住	'mecɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-50	插	'cubɨke'	正式拼寫特殊字:ɨ
+[FORMAL] 26-55	壓住	'dɨpɨdɨpɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-56	搔癢	'ugulugulapɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-57	握拳	'ugɨmɨgɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-59	晃動	'vɨlɨvɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-60	剝(花生；豆類)	'okɨcekɨce'	正式拼寫特殊字:ɨ
+[FORMAL] 26-61	涉水而過	'mɨsovɨkalɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-62	振動	'uvɨlɨvɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-66	(搖)動	'vɨlɨvɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-67	追捕	'solɨra'	正式拼寫特殊字:ɨ
+[FORMAL] 26-68	打碎	'pisɨre'	正式拼寫特殊字:ɨ
+[FORMAL] 26-69	倒(下)	'mɨbabɨnge'	正式拼寫特殊字:ɨ
+[FORMAL] 26-71	豎立	'drɨngɨrɨsɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-72	踩踏	'udrɨdrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-73	跨過	'tulakɨdre'	正式拼寫特殊字:ɨ
+[FORMAL] 26-74	割	'ukɨtɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-75	掐住	'uthɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-77	餵食	'pakɨne'	正式拼寫特殊字:ɨ
+[FORMAL] 26-79	撬開	'okɨcangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-80	(用腳)踏	'udrɨdrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-81	壓扁	'uréci'	正式拼寫特殊字:é
+[FORMAL] 26-86	靠著	'mɨtalu'	正式拼寫特殊字:ɨ
+[FORMAL] 26-89	削(水果)	'kothɨpe'	正式拼寫特殊字:ɨ
+[FORMAL] 26-92	砍除	'uthiebɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-94	剁	'tɨkɨtɨkɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-103	隨意	'ngikɨdrɨdrɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 26-105	起立	'icɨkalɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 27-01	吃	'ukanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 27-02	吸	'sulutu/thɨrɨpɨ'	正式拼寫特殊字:/ɨ
+[FORMAL] 27-05	咬	'utɨtɨ/ungocu'	正式拼寫特殊字:/ɨ
+[FORMAL] 27-06	吞嚥	'uthɨmɨdrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 27-07	吞下	'urɨdɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 27-08	燙到	'kisɨbu marɨpa'	正式拼寫特殊字:ɨ
+[FORMAL] 27-09	噎到	'sitɨrɨcɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 27-11	咀嚼	'ngocɨngacɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 27-12	渴	'médru'	正式拼寫特殊字:é
+[FORMAL] 27-13	啃	'uisi/ngodrɨngadru'	正式拼寫特殊字:/ɨ
+[FORMAL] 27-14	餓	'abési'	正式拼寫特殊字:é
+[FORMAL] 27-15	吃(東西)	'ukanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 27-16	吃早餐	'tikierɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 27-17	吃午餐	'tikɨdrali'	正式拼寫特殊字:ɨ
+[FORMAL] 28-01	遇到	'madrɨsɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 28-03	看	'cɨnglɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 28-04	說	'mɨsobaka'	正式拼寫特殊字:ɨ
+[FORMAL] 28-06	閉(眼睛)	'malɨmɨmɨcɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 28-07	聞(如聞味道)	'sobɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 28-08	觸摸(物品)	'depɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 28-10	感覺	'pakɨdrɨdrɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 28-15	相信	'tɨkabɨkanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 28-20	舔	'ɨdɨné'	正式拼寫特殊字:éɨ
+[FORMAL] 28-22	睜眼	'masomɨcamɨca'	正式拼寫特殊字:ɨ
+[FORMAL] 28-23	瞄準	'lɨnglɨngre'	正式拼寫特殊字:ɨ
+[FORMAL] 28-25	想(思考)	'pakɨdrɨdrɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 28-26	觀察	'cɨngcɨnglɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 28-29	喜歡	'madɨlamɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 29-01	喜愛	'madɨlamɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 29-04	疼愛	'matharé'	正式拼寫特殊字:é
+[FORMAL] 29-07	愛護	'kilivakɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-01	整理	'usɨkɨtɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-03	工作	'depɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-04	停止	'itɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 30-06	起床	'sémɨca'	正式拼寫特殊字:éɨ
+[FORMAL] 30-07	再見(如互道再見)	'cɨngɨla/denga'	正式拼寫特殊字:/ɨ
+[FORMAL] 30-09	睡覺	'sierɨkɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-11	大便	'cɨké'	正式拼寫特殊字:éɨ
+[FORMAL] 30-12	休息	'obailanɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-13	睏(想睡覺)	'masɨpɨpɨrɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-14	打掃	'ususuepɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-16	躺臥	'ébare'	正式拼寫特殊字:é
+[FORMAL] 30-19	煮(菜)	'télɨcenge'	正式拼寫特殊字:éɨ
+[FORMAL] 30-21	打哈欠	'masasebɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-22	烤(如烤地瓜)	'okamɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-23	烹煮(飯／肉／地瓜)	'tékane'	正式拼寫特殊字:é
+[FORMAL] 30-25	陷獵(地洞)	'utɨrɨbɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-26	曬乾(如將衣服曬乾)	'pové pɨtélo'	正式拼寫特殊字:éɨ
+[FORMAL] 30-28	將水排出(疏減)	'orɨléngé'	正式拼寫特殊字:éɨ
+[FORMAL] 30-29	收拾(祈使，如收拾東西)	'pasɨkɨsɨkɨtɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-31	晾乾	'pové pɨtélo'	正式拼寫特殊字:éɨ
+[FORMAL] 30-32	蓋被子	'siciebɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-33	照起來／照明	'paliliepɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-35	以籠捕魚蝦	'urungu tɨkasuludru kangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-38	釣魚	'nogɨnagɨpi'	正式拼寫特殊字:ɨ
+[FORMAL] 30-39	生火	'tépuru'	正式拼寫特殊字:é
+[FORMAL] 30-40	醃漬(祈使)	'verengɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-41	燒焦	'sidrɨkarɨ / sélobu'	正式拼寫特殊字:/éɨ
+[FORMAL] 30-42	照顧	'odrodro/siavavé'	正式拼寫特殊字:/é
+[FORMAL] 30-44	浸泡	'sɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-45	掀開(如掀開蓋子)	'wacɨlebɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-46	掩埋	'sɨrɨpɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-48	鎖上	'sésu'	正式拼寫特殊字:é
+[FORMAL] 30-49	鋪床	'sopa tibingcɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-53	量測	'ukɨtɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-54	燃燒	'sélobu'	正式拼寫特殊字:é
+[FORMAL] 30-55	懸掛(祈使)	'kɨré'	正式拼寫特殊字:éɨ
+[FORMAL] 30-57	飼養	'thedɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 30-63	(居)住	'sédanɨ'	正式拼寫特殊字:éɨ
+[FORMAL] 30-64	唱歌	'uthɨné'	正式拼寫特殊字:éɨ
+[FORMAL] 31-02	好痛	'utɨrɨtɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 31-05	痛	'tɨrɨtɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 31-06	流血	'apuidri/apulobu'	正式拼寫特殊字:/
+[FORMAL] 31-09	放屁	'upɨthɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 31-10	跛腳	'mapɨlé'	正式拼寫特殊字:éɨ
+[FORMAL] 31-13	疤	'mabɨrécé'	正式拼寫特殊字:éɨ
+[FORMAL] 31-15	打瞌睡	'olɨdrelɨdreke'	正式拼寫特殊字:ɨ
+[FORMAL] 31-16	打噴嚏	'oramɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 31-17	嫁給非本族群的族人	'kisiri sɨkabɨranɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 31-18	痠痛	'abɨnerɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 31-19	生病	'maciemɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 31-20	化膿	'ténna'	正式拼寫特殊字:é
+[FORMAL] 32-01	瘦(身形)	'marɨlé'	正式拼寫特殊字:éɨ
+[FORMAL] 32-02	重(重量)	'madɨkɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-03	輕(重量)	'malupé'	正式拼寫特殊字:é
+[FORMAL] 32-04	高(身高)	'maragɨre'	正式拼寫特殊字:ɨ
+[FORMAL] 32-05	大的	'tɨradro'	正式拼寫特殊字:ɨ
+[FORMAL] 32-06	矮(身高)	'tikɨca'	正式拼寫特殊字:ɨ
+[FORMAL] 32-07	勤勞	'masɨkɨsɨka'	正式拼寫特殊字:ɨ
+[FORMAL] 32-08	冷	'matɨlɨkɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-09	小的	'tikɨcɨnɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-12	冰冷	'matɨlɨkɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-13	悶熱	'masɨmɨtɨne marɨpa'	正式拼寫特殊字:ɨ
+[FORMAL] 32-17	濕的	'madiripɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-18	熟(果實)	'marɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-19	厚的	'marimɨdrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-23	很懶惰	'marɨkakathɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-25	很快	'marɨdé'	正式拼寫特殊字:éɨ
+[FORMAL] 32-26	明亮	'uliliepɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-29	累	'abɨrélé'	正式拼寫特殊字:éɨ
+[FORMAL] 32-30	好可憐	'sɨkagugucu'	正式拼寫特殊字:ɨ
+[FORMAL] 32-34	燙	'marɨpa'	正式拼寫特殊字:ɨ
+[FORMAL] 32-35	壞掉	'makurathɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-37	遠	'médavili'	正式拼寫特殊字:é
+[FORMAL] 32-38	腫	'abɨrakɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-40	久的	'médavilinga'	正式拼寫特殊字:é
+[FORMAL] 32-41	瞎了	'maliecɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-43	很好吃	'margi kuenɨ madɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-44	滑	'mathuré'	正式拼寫特殊字:é
+[FORMAL] 32-47	未成熟的(果實)	'ikrɨmɨla / madɨla'	正式拼寫特殊字:/ɨ
+[FORMAL] 32-50	輕快	'malupupé'	正式拼寫特殊字:é
+[FORMAL] 32-52	鹹	'mathɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-53	故意	'orunavɨne'	正式拼寫特殊字:ɨ
+[FORMAL] 32-56	暖和	'mabɨlɨsɨbɨsɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-57	鈍的(指器物)	'igarɨnge'	正式拼寫特殊字:ɨ
+[FORMAL] 32-59	澀澀的(味覺)	'mangɨda'	正式拼寫特殊字:ɨ
+[FORMAL] 32-60	高瘦(身材)	'tɨradromɨrɨlé'	正式拼寫特殊字:éɨ
+[FORMAL] 32-62	軟	'mamɨmɨrɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-63	很硬	'matukuru/matɨkɨ'	正式拼寫特殊字:/ɨ
+[FORMAL] 32-64	酸臭	'mabɨro'	正式拼寫特殊字:ɨ
+[FORMAL] 32-66	滿了	'sitɨnga'	正式拼寫特殊字:ɨ
+[FORMAL] 32-68	(空間)寬敞	'mavɨné'	正式拼寫特殊字:éɨ
+[FORMAL] 32-69	正確	'pakɨcɨgɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-70	全濕透	'madiripɨpɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-72	溫的(水)	'madɨlada'	正式拼寫特殊字:ɨ
+[FORMAL] 32-74	長	'mathɨngeda'	正式拼寫特殊字:ɨ
+[FORMAL] 32-75	細	'makulé'	正式拼寫特殊字:é
+[FORMAL] 32-76	短	'mekɨnɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-77	炎熱	'mardrangdrangɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-78	成熟(果實)	'marɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-79	滿滿	'siɨtɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 32-80	英俊	'mathɨbarɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 33-01	應該	'nitiménia'	正式拼寫特殊字:é
+[FORMAL] 33-02	一定	'tumémianga'	正式拼寫特殊字:é
+[FORMAL] 33-04	可能	'nutuméma'	正式拼寫特殊字:é
+[FORMAL] 33-05	慶祝	'melɨgɨsɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 34-02	裂開	'angɨlengɨle'	正式拼寫特殊字:ɨ
+[FORMAL] 34-03	使用	'sarɨké'	正式拼寫特殊字:éɨ
+[FORMAL] 34-04	溢出(如水溢出來)	'urupɨsé'	正式拼寫特殊字:éɨ
+[FORMAL] 34-05	幫忙	'pasɨpara'	正式拼寫特殊字:ɨ
+[FORMAL] 34-06	(有東西)附著	'sédiképé'	正式拼寫特殊字:é
+[FORMAL] 34-07	混以某物	'paperesɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 34-08	被(搖)動的	'pavɨlɨvɨlɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 34-09	刷除	'lisilisi ovɨra'	正式拼寫特殊字:ɨ
+[FORMAL] 34-10	依賴	'kédré'	正式拼寫特殊字:é
+[FORMAL] 34-12	阻擋	'tɨkɨpɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 34-14	聲響	'mathɨgé'	正式拼寫特殊字:éɨ
+[FORMAL] 34-15	超過	'ribɨte'	正式拼寫特殊字:ɨ
+[FORMAL] 34-16	崩落	'mocɨba'	正式拼寫特殊字:ɨ
+[FORMAL] 34-17	煞車	'kosɨta'	正式拼寫特殊字:ɨ
+[FORMAL] 34-18	尋找	'usɨlapɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 34-20	禁止	'tɨkɨpɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 34-21	有	'iké'	正式拼寫特殊字:é
+[FORMAL] 34-23	設置	'pétha'	正式拼寫特殊字:é
+[FORMAL] 34-24	開始	'pasɨkérodru'	正式拼寫特殊字:éɨ
+[FORMAL] 34-25	完成	'rɨpɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 34-26	找碴	'vodrɨle'	正式拼寫特殊字:ɨ
+[FORMAL] 34-27	製作(物品)	'pétha'	正式拼寫特殊字:é
+[FORMAL] 34-32	旋轉	'ngépréprécé'	正式拼寫特殊字:é
+[FORMAL] 34-33	圍著某物	'rovɨdre'	正式拼寫特殊字:ɨ
+[FORMAL] 34-35	謝謝	'takɨdrɨngésu'	正式拼寫特殊字:éɨ
+[FORMAL] 34-36	不客氣	'adraikénu'	正式拼寫特殊字:é
+[FORMAL] 34-37	沒有	'tédra'	正式拼寫特殊字:é
+[FORMAL] 35-01	不要	'éni'	正式拼寫特殊字:é
+[FORMAL] 35-03	不是(回答用)	'ikɨmani'	正式拼寫特殊字:ɨ
+[FORMAL] 35-04	沒有(表擁有的否定詞)	'tédra'	正式拼寫特殊字:é
+[FORMAL] 36-01	真的	'matɨkadrɨngé'	正式拼寫特殊字:éɨ
+[FORMAL] 36-02	正在...	'icɨngɨcɨngɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 36-03	隨意	'ngikɨdrɨdrɨmɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 36-08	足夠	'mɨkɨtɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 36-10	只有	'manɨmani'	正式拼寫特殊字:ɨ
+[FORMAL] 36-15	不該	'nitɨmai'	正式拼寫特殊字:ɨ
+[FORMAL] 36-16	所以	'sukédra'	正式拼寫特殊字:é
+[FORMAL] 36-17	經常	'sitalɨsɨ'	正式拼寫特殊字:ɨ
+[FORMAL] 36-18	和	'si / ki'	正式拼寫特殊字:/
+[FORMAL] 36-19	偶爾	'ikédruma'	正式拼寫特殊字:é
+[FORMAL] 36-20	是嗎(語助詞)	'matɨkadrɨngé / tuménia'	正式拼寫特殊字:/éɨ
+[FORMAL] 36-24	如此	'tuméninia'	正式拼寫特殊字:é
+[FORMAL] 36-25	也	'tumé'	正式拼寫特殊字:é
+[FORMAL] 36-29	僅僅	'tɨkathani'	正式拼寫特殊字:ɨ
+[FORMAL] 36-30	雖然	'kumédra'	正式拼寫特殊字:é
+[FORMAL] 36-31	嗎(用在問句)	'ma / ni / na / ka'	正式拼寫特殊字:/
+[FORMAL] 36-34	屬格標記(各族用語)	'na / ki'	正式拼寫特殊字:/
+[MEMO?] 36-35	在(這裡)	'iké (kɨné)'	疑似備註字元:()
+[FORMAL] 36-35	在(這裡)	'iké (kɨné)'	正式拼寫特殊字:éɨ
+[FORMAL] 36-37	傻瓜	'mamɨlɨɨ'	正式拼寫特殊字:ɨ

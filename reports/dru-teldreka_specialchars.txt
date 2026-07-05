@@ -1,0 +1,356 @@
+# 特殊字元 / 清理報表 — 多納魯凱語 (dialectId=30, lang_code=dru-teldreka)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1091,
+  "skipped_placeholder": 3,
+  "levels": {
+    "1": 256,
+    "2": 237,
+    "3": 296,
+    "4": 302
+  },
+  "cleaned": 1,
+  "with_image": 599,
+  "with_audio": 1091,
+  "apostrophe_words": 295,
+  "slash_words": 41,
+  "caret_words": 0,
+  "special_chars": {
+    "ʼ": 292,
+    "/": 41,
+    "’": 3,
+    "…": 3,
+    ")": 1,
+    "(": 1,
+    ".": 1,
+    "~": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 01-01	一	'nega / sesesane'	正式拼寫特殊字:/
+[FORMAL] 01-04	四	'pate / thipate'	正式拼寫特殊字:/
+[FORMAL] 01-10	十	'poko/mangesale'	正式拼寫特殊字:/
+[FORMAL] 01-41	種類；各式各樣	'maʼakakwanga'	正式拼寫特殊字:ʼ
+[FORMAL] 01-42	一雙	'ʼadrosa'	正式拼寫特殊字:ʼ
+[FORMAL] 01-43	全部	'ʼangicoʼolo'	正式拼寫特殊字:ʼ
+[FORMAL] 01-44	一點點	'ʼakatitiʼici'	正式拼寫特殊字:ʼ
+[FORMAL] 01-45	一半	'maʼotiki'	正式拼寫特殊字:ʼ
+[FORMAL] 03-11	多少(程度大小)	'tataʼathaanini'	正式拼寫特殊字:ʼ
+[FORMAL] 04-03	堂、表兄弟姐妹	'maʼalamelamengane'	正式拼寫特殊字:ʼ
+[FORMAL] 04-14	夫妻	'lamaʼataka'	正式拼寫特殊字:ʼ
+[FORMAL] 04-16	姻親	'pathidaʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 04-17	兄弟姊妹	'maʼalamelamengane'	正式拼寫特殊字:ʼ
+[FORMAL] 04-20	姊姊	'kaka ʼabayane'	正式拼寫特殊字:ʼ
+[FORMAL] 04-21	哥哥	'kaka saʼoalay'	正式拼寫特殊字:ʼ
+[FORMAL] 04-22	(弟弟；妹妹)通稱	'lagili saʼoalay /lagili ʼabayane'	正式拼寫特殊字:/ʼ
+[FORMAL] 04-23	弟弟	'gili saʼoalay'	正式拼寫特殊字:ʼ
+[FORMAL] 04-24	妹妹	'giliʼabayane'	正式拼寫特殊字:ʼ
+[FORMAL] 04-25	(伯父；叔叔；舅舅)稱呼	'lamama/mao'	正式拼寫特殊字:/
+[FORMAL] 05-02	男孩	'saʼoalay'	正式拼寫特殊字:ʼ
+[FORMAL] 05-03	女孩	'ʼabayane'	正式拼寫特殊字:ʼ
+[FORMAL] 05-04	朋友	'laʼosay/lali'	正式拼寫特殊字:/ʼ
+[FORMAL] 05-07	女性	'ʼabayane'	正式拼寫特殊字:ʼ
+[FORMAL] 05-08	男性	'saʼoalay'	正式拼寫特殊字:ʼ
+[FORMAL] 05-11	老師	'ʼasaboboowane'	正式拼寫特殊字:ʼ
+[FORMAL] 05-20	男青年	'thabathabae / bawbaw'	正式拼寫特殊字:/
+[FORMAL] 06-14	血	'ʼaydri'	正式拼寫特殊字:ʼ
+[FORMAL] 06-24	胸腔	'tokoʼoso'	正式拼寫特殊字:ʼ
+[FORMAL] 06-27	肺	'baʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 06-30	口水	'taʼapese'	正式拼寫特殊字:ʼ
+[FORMAL] 06-35	痰	'ʼaeke'	正式拼寫特殊字:ʼ
+[FORMAL] 06-36	甲狀腺腫	'ʼakataytai'	正式拼寫特殊字:ʼ
+[FORMAL] 06-37	油脂	'simaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 06-41	喉嚨	'toloʼoane'	正式拼寫特殊字:ʼ
+[FORMAL] 06-46	汗水	'ʼaybwane'	正式拼寫特殊字:ʼ
+[FORMAL] 06-47	脖子	'eʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 06-54	腎臟	'padeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 07-01	尾巴	'ʼikivi'	正式拼寫特殊字:ʼ
+[FORMAL] 07-02	豬	'bekeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 07-04	羊	'sawʼiyo'	正式拼寫特殊字:ʼ
+[FORMAL] 07-07	魚	'kaʼange'	正式拼寫特殊字:ʼ
+[FORMAL] 07-16	野鴿子	'bakoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 07-17	蟲(統稱)	'keʼelange'	正式拼寫特殊字:ʼ
+[FORMAL] 07-19	蛇	'swaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 07-20	飛鼠	'avaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 07-32	蚊子	'atatingaʼolo'	正式拼寫特殊字:ʼ
+[FORMAL] 07-36	雄性(動物)	'saʼoalay ka bee'	正式拼寫特殊字:ʼ
+[FORMAL] 07-38	鴨	'ʼailre'	正式拼寫特殊字:ʼ
+[FORMAL] 07-44	馬	'ʼema'	正式拼寫特殊字:ʼ
+[FORMAL] 07-45	雌性(動物)	'ʼodii'	正式拼寫特殊字:ʼ
+[FORMAL] 07-48	百步蛇	'kaswaʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 07-50	蝙蝠	'tabaaʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 07-55	螞蟻	'abongoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 07-60	跳蚤	'taʼopothake'	正式拼寫特殊字:ʼ
+[FORMAL] 07-61	眼鏡蛇	'taaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 08-03	樹	'ʼangato'	正式拼寫特殊字:ʼ
+[FORMAL] 08-15	樹枝	'lidaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 08-21	藤類	'vaʼedre'	正式拼寫特殊字:ʼ
+[FORMAL] 08-26	木耳	'tangeeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 08-28	樹根	'ʼamici'	正式拼寫特殊字:ʼ
+[FORMAL] 08-30	姑婆芋	'biʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 08-41	山藥	'tobaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 08-42	檜木	'baʼali'	正式拼寫特殊字:ʼ
+[FORMAL] 08-43	幼苗	'sadodokoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 08-44	種子	'capeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 08-47	過貓	'maʼongo'	正式拼寫特殊字:ʼ
+[FORMAL] 09-06	筆	'ʼingpice'	正式拼寫特殊字:ʼ
+[FORMAL] 09-08	藥物	'saboʼoane'	正式拼寫特殊字:ʼ
+[FORMAL] 09-11	手錶	'koliʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 09-14	細線	'saʼivisi'	正式拼寫特殊字:ʼ
+[FORMAL] 09-18	枝條	'lidaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 09-29	(竹製的)刮麻具	'sasakoʼoto'	正式拼寫特殊字:ʼ
+[FORMAL] 09-32	棉被	'caʼebe'	正式拼寫特殊字:ʼ
+[FORMAL] 09-45	梗	'lidaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 09-60	水瓢(舀水用)	'saswasoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 10-06	泥土	'daʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 10-10	縫隙	'becekaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 10-13	土堆	'ʼiyadomolo na daʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 10-14	岩洞	'eeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 10-16	溫泉	'ʼongsing'	正式拼寫特殊字:ʼ
+[FORMAL] 10-17	峽谷	'caʼoipi'	正式拼寫特殊字:ʼ
+[FORMAL] 11-01	下雨	'wadaʼolo'	正式拼寫特殊字:ʼ
+[FORMAL] 11-02	太陽	'koliʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 11-06	雨	'daʼolo'	正式拼寫特殊字:ʼ
+[FORMAL] 11-07	雪	'ʼiela'	正式拼寫特殊字:ʼ
+[FORMAL] 11-09	夏天	'kalapaʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 11-11	露水	'lamoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 11-14	閃電	'cecelaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 11-19	地震	'inoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 11-24	水患	'wadrakoʼoso'	正式拼寫特殊字:ʼ
+[FORMAL] 11-31	雨停	'maangecaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 11-33	日出	'waaʼoso'	正式拼寫特殊字:ʼ
+[FORMAL] 12-01	家	'daʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 12-02	窗戶	'taʼavangane'	正式拼寫特殊字:ʼ
+[FORMAL] 12-05	石頭	'ʼalapi'	正式拼寫特殊字:ʼ
+[FORMAL] 12-08	工寮	'taʼoanane'	正式拼寫特殊字:ʼ
+[FORMAL] 12-14	庭院	'taʼiyoboane'	正式拼寫特殊字:ʼ
+[FORMAL] 12-15	牆壁	'taʼaedrane'	正式拼寫特殊字:ʼ
+[FORMAL] 13-02	晚上	'maʼawbo'	正式拼寫特殊字:ʼ
+[FORMAL] 13-03	昨天	'kosiʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 13-04	明天	'nosiʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 13-07	白天	'vivivaʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 13-09	清晨	'waledraledraʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 13-11	傍晚	'maʼoʼawbo'	正式拼寫特殊字:ʼ
+[FORMAL] 13-17	大後天	'paelelelanga /sapakathipatele'	正式拼寫特殊字:/
+[FORMAL] 13-23	年輕時	'ʼabababawbaw / ʼathathabathabae'	正式拼寫特殊字:/ʼ
+[FORMAL] 13-25	下午	'vivaʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 13-26	幾點?	'pyani na koliʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 13-29	天天	'pavaʼiyane'	正式拼寫特殊字:ʼ
+[FORMAL] 13-31	生日	'takitivalakanini na vaʼiyane'	正式拼寫特殊字:ʼ
+[FORMAL] 14-01	裡面	'ʼadringi'	正式拼寫特殊字:ʼ
+[FORMAL] 14-02	在某處	'taʼikanini'	正式拼寫特殊字:ʼ
+[FORMAL] 14-08	旁邊	'cigiʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 14-09	頂	'thacobo/aogane'	正式拼寫特殊字:/
+[FORMAL] 14-15	到某處	'ʼavathiya'	正式拼寫特殊字:ʼ
+[FORMAL] 15-03	播種	'pwaʼeape'	正式拼寫特殊字:ʼ
+[FORMAL] 15-04	種苗(動作)	'sadodokoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 15-07	鐮刀	'saʼalodro'	正式拼寫特殊字:ʼ
+[FORMAL] 15-14	稻草	'sangoʼikane'	正式拼寫特殊字:ʼ
+[FORMAL] 16-09	石壓式陷阱	'taʼene'	正式拼寫特殊字:ʼ
+[FORMAL] 16-10	套頸式繩索陷阱	'watheʼee'	正式拼寫特殊字:ʼ
+[FORMAL] 17-03	巫術	'ʼabiki'	正式拼寫特殊字:ʼ
+[FORMAL] 17-06	播種祭	'kaladokodokoʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 18-03	編織	'watako / waapidri'	正式拼寫特殊字:/
+[FORMAL] 18-06	頸鍊	'ce’e'	正式拼寫特殊字:’
+[FORMAL] 18-08	破掉	'mapoʼay'	正式拼寫特殊字:ʼ
+[FORMAL] 18-13	染色	'wadepeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 18-14	浮織(單面)	'ʼiyadiʼici'	正式拼寫特殊字:ʼ
+[FORMAL] 18-20	傳統女裙	'ʼimaini na ʼabayane'	正式拼寫特殊字:ʼ
+[FORMAL] 18-24	裙子	'ʼimay'	正式拼寫特殊字:ʼ
+[FORMAL] 18-27	男用遮布；掛肩	'’imay'	正式拼寫特殊字:’
+[FORMAL] 18-32	刮苧麻	'wasakoʼoto na damili'	正式拼寫特殊字:ʼ
+[FORMAL] 21-01	飯	'doʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 21-03	白米	'beʼase'	正式拼寫特殊字:ʼ
+[FORMAL] 21-08	蜜	'ʼesebe na valo'	正式拼寫特殊字:ʼ
+[FORMAL] 21-10	油	'ʼabelra'	正式拼寫特殊字:ʼ
+[FORMAL] 21-12	湯	'sasooʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 21-25	麵粉	'ʼodongko'	正式拼寫特殊字:ʼ
+[FORMAL] 22-02	黑色	'tayceceenge/maycenge'	正式拼寫特殊字:/
+[FORMAL] 22-05	黃色	'mabokaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 22-06	咖啡色	'maboaʼale'	正式拼寫特殊字:ʼ
+[FORMAL] 24-02	獨自一人	'taʼangengesa'	正式拼寫特殊字:ʼ
+[FORMAL] 24-03	相同	'maamaw/amiya'	正式拼寫特殊字:/
+[FORMAL] 24-05	日子	'vaʼiyane'	正式拼寫特殊字:ʼ
+[FORMAL] 24-06	是的	'eʼe/esi'	正式拼寫特殊字:/ʼ
+[FORMAL] 24-09	目標	'tapataʼathaane'	正式拼寫特殊字:ʼ
+[FORMAL] 24-17	遲到	'ʼiyasolodrane'	正式拼寫特殊字:ʼ
+[FORMAL] 25-04	打開	'ʼoʼeleba'	正式拼寫特殊字:ʼ
+[FORMAL] 25-07	給	'wabaʼay'	正式拼寫特殊字:ʼ
+[FORMAL] 25-08	來	'ʼawkay'	正式拼寫特殊字:ʼ
+[FORMAL] 25-11	走(離開)	'ʼavagay'	正式拼寫特殊字:ʼ
+[FORMAL] 25-12	飛	'ʼangopalay'	正式拼寫特殊字:ʼ
+[FORMAL] 25-14	抵達	'ʼiyaegeege'	正式拼寫特殊字:ʼ
+[FORMAL] 25-15	送(客人)	'wabaʼay'	正式拼寫特殊字:ʼ
+[FORMAL] 25-16	逃跑	'ʼabebee'	正式拼寫特殊字:ʼ
+[FORMAL] 25-17	進入	'mwadaʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 25-20	趕走	'paʼabebee'	正式拼寫特殊字:ʼ
+[FORMAL] 25-23	讓開	'ʼiga/paibate'	正式拼寫特殊字:/ʼ
+[FORMAL] 25-24	贈送(禮物)	'wabaʼay'	正式拼寫特殊字:ʼ
+[FORMAL] 25-25	沿著山巒	'ʼangoegeegeege'	正式拼寫特殊字:ʼ
+[FORMAL] 25-26	(植物的果實)掉落	'maoo/mapisisi'	正式拼寫特殊字:/
+[FORMAL] 25-30	向人家要(東西)	'kyababaʼai'	正式拼寫特殊字:ʼ
+[FORMAL] 25-31	倒(水)	'wabolo / wadrodroʼo'	正式拼寫特殊字:/ʼ
+[FORMAL] 25-32	走(向某個方向)	'ʼavathiya'	正式拼寫特殊字:ʼ
+[FORMAL] 25-33	(藤類植物)攀爬	'ʼangotoloo moagae'	正式拼寫特殊字:ʼ
+[FORMAL] 25-35	追	'wasalaaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 25-36	趕上	'wataʼipaa'	正式拼寫特殊字:ʼ
+[FORMAL] 25-38	分開	'paʼavagay'	正式拼寫特殊字:ʼ
+[FORMAL] 25-42	出現	'ʼabwale'	正式拼寫特殊字:ʼ
+[FORMAL] 25-43	坐著	'ʼiyanono'	正式拼寫特殊字:ʼ
+[FORMAL] 25-44	站著	'ʼiyadiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 25-46	要來	'ʼawkayami'	正式拼寫特殊字:ʼ
+[FORMAL] 25-47	來過	'ʼawkainga'	正式拼寫特殊字:ʼ
+[FORMAL] 26-01	跳躍	'ʼiyathyake'	正式拼寫特殊字:ʼ
+[FORMAL] 26-03	坐下	'ʼinonoa'	正式拼寫特殊字:ʼ
+[FORMAL] 26-04	彎腰	'peneʼa apedre'	正式拼寫特殊字:ʼ
+[MEMO?] 26-06	玩球	'ʼaangii (malri)'	疑似備註字元:()
+[FORMAL] 26-06	玩球	'ʼaangii (malri)'	正式拼寫特殊字:ʼ
+[FORMAL] 26-11	跌倒	'ʼiyaevese'	正式拼寫特殊字:ʼ
+[FORMAL] 26-16	折斷	'wapicoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 26-20	躺	'ʼiyabaae'	正式拼寫特殊字:ʼ
+[FORMAL] 26-28	吹	'waʼipi'	正式拼寫特殊字:ʼ
+[FORMAL] 26-29	挖掘	'wakiʼale'	正式拼寫特殊字:ʼ
+[FORMAL] 26-30	切	'wakeʼete'	正式拼寫特殊字:ʼ
+[FORMAL] 26-35	揹負(物品)	'waaba / wa’odo'	正式拼寫特殊字:/’
+[FORMAL] 26-37	剖切	'wakeʼete'	正式拼寫特殊字:ʼ
+[FORMAL] 26-38	綁住	'waʼebeke'	正式拼寫特殊字:ʼ
+[FORMAL] 26-44	捆綁	'waʼebeke'	正式拼寫特殊字:ʼ
+[FORMAL] 26-52	搬運	'waʼodo'	正式拼寫特殊字:ʼ
+[FORMAL] 26-59	晃動	'ʼavelevele'	正式拼寫特殊字:ʼ
+[FORMAL] 26-62	振動	'ʼanegenege'	正式拼寫特殊字:ʼ
+[FORMAL] 26-64	採收	'kyapisisi/ wapisisi'	正式拼寫特殊字:/
+[FORMAL] 26-67	追捕	'wasalaaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 26-68	打碎	'wapoʼay'	正式拼寫特殊字:ʼ
+[FORMAL] 26-74	割	'wakeʼete'	正式拼寫特殊字:ʼ
+[FORMAL] 26-84	亂翻	'wadridriʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 26-88	側臥	'talocicigiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 26-95	搗	'syaiboʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 26-100	(用手)挖掘	'wakiʼale'	正式拼寫特殊字:ʼ
+[FORMAL] 26-103	隨意	'ʼangiyao'	正式拼寫特殊字:ʼ
+[FORMAL] 26-104	蹲下	'ʼiyakokolo'	正式拼寫特殊字:ʼ
+[FORMAL] 26-105	起立	'ʼidiʼiya'	正式拼寫特殊字:ʼ
+[FORMAL] 27-03	喝	'waʼongolo'	正式拼寫特殊字:ʼ
+[FORMAL] 27-04	吐	'waʼota'	正式拼寫特殊字:ʼ
+[FORMAL] 27-05	咬	'wakaʼace'	正式拼寫特殊字:ʼ
+[FORMAL] 27-06	吞嚥	'waeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 27-07	吞下	'waeʼede'	正式拼寫特殊字:ʼ
+[FORMAL] 27-13	啃	'waʼisi'	正式拼寫特殊字:ʼ
+[FORMAL] 27-14	餓	'ʼabaysi'	正式拼寫特殊字:ʼ
+[FORMAL] 27-18	吃晚餐	'tyakiʼawbo'	正式拼寫特殊字:ʼ
+[FORMAL] 28-02	知道	'waigoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 28-04	說	'ʼapobaka'	正式拼寫特殊字:ʼ
+[FORMAL] 28-11	告訴(別人)	'maʼitikikay'	正式拼寫特殊字:ʼ
+[FORMAL] 28-14	答應	'maeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 28-16	謾罵	'magaʼawco'	正式拼寫特殊字:ʼ
+[FORMAL] 28-18	回應	'ʼakobii'	正式拼寫特殊字:ʼ
+[FORMAL] 28-22	睜眼	'ʼapomacamaca'	正式拼寫特殊字:ʼ
+[FORMAL] 28-27	會(做某事)	'waigoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 29-02	害怕	'ʼakolodro'	正式拼寫特殊字:ʼ
+[FORMAL] 29-06	生氣	'magiʼimoco'	正式拼寫特殊字:ʼ
+[FORMAL] 30-04	停止	'ʼiyasasadra'	正式拼寫特殊字:ʼ
+[FORMAL] 30-05	浪費	'watangetangebe/watalawa'	正式拼寫特殊字:/
+[FORMAL] 30-06	起床	'ʼiyacekale'	正式拼寫特殊字:ʼ
+[FORMAL] 30-12	休息	'ʼobaylane'	正式拼寫特殊字:ʼ
+[FORMAL] 30-15	學習	'kyacaʼoane'	正式拼寫特殊字:ʼ
+[FORMAL] 30-16	躺臥	'ʼiyabaae'	正式拼寫特殊字:ʼ
+[FORMAL] 30-18	偷竊	'kyaʼopa'	正式拼寫特殊字:ʼ
+[FORMAL] 30-23	烹煮(飯／肉／地瓜)	'wadoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 30-24	等待	'waʼadraʼadraw'	正式拼寫特殊字:ʼ
+[FORMAL] 30-29	收拾(祈使，如收拾東西)	'wasenekete/seneketa'	正式拼寫特殊字:/
+[FORMAL] 30-30	碾(米)	'pasiiboʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 30-32	蓋被子	'syacaʼebe'	正式拼寫特殊字:ʼ
+[FORMAL] 30-37	種植	'wadokoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 30-43	剪(男性頭髮)	'wakacipi/waʼonoo'	正式拼寫特殊字:/ʼ
+[FORMAL] 30-45	掀開(如掀開蓋子)	'waʼotoloboko'	正式拼寫特殊字:ʼ
+[FORMAL] 30-46	掩埋	'waʼabolo'	正式拼寫特殊字:ʼ
+[FORMAL] 30-47	替換(衣服)	'wabaythi/pabaythi'	正式拼寫特殊字:/
+[FORMAL] 30-49	鋪床	'wasapaʼa/wasekeseke'	正式拼寫特殊字:/ʼ
+[FORMAL] 30-51	剝葉	'waʼosopongo'	正式拼寫特殊字:ʼ
+[FORMAL] 30-52	尿急	'ʼapoysisi'	正式拼寫特殊字:ʼ
+[FORMAL] 30-56	模仿	'ʼangiyaao'	正式拼寫特殊字:ʼ
+[FORMAL] 30-57	飼養	'wathadeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 30-61	喝(水)	'waʼongolo'	正式拼寫特殊字:ʼ
+[FORMAL] 30-62	(用鋤具)挖掘	'wakiʼale'	正式拼寫特殊字:ʼ
+[FORMAL] 30-63	(居)住	'syadaʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 30-65	玩耍	'ʼaangii'	正式拼寫特殊字:ʼ
+[FORMAL] 31-02	好痛	'waʼangeʼange'	正式拼寫特殊字:ʼ
+[FORMAL] 31-03	受傷	'madolaʼa/macongaw'	正式拼寫特殊字:/ʼ
+[FORMAL] 31-05	痛	'waʼangeʼange'	正式拼寫特殊字:ʼ
+[FORMAL] 31-06	流血	'ʼapoʼaydri'	正式拼寫特殊字:ʼ
+[FORMAL] 31-11	撫養	'wathadeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 31-13	疤	'takacongavane / tayʼasane'	正式拼寫特殊字:/ʼ
+[FORMAL] 31-15	打瞌睡	'walagolagoʼane'	正式拼寫特殊字:ʼ
+[FORMAL] 31-18	痠痛	'waʼangeʼange bwatini'	正式拼寫特殊字:ʼ
+[FORMAL] 31-19	生病	'macaʼeme'	正式拼寫特殊字:ʼ
+[FORMAL] 32-02	重(重量)	'madikeʼee'	正式拼寫特殊字:ʼ
+[FORMAL] 32-04	高(身高)	'maʼagae'	正式拼寫特殊字:ʼ
+[FORMAL] 32-06	矮(身高)	'maʼalelebe'	正式拼寫特殊字:ʼ
+[FORMAL] 32-07	勤勞	'masekasekaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 32-09	小的	'tiʼicane'	正式拼寫特殊字:ʼ
+[FORMAL] 32-11	漂亮	'maagiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 32-13	悶熱	'maapaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 32-16	笑	'ʼangii'	正式拼寫特殊字:ʼ
+[FORMAL] 32-17	濕的	'malangeeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 32-18	熟(果實)	'madoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 32-19	厚的	'mayʼemedre'	正式拼寫特殊字:ʼ
+[FORMAL] 32-23	很懶惰	'maʼamaʼamace'	正式拼寫特殊字:ʼ
+[FORMAL] 32-24	乾淨	'mabolaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 32-26	明亮	'waleleape/patilikalikae'	正式拼寫特殊字:/
+[FORMAL] 32-27	胖(身形)	'mamitee/mabotokolo'	正式拼寫特殊字:/
+[FORMAL] 32-28	乾的	'mapacai/malaʼo'	正式拼寫特殊字:/ʼ
+[FORMAL] 32-29	累	'ʼabaili'	正式拼寫特殊字:ʼ
+[FORMAL] 32-30	好可憐	'matigagoʼoco'	正式拼寫特殊字:ʼ
+[FORMAL] 32-31	新的	'baʼowane'	正式拼寫特殊字:ʼ
+[FORMAL] 32-32	舊的	'aolaane / masopii'	正式拼寫特殊字:/
+[FORMAL] 32-33	近	'maʼadadyali'	正式拼寫特殊字:ʼ
+[FORMAL] 32-34	燙	'maapaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 32-37	遠	'maʼadavili'	正式拼寫特殊字:ʼ
+[FORMAL] 32-38	腫	'ʼabaake'	正式拼寫特殊字:ʼ
+[FORMAL] 32-40	久的	'ʼiyakikay'	正式拼寫特殊字:ʼ
+[FORMAL] 32-41	瞎了	'mabotiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 32-43	很好吃	'maagiʼi no kwanimade'	正式拼寫特殊字:ʼ
+[FORMAL] 32-46	脆弱(如竹竿、木材易斷裂)	'maʼotoso'	正式拼寫特殊字:ʼ
+[FORMAL] 32-55	壯碩	'ʼiyaengedelane'	正式拼寫特殊字:ʼ
+[FORMAL] 32-61	(傾)斜	'talocicigiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 32-62	軟	'mamameeʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 32-65	直	'masokooʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 32-66	滿了	'syaʼetenga'	正式拼寫特殊字:ʼ
+[FORMAL] 32-67	好好的	'magyagiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 32-74	長	'mathangedaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 32-77	炎熱	'maapaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 32-79	滿滿	'syaʼete'	正式拼寫特殊字:ʼ
+[FORMAL] 32-80	英俊	'ʼathabae'	正式拼寫特殊字:ʼ
+[FORMAL] 33-02	一定	'iʼisadra'	正式拼寫特殊字:ʼ
+[FORMAL] 33-06	擦拭	'wadrisidrisi/sadrisidrisi'	正式拼寫特殊字:/
+[FORMAL] 33-07	使喚	'wasokoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 34-07	混以某物	'paʼiboʼibo / paʼaʼibo'	正式拼寫特殊字:/ʼ
+[FORMAL] 34-09	刷除	'waʼosoʼoso'	正式拼寫特殊字:ʼ
+[FORMAL] 34-12	阻擋	'watekepe/wateele'	正式拼寫特殊字:/
+[FORMAL] 34-21	有	'ʼiyakay'	正式拼寫特殊字:ʼ
+[FORMAL] 34-22	剩下	'ʼatedra'	正式拼寫特殊字:ʼ
+[FORMAL] 34-34	好	'maagiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 34-36	不客氣	'adrikaʼino'	正式拼寫特殊字:ʼ
+[FORMAL] 35-01	不要	'ʼayni'	正式拼寫特殊字:ʼ
+[FORMAL] 35-02	不可以	'idoo / doiya'	正式拼寫特殊字:/
+[FORMAL] 35-03	不是(回答用)	'ʼaini'	正式拼寫特殊字:ʼ
+[FORMAL] 35-06	不知道	'iigoʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 36-02	正在...	'ʼiyacengecenge'	正式拼寫特殊字:ʼ
+[FORMAL] 36-03	隨意	'ʼangiyaao'	正式拼寫特殊字:ʼ
+[FORMAL] 36-04	好的(沒問題)	'eʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 36-07	立即	'padodawʼo / wadodawʼo'	正式拼寫特殊字:/ʼ
+[MEMO?] 36-09	再(取/拿)	'kelea/ lawa/ no…la'	疑似備註字元:…
+[FORMAL] 36-09	再(取/拿)	'kelea/ lawa/ no…la'	正式拼寫特殊字:/
+[FORMAL] 36-12	少許/減量	'pakatitiʼici'	正式拼寫特殊字:ʼ
+[FORMAL] 36-14	從不	'iʼikay'	正式拼寫特殊字:ʼ
+[MEMO?] 36-15	不該	'nini…'	疑似備註字元:…
+[FORMAL] 36-17	經常	'ʼataleese'	正式拼寫特殊字:ʼ
+[MEMO?] 36-21	還(尚未)	'no….la'	疑似備註字元:.…
+[FORMAL] 36-22	如果	'layaasi/ nilavani'	正式拼寫特殊字:/
+[FORMAL] 36-27	整天	'maʼakasongo'	正式拼寫特殊字:ʼ
+[FORMAL] 36-31	嗎(用在問句)	'mya~/ka'	正式拼寫特殊字:/~
+[FORMAL] 36-32	主格標記(各族用語)	'ka / ki /ko'	正式拼寫特殊字:/
+[FORMAL] 36-33	受格標記(各族用語)	'ka / ki /ko/na'	正式拼寫特殊字:/
+[FORMAL] 36-35	在(這裡)	'ʼiyakay/nakay'	正式拼寫特殊字:/ʼ
+[FORMAL] 36-37	傻瓜	'ʼothongo'	正式拼寫特殊字:ʼ
