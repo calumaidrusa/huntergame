@@ -1504,16 +1504,18 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   border-image:url('/images/ui/login-frame.png') 62 stretch;
 }
 .auth-plaque {
-  width:300px; height:auto; position:relative; z-index:3;
+  /* 新版 logo（login-title-plaque.png）為單行「族語射手」、比例 2.8:1（比舊 3 行版扁），
+     width 320 → 高約 114px。與關卡選擇頁同一張，兩頁 logo 統一。 */
+  width:320px; height:auto; position:relative; z-index:3;
   filter:drop-shadow(0 6px 12px rgba(0,0,0,0.55));
 }
-/* 登入畫面語別下拉（#authLangPicker）：招牌圖 login-title-plaque.png 底部
-   烤有「太魯閣語 · TRUKU LANGUAGE」字，下拉必須明確落在招牌下方、不疊字。
+/* 登入畫面語別下拉（#authLangPicker）：新版 logo 底部【已無】烤死的「太魯閣語」字
+   （改用只有族語射手的乾淨版），下拉直接落在招牌下方即可、不再有疊字顧慮。
    .lang-picker 是共用 class（標題畫面也用），這裡只以 #id 覆寫登入版定位，
    不影響 #titleLangPicker。 */
 #authLangPicker {
-  position:relative; z-index:4;   /* 疊在招牌之上避免被 drop-shadow 蓋，但靠 margin 落到圖下方 */
-  margin:6px 0 10px;              /* 招牌底邊 → 下拉 → .auth-card 之間留白 */
+  position:relative; z-index:4;
+  margin:2px 0 8px;              /* 招牌底邊 → 下拉 → .auth-card 之間留白 */
 }
 /* 290px 寬、比例 957:1200 → 高約 364px；padding 對位素材羊皮紙內區
    （x 約 13.6%~86.8%、y 約 12.5%~88%）。上緣掛繩收在標題木牌後面（負 margin）。 */
@@ -1634,40 +1636,17 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   pointer-events:none;
 }
 
-/* ── 標題招牌區：木招牌 + 左側蹲姿獵人 ── */
-.title-header { position:relative; width:540px; max-width:90%; margin:0 auto 2px; flex:0 0 auto; }
-.title-plaque {
-  position:relative;
-  width:100%;
-  padding:40px 40px 34px;
-  box-sizing:border-box;
-  background:url('/images/ui/v2-title-sign.png') no-repeat center top;
-  background-size:100% 100%;
-  text-align:center;
+/* ── 標題招牌區（A1：整合 logo 圖，兩頁一致）── */
+.title-header { position:relative; width:480px; max-width:90%; margin:0 auto 2px; flex:0 0 auto; text-align:center; }
+/* 整合 logo（login-title-plaque.png，含族語射手+木牌+弓箭+藤葉，透明背景）。
+   單張圖取代原「空木牌+CSS金字+浮動獵人」，無溢出裁切；下方接動態副標。 */
+.title-plaque-img {
+  display:block; width:100%; height:auto; margin:0 auto 2px;
   filter:drop-shadow(0 8px 18px rgba(0,0,0,0.45));
 }
-.title-main {
-  font-family:'Fredoka One', sans-serif;
-  font-size:32px;
-  color:#FFD700;
-  text-shadow:2px 2px 0 #5A3000, 0 0 26px rgba(255,215,0,0.55);
-  line-height:1.05;
-  letter-spacing:2px;
-}
-.title-main .title-main-en {
-  display:block; font-size:15px; letter-spacing:5px; margin-top:2px;
-  color:#F5A623; text-shadow:1px 1px 0 #3A2000;
-}
 .title-sub { font-size:10px; color:#AAFFAA; font-family:'Fredoka One',sans-serif; letter-spacing:3px; margin-top:4px; }
-/* 蹲姿獵人：疊在招牌左下角外側，向右拉弓朝標題 */
-.title-hunter {
-  position:absolute; left:-108px; bottom:-22px;
-  width:158px; height:auto;
-  filter:drop-shadow(0 8px 14px rgba(0,0,0,0.5));
-  animation:titleBob 2.6s ease-in-out infinite;
-  pointer-events:none; z-index:2;
-}
-@keyframes titleBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+/* 註：舊的 .title-plaque / .title-main / .title-hunter / @keyframes titleBob 已隨 A1
+   改版移除（浮動獵人 left:-108px 被 overflow:hidden 裁切＝「logo 跑掉」的元凶）。 */
 
 /* ── 語別選擇：小木牌標籤 + 深木色下拉 ── */
 .lang-picker { display:flex; flex-direction:column; align-items:center; gap:4px; margin:2px 0 6px; z-index:2; }
@@ -1945,9 +1924,17 @@ body.choice-active #choicePanel {
   transform:translate(-50%,-50%);
   width:min(600px, calc(100% - 264px));
 }
-/* 選項關把獵人抬到面板之上（安全網）：即使面板陰影/邊緣飄近，獵人仍清楚可見；
-   仍在 HUD(50)之下、泡泡(40)之下。只調 z-index，不動位置。 */
-body.choice-active #hunter { z-index:38; }
+/* 選項關獵人「走底部空帶」：使用者回報前進時獵人會擋到選項（選項是 2×2 置中網格，
+   獵人前進會滑到選項下方）。選項底緣約設計 y406、底部資訊列約 y504，中間有一條空帶。
+   這裡在選項關把獵人縮小並改用低走動畫，讓牠走在「選項下方、資訊列上方」的空帶裡，
+   前進時始終在選項底下、不再遮擋作答。縮小後 fireArrow/moveHunterTowardPrey 讀即時
+   rect 仍正確。z-index 38 仍在 HUD(50)/泡泡(40)之下、面板(35)之上。 */
+@keyframes hunterRunChoice { 0%{bottom:40px} 50%{bottom:45px} 100%{bottom:40px} }
+body.choice-active #hunter {
+  z-index:38;
+  width:100px; height:88px;
+  animation: hunterRunChoice 0.5s steps(2) infinite, hunterSway 2.6s ease-in-out infinite;
+}
 /* 選項關隱藏詞彙卡（含族語詞）與底部打字輸入列 */
 body.choice-active #wordBubble { display:none; }
 body.choice-active #bottomBar { display:none; }
@@ -1989,9 +1976,12 @@ body.choice-active #stage { bottom: 0; }
 /* picture cue(L4)：放大的大圖。素材為不透明白底 jpg，用金框圓角 + 內縮遮罩
    把方形白底收進「圓角相框」語言，減少與深色面板的違和。 */
 #choiceCueImg {
-  width:130px; height:130px; object-fit:cover;
+  /* 加大並完整顯示不裁切：object-fit:contain（原 cover 會把長寬比不同的圖切掉邊）。
+     素材多為白底 jpg，故框底改白色，contain 的留邊與圖白底無縫（不再出現深色留邊）。
+     置中由 #choiceCue 的 flex column align-items:center 提供。 */
+  width:180px; height:180px; object-fit:contain;
   border:3px solid #F5A623; border-radius:16px;
-  background:rgba(10,30,8,0.5);
+  background:#ffffff;
   box-shadow:0 6px 14px rgba(0,0,0,0.5),
              inset 0 0 0 2px rgba(0,0,0,0.15);
   padding:0;
@@ -2310,14 +2300,16 @@ body.choice-active #stage { bottom: 0; }
   <!-- TITLE SCREEN — #titleScreen. 顯示: 登入成功後 showTitleScreen() / goTitle(). 隱藏: startGame(lvl). -->
   <div id="titleScreen">
     <!-- ── 標題招牌：木招牌(v2-title-sign.png)當底，金字疊上；左側蹲姿獵人 ── -->
+    <!-- 標題招牌：A1 統一使用首頁那張整合 logo（login-title-plaque.png）。原本是
+         空木牌 v2-title-sign + CSS 金字 + 左外側浮動獵人(.title-hunter left:-108px)，
+         那個浮動獵人在窄視窗被 #titleScreen overflow:hidden 裁掉＝使用者回報的「logo 跑掉」。
+         改成單張 <img> 後兩頁 logo 一致、無溢出裁切問題。#titleSub / #welcomeMsg 仍由
+         JS(refreshLangUi / showTitleScreen) 動態更新，保留在 logo 下方。 -->
     <div class="title-header">
-      <img class="title-hunter" src="/images/ui/v2-hunter-truku-h2.png" alt="獵人">
-      <div class="title-plaque">
-        <div class="title-main">族語射手<span class="title-main-en">HUNTER TYPER</span></div>
-        <!-- §任務C：副標依當前語別動態填（refreshLangUi 寫 #titleSub.textContent）；預設太魯閣語。 -->
-        <div class="title-sub" id="titleSub">太魯閣語學習 · TRUKU VOCABULARY</div>
-        <div class="title-sub" id="welcomeMsg" style="font-size:9px;color:#FFE566;letter-spacing:1px;margin-top:3px;"></div>
-      </div>
+      <img class="title-plaque-img" src="/images/ui/login-title-plaque.png" alt="族語射手">
+      <!-- §任務C：副標依當前語別動態填（refreshLangUi 寫 #titleSub.textContent）；預設太魯閣語。 -->
+      <div class="title-sub" id="titleSub">太魯閣語學習 · TRUKU VOCABULARY</div>
+      <div class="title-sub" id="welcomeMsg" style="font-size:9px;color:#FFE566;letter-spacing:1px;margin-top:3px;"></div>
     </div>
     <!-- §任務B：標題畫面「選擇學習語別」入口（小木牌標籤 + 深木色下拉）。 -->
     <div class="lang-picker lang-picker-title" id="titleLangPicker">
@@ -2982,8 +2974,6 @@ function _initAuthVolIcon() {
 _initAuthVolIcon();
 window.addEventListener('load', _initAuthVolIcon);
 
-// 訪客模式：功能未定案（見 Truku_Login_Screen_Codex_v4.md 開頭提醒），
-// 按鈕先佔位，點擊只跳「即將開放」提示，不做任何登入/繞過驗證行為。
 function _showAuthToast(msg) {
   const host = document.getElementById('authScreen');
   if (!host) return;
@@ -2993,9 +2983,13 @@ function _showAuthToast(msg) {
   host.appendChild(t);
   setTimeout(() => t.remove(), 2300); // unlockPop 2.2s forwards 結束後移除節點
 }
+// 訪客模式：不登入、不發 JWT、不寫 localStorage（重新整理即回登入畫面，訪客不持久）。
+// 可正常順序闖關（解鎖進度只存在本次 session 的 AUTH.unlockedLevel 記憶體），但成績
+// 一律不送後端（submitScore 內以 AUTH.isGuest 分流略過 /api/scores）、不進排行榜。
 function onGuestBtnClick() {
   if (window.Sfx) Sfx.sfxClick();
-  _showAuthToast('🚧 訪客模式即將開放');
+  AUTH = { token: null, username: null, displayName: '訪客', unlockedLevel: 1, totalScore: 0, isGuest: true };
+  showTitleScreen();
 }
 
 // ═══════════════════════════════════════════════════
@@ -3038,7 +3032,8 @@ let AUTH = {
   username: null,
   displayName: null,
   unlockedLevel: 1,
-  totalScore: 0
+  totalScore: 0,
+  isGuest: false   // 訪客模式：true 時成績不送後端、不進排行榜（見 onGuestBtnClick / submitScore）
 };
 
 let _authMode = 'login'; // 'login' | 'register'
@@ -3093,7 +3088,9 @@ function hideAuthScreen() {
 function showTitleScreen() {
   hideAuthScreen();
   document.getElementById('titleScreen').style.display = 'flex';
-  document.getElementById('welcomeMsg').textContent = `👋 歡迎回來，${AUTH.displayName}！`;
+  document.getElementById('welcomeMsg').textContent = AUTH.isGuest
+    ? '👋 訪客模式・成績不會記錄'
+    : `👋 歡迎回來，${AUTH.displayName}！`;
   applyLevelLocks();
   // 第一次進標題必然在使用者互動（登入/有效 token 載入）之後，autoplay 合規。
   if (window.Sfx) Sfx.unlock();   // 提前喚醒音效 AudioContext，讓第一聲零延遲
@@ -3156,7 +3153,7 @@ async function submitAuth() {
 }
 
 function logout() {
-  AUTH = { token: null, username: null, displayName: null, unlockedLevel: 1, totalScore: 0 };
+  AUTH = { token: null, username: null, displayName: null, unlockedLevel: 1, totalScore: 0, isGuest: false };
   localStorage.removeItem(AUTH_TOKEN_KEY);
   document.getElementById('titleScreen').style.display = 'none';
   document.getElementById('authUsername').value = '';
@@ -4870,6 +4867,15 @@ const API = `${API_BASE}/api`;
 // cleared: true = 過關成功呼叫（submitAndNext），false = 死亡結束呼叫（submitAndRetry）。
 // 玩家身分一律來自登入的 JWT（後端從 req.player.display_name 取得），不再從這裡傳 player 字串。
 async function submitScore(cleared) {
+  // 訪客模式：成績一律不記錄——不打 /api/scores、不進排行榜。若過關則在本次 session
+  // 記憶體內自行解鎖下一關（比照後端序列解鎖），讓訪客也能順序闖到下一關；回傳
+  // { guest:true } 讓結算畫面（submitAndRetry / submitAndNext）走「不記錄」文案分支。
+  if (AUTH.isGuest) {
+    if (cleared && G.level >= AUTH.unlockedLevel && G.level < MAX_LEVEL) {
+      AUTH.unlockedLevel = G.level + 1;
+    }
+    return { guest: true, unlockedLevel: AUTH.unlockedLevel };
+  }
   const acc = G.totalAttempts > 0 ? Math.round(G.hitAttempts/G.totalAttempts*100) : 0;
   try {
     const res = await fetch(`${API}/scores`, {
@@ -4906,7 +4912,7 @@ function gameOver() {
   document.getElementById('goAcc').textContent = acc + '%';
   document.getElementById('goRankResult').textContent = '';
   document.getElementById('goSubmitBtn').disabled = false;
-  document.getElementById('goSubmitBtn').textContent = '記錄 + 重試';
+  document.getElementById('goSubmitBtn').textContent = AUTH.isGuest ? '重試' : '記錄 + 重試';
   renderReviewList('goReview'); // §1.5-B 單詞回顧
   document.getElementById('gameOverScreen').classList.add('show');
 }
@@ -4926,9 +4932,16 @@ function stageClear() {
   document.getElementById('nextLvlBtn').style.display = 'none';
   document.getElementById('clRankResult').textContent = '';
   document.getElementById('clSubmitBtn').disabled = false;
-  document.getElementById('clSubmitBtn').textContent = '登錄成績';
+  document.getElementById('clSubmitBtn').textContent = AUTH.isGuest ? '繼續' : '登錄成績';
   renderReviewList('clReview'); // §1.5-B 單詞回顧
   document.getElementById('clearScreen').classList.add('show');
+  // 過關即「自動登錄成績」：記錄 cleared=1 → 後端解鎖下一關 → 顯示 NEXT STAGE。
+  // 以前要玩家手動點「登錄成績」才會送出+解鎖，若清關後沒點（中途回首頁 / session
+  // 過期 / 網路失敗）就不會解鎖下一關——正是「Level4 破關卻上不了第五關」的成因
+  // （正式站資料實測：該玩家 L4 只有一筆 cleared=0，無 cleared=1）。改成過關自動送出，
+  // 讓清關一定算數。submitAndNext 內含 guest 分流、離線容錯與 nextBtn 顯示邏輯，
+  // 且會 disable 按鈕避免與手動點擊重複送出。
+  submitAndNext();
 }
 
 async function submitAndRetry() {
@@ -4936,7 +4949,9 @@ async function submitAndRetry() {
   btn.disabled = true;
   btn.textContent = '送出中...';
   const result = await submitScore(false);
-  if (result && result.rank) {
+  if (result && result.guest) {
+    document.getElementById('goRankResult').textContent = '👤 訪客模式・成績不記錄';
+  } else if (result && result.rank) {
     document.getElementById('goRankResult').textContent = `✓ 第 ${result.rank} 名！成績已記錄`;
   } else if (result && result.error) {
     document.getElementById('goRankResult').textContent = `✗ ${result.error}`;
@@ -4955,7 +4970,13 @@ async function submitAndNext() {
   btn.textContent = '送出中...';
   const prevUnlocked = AUTH.unlockedLevel;
   const result = await submitScore(true);
-  if (result && result.rank) {
+  if (result && result.guest) {
+    document.getElementById('clRankResult').textContent = '👤 訪客模式・成績不記錄';
+    if (AUTH.unlockedLevel > prevUnlocked) {
+      document.getElementById('clRankResult').textContent += ` 🎉 解鎖 LEVEL ${AUTH.unlockedLevel}！`;
+      if (window.Sfx) Sfx.sfxUnlock(); // 訪客本地序列解鎖也給解鎖音效
+    }
+  } else if (result && result.rank) {
     document.getElementById('clRankResult').textContent = `🏹 本關第 ${result.rank} 名！`;
     if (AUTH.unlockedLevel > prevUnlocked) {
       document.getElementById('clRankResult').textContent += ` 🎉 解鎖 LEVEL ${AUTH.unlockedLevel}！`;
