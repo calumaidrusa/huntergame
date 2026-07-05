@@ -292,6 +292,20 @@ body{
   border-radius:22px; padding:30px 24px;
   box-shadow:0 12px 34px rgba(0,0,0,.6);
 }
+/* 統一 logo（login-title-plaque.png，2.8:1）。桌機首頁用 width:320→高約114；
+   手機卡片較窄（max-width 340、左右 padding 24 → 內容約 292），故用 width:100% 自適應，
+   高度 auto 維持 2.8:1 不變形。圖載入失敗時 onerror 會設 hidden，露出下方文字標題 fallback。 */
+.ov-logo{
+  display:block; width:100%; max-width:300px; height:auto;
+  margin:0 auto 6px;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));
+}
+/* logo 成功顯示時，文字標題退為小副標階層（不與 logo 上的「族語射手」重複搶視覺）。
+   :not([hidden]) → 只有在 logo 還在（沒被 onerror 隱藏）時才降級文字標題。 */
+.ov-logo:not([hidden]) ~ .ov-title{
+  font-size:15px; color:var(--cream); opacity:.7;
+  letter-spacing:.5px; text-shadow:none; margin-top:2px;
+}
 .ov-title{font-family:'Fredoka One',cursive; font-size:30px; color:var(--gold-lt); letter-spacing:1px; text-shadow:0 2px 0 var(--wood-dk);}
 .ov-sub{font-size:14px; opacity:.85; margin:6px 0 18px;}
 .ov-stats{

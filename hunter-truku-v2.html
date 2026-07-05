@@ -2306,6 +2306,14 @@ body.choice-active #stage { bottom: 0; }
 .lb-rank-3 td { color:#FF9955; }
 .lb-rank td { color:#AAAAAA; }
 .lb-medal { font-size:14px; }
+/* 排行榜管理刪除鈕（僅 asd8107 登入時每列出現）：小紅垃圾桶鈕 */
+.lb-del-btn {
+  border:1px solid rgba(200,60,60,0.5); background:rgba(120,20,20,0.35);
+  color:#FF9B9B; border-radius:6px; cursor:pointer; font-size:12px;
+  padding:2px 7px; line-height:1; transition:background .12s, transform .1s;
+}
+.lb-del-btn:hover { background:rgba(180,30,30,0.6); color:#fff; }
+.lb-del-btn:active { transform:scale(0.92); }
 </style>
 </head>
 <body>
@@ -2325,7 +2333,7 @@ body.choice-active #stage { bottom: 0; }
        顯示: 頁面載入時若 localStorage 沒有有效 JWT（checkAuthOnLoad()）。
        隱藏: 登入/註冊成功後（showTitleScreen()）。 -->
   <div id="authScreen">
-    <img class="auth-plaque" src="/images/ui/login-title-plaque.png" alt="族語射手 TRUKU WORD ARCHER">
+    <img class="auth-plaque" src="/images/ui/login-title-plaque.png?v=2" alt="族語射手 TRUKU WORD ARCHER">
     <!-- §任務B：族別下拉（取代原「太魯閣語 · TRUKU LANGUAGE」牌子）。
          由 populateLangSelects() 用 /api/languages 動態填 42 語別；
          onLangChange() 更新 G.lang + localStorage + 清詞彙快取。
@@ -2375,7 +2383,7 @@ body.choice-active #stage { bottom: 0; }
          改成單張 <img> 後兩頁 logo 一致、無溢出裁切問題。#titleSub / #welcomeMsg 仍由
          JS(refreshLangUi / showTitleScreen) 動態更新，保留在 logo 下方。 -->
     <div class="title-header">
-      <img class="title-plaque-img" src="/images/ui/login-title-plaque.png" alt="族語射手">
+      <img class="title-plaque-img" src="/images/ui/login-title-plaque.png?v=2" alt="族語射手">
       <!-- §任務C：副標依當前語別動態填（refreshLangUi 寫 #titleSub.textContent）；預設太魯閣語。 -->
       <div class="title-sub" id="titleSub">太魯閣語學習 · TRUKU VOCABULARY</div>
       <div class="title-sub" id="welcomeMsg" style="font-size:9px;color:#FFE566;letter-spacing:1px;margin-top:3px;"></div>
@@ -5286,18 +5294,25 @@ async function loadLeaderboard() {
   }
 }
 
+// 排行榜刪除權限：只有這個帳號登入時，榜面每列多一顆刪除鈕（跟後端 LEADERBOARD_ADMIN_USERNAME 一致）。
+const LEADERBOARD_ADMIN_USERNAME = 'asd8107';
+function isLeaderboardAdmin() {
+  return !!(AUTH && AUTH.username === LEADERBOARD_ADMIN_USERNAME);
+}
+
 function renderLbTable(rows) {
   if (!rows || rows.length === 0)
     return '<div class="lb-empty">還沒有紀錄，快去成為第一名！🏹</div>';
 
   const medals = ['🥇','🥈','🥉'];
+  const admin = isLeaderboardAdmin();
 
   let html = `<table class="lb-table">
     <thead><tr>
       <th>#</th>
       <th>獵人</th>
       <th>累計總分</th>
-      <th>已完成關卡數</th>
+      <th>已完成關卡數</th>${admin ? '<th></th>' : ''}
     </tr></thead><tbody>`;
 
   rows.forEach((r, i) => {
@@ -5305,15 +5320,44 @@ function renderLbTable(rows) {
     const medal = medals[i] || `${i+1}`;
     // §任務C-2：玩家名旁顯示「最近語別」小標籤（r.lang_code 對照 _langByCode）。
     // 樣式基本（class: lb-lang-tag），美化交小排版。查無此 code 則不顯示標籤。
+    // §管理刪除：僅 asd8107 登入時每列給 🗑️（刪該玩家×該語別整列）。player_id 由後端回傳。
+    const delCell = admin
+      ? `<td><button class="lb-del-btn" title="刪除此列（該玩家在此語別的所有分數）"
+           onclick="deleteLbEntry(${Number(r.player_id)}, '${escapeHtml(r.lang_code || '')}', '${escapeHtml(r.player)}')">🗑️</button></td>`
+      : '';
     html += `<tr class="${cls}">
       <td><span class="lb-medal">${medal}</span></td>
       <td>${escapeHtml(r.player)}${langTagHtml(r.lang_code)}</td>
       <td>${r.score.toLocaleString()}</td>
-      <td>${r.levels_played}</td>
+      <td>${r.levels_played}</td>${delCell}
     </tr>`;
   });
   html += '</tbody></table>';
   return html;
+}
+
+// 管理刪除排行一整列（asd8107 專用）：確認 → DELETE /api/leaderboard/entry → 清快取重載。
+async function deleteLbEntry(playerId, langCode, playerName) {
+  if (!isLeaderboardAdmin()) return; // 前端二次防呆（後端才是真權限關卡）
+  if (!playerId || !langCode) { alert('無法刪除：缺少玩家或語別資訊'); return; }
+  const langZh = (_langByCode[langCode] && _langByCode[langCode].name_zh) || langCode;
+  if (!confirm(`確定刪除「${playerName}・${langZh}」在排行榜上的所有分數？\n此動作無法復原。`)) return;
+  try {
+    const res = await fetch(`${API_BASE}/api/leaderboard/entry`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ player_id: playerId, lang_code: langCode })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      _lbCache = null;      // 清排行榜快取
+      loadLeaderboard();    // 重新載入榜面
+    } else {
+      alert('刪除失敗：' + (data.error || '未知錯誤'));
+    }
+  } catch (e) {
+    alert('刪除失敗：無法連線到伺服器');
+  }
 }
 
 // 語別小標籤 HTML（給排行榜用）。r.lang_code 對照 _langByCode 取中文名；

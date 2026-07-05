@@ -494,6 +494,7 @@ app.get('/api/leaderboard', (req, res) => {
   const limit = Math.min(parseInt(req.query.limit) || 10, 50);
   const rows = db.prepare(`
     SELECT p.display_name AS player,
+           best.player_id AS player_id,
            SUM(best.score) AS score,
            COUNT(DISTINCT best.level) AS levels_played,
            best.lang_code AS lang_code
@@ -508,6 +509,24 @@ app.get('/api/leaderboard', (req, res) => {
     LIMIT ?
   `).all(limit);
   res.json({ data: rows });
+});
+
+// DELETE /api/leaderboard/entry — 從前端刪除排行榜「一整列」（某玩家×某語別的所有分數）。
+// 權限鎖死：只有指定管理帳號（LEADERBOARD_ADMIN_USERNAME）能用；其他登入帳號 403。
+// body: { player_id, lang_code }。刪 scores WHERE player_id=? AND lang_code=?（該玩家該語別全刪）。
+// ⚠️ 破壞性：刪真實 scores，但這是刻意的後台清理功能（清測試/垃圾帳號），非誤刪。
+const LEADERBOARD_ADMIN_USERNAME = 'asd8107';
+app.delete('/api/leaderboard/entry', requirePlayerAuth, (req, res) => {
+  if (req.player.username !== LEADERBOARD_ADMIN_USERNAME) {
+    return res.status(403).json({ error: '權限不足（僅管理帳號可刪除排行）' });
+  }
+  const playerId = parseInt(req.body.player_id, 10);
+  const langCode = req.body.lang_code;
+  if (!playerId || !langCode) {
+    return res.status(400).json({ error: '缺少 player_id 或 lang_code' });
+  }
+  const info = db.prepare('DELETE FROM scores WHERE player_id = ? AND lang_code = ?').run(playerId, langCode);
+  res.json({ success: true, deleted: info.changes });
 });
 
 // GET /api/leaderboard/top3?level=1

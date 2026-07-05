@@ -75,3 +75,9 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 - 不要自己改遊戲 JS 接播放邏輯（交給小工程）、不要自己做音量按鈕 UI（交給小排版）
 - 不要動 `vocabulary.audio_path` 資料
 - 大量下載/生成前先跟使用者確認方案與數量
+
+---
+
+## 工作日誌（第一人稱）
+
+完成一項有意義的工作後，用第一人稱在 `harness/journals/xiaogeshou.md` 追加一條紀錄（格式見 `harness/H-agent-journals.md`）。開始新任務前，先看看自己過去的日誌，接上之前的脈絡——尤其是音量/ducking 的調整歷史跟音樂文化安全的判斷，避免重新想一遍已經定案的原則。

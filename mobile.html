@@ -83,6 +83,10 @@
   <!-- 開始 / 結束 覆蓋層 -->
   <div id="overlay" class="overlay">
     <div class="overlay-card">
+      <!-- 統一 logo：與桌機首頁/關卡頁同一張單行「族語射手」木牌（login-title-plaque.png，
+           1200×428≈2.8:1，透明背景）。共用素材、引用同路徑不複製。圖載入失敗時，下方文字標題
+           仍在，是為 fallback；載入成功時由 CSS 讓文字標題退為副標階層（見 mobile.css）。 -->
+      <img id="ovLogo" class="ov-logo" src="/images/ui/login-title-plaque.png?v=2" alt="族語射手 TRUKU WORD ARCHER" onerror="this.hidden=true">
       <div id="ovTitle" class="ov-title">族語射手</div>
       <div id="ovSub" class="ov-sub">點字拼字 · 直式手機版</div>
       <div id="ovStats" class="ov-stats" hidden></div>
