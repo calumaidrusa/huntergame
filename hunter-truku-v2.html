@@ -1298,6 +1298,36 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   font-size: 11px; font-weight: 900;
 }
 .mg-prev-progress { justify-self: start; color: #ffe49a; font-size: 10px; font-weight: 900; text-shadow: 0 1px 0 rgba(0,0,0,0.7); }
+/* 中央預覽的 cue / answer 容器（依 mode 換內容，fillModeGuide 注入）。
+   cue 佔中間彈性列並置中；answer 靠下置中（打字關=答案格+送出、選項關=4選項）。 */
+.mg-prev-cue { display: flex; align-items: center; justify-content: center; min-height: 0; }
+.mg-prev-answer { display: flex; align-items: flex-end; justify-content: center; }
+/* 看圖選詞 cue：小圖框（emoji 佔位，僅示意） */
+.mg-prev-pic {
+  width: 60px; height: 60px; border-radius: 10px; border: 2px solid #8a5b23;
+  background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center; font-size: 30px;
+}
+/* 填空 cue：迷你提示卡（中文提示 + 打散字母示意） */
+.mg-prev-hintcard {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: rgba(245,222,178,0.92); color: #3a2410;
+  border: 2px solid #8a5b23; border-radius: 8px; padding: 5px 14px; font-weight: 900;
+}
+.mg-prev-hc-zh { font-size: 12px; }
+.mg-prev-hc-scramble { font-family: 'Fredoka One', sans-serif; font-size: 11px; letter-spacing: 2px; color: #5a3410; }
+/* 盲打 cue：只給中文詞 */
+.mg-prev-zh {
+  font-size: 20px; font-weight: 900; color: #ffe9b0; text-shadow: 1px 1px 0 #4a2800;
+  padding: 4px 16px; background: rgba(24,16,7,0.7); border: 2px solid #8a5b23; border-radius: 8px;
+}
+/* 打字關 answer：一排答案格 + 送出鈕（示意） */
+.mg-prev-type { display: flex; align-items: center; gap: 9px; }
+.mg-prev-cells { font-family: 'Fredoka One', sans-serif; font-size: 15px; letter-spacing: 3px; color: #ffe49a; }
+.mg-prev-submit {
+  font-size: 11px; font-weight: 900; color: #0a2a08;
+  background: linear-gradient(#7dd35a, #4f9e2a); border: 2px solid #2f6a12;
+  border-radius: 6px; padding: 3px 10px;
+}
 /* 四張編號說明卡（羊皮紙 + 綠色編號章） */
 .mg-card {
   position: relative;
@@ -1636,8 +1666,11 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   pointer-events:none;
 }
 
-/* ── 標題招牌區（A1：整合 logo 圖，兩頁一致）── */
-.title-header { position:relative; width:480px; max-width:90%; margin:0 auto 2px; flex:0 0 auto; text-align:center; }
+/* ── 標題招牌區（A1：整合 logo 圖，兩頁一致）──
+   ⚠ logo 高度直接吃掉垂直預算：整合圖比例 2.8:1，width 越大越高。480px→高171px 會把
+   下面關卡卡片+底部功能列（登出）推出 540 設計高被 overflow:hidden 裁掉。收到 360px
+   （高約128px）讓五關卡片+功能列完整落在 540 內。 */
+.title-header { position:relative; width:360px; max-width:80%; margin:0 auto 2px; flex:0 0 auto; text-align:center; }
 /* 整合 logo（login-title-plaque.png，含族語射手+木牌+弓箭+藤葉，透明背景）。
    單張圖取代原「空木牌+CSS金字+浮動獵人」，無溢出裁切；下方接動態副標。 */
 .title-plaque-img {
@@ -1673,9 +1706,12 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   background-position: 0 0, calc(100% - 16px) 55%, calc(100% - 11px) 55%;
   background-size: 100% 100%, 5px 5px, 5px 5px;
   background-repeat:no-repeat;
-  transition:transform .12s, box-shadow .12s;
+  /* ⚠ 不要對 <select> 用 transform：Chromium 上 transform（即使只有 translateY(-1px)）
+     會讓原生下拉選單「一放開滑鼠就收起、要按著拖」——使用者回報「語別沒辦法選，要一直
+     用滑鼠按著」的成因。hover 回饋改用 filter/box-shadow，不動 transform，選單恢復正常點選。 */
+  transition:filter .12s, box-shadow .12s, border-color .12s;
 }
-.lang-select:hover { transform:translateY(-1px); }
+.lang-select:hover { filter:brightness(1.08); border-color:#F5A623; }
 .lang-select:focus { outline:none; border-color:#F5A623; box-shadow:0 4px 0 #2A1500, 0 0 0 2px rgba(245,166,35,0.5); }
 .lang-select option { background:#241708; color:#FFE9B0; }
 /* 排行榜語別小標籤 */
@@ -2628,39 +2664,42 @@ body.choice-active #stage { bottom: 0; }
   <div id="modeInstructionOverlay" role="dialog" aria-modal="true" aria-labelledby="mgTitle">
     <header class="mg-masthead">
       <div class="mg-title-plaque"><h1 id="mgTitle">遊戲說明</h1></div>
-      <div class="mg-subtitle-plaque"><p>音選詞模式怎麼玩</p></div>
+      <div class="mg-subtitle-plaque"><p id="mgSubtitle">音選詞模式怎麼玩</p></div>
     </header>
+    <!-- 五模式共用同一組海報式看板骨架；文字/預覽由 fillModeGuide(G.mode) 依 mode+語別動態填。
+         四張編號卡固定 1/2/3/4（依角落位置 lt/rt/lb/rb），h2/p 用穩定 id 更新；中央預覽的
+         cue(#mgPrevCue) 與 answer(#mgPrevAnswer) 依 mode 換內容（選項關=4選項、打字關=答案格+送出）。 -->
     <div class="mg-board">
       <article class="mg-card mg-card--lt">
         <span class="mg-num">1</span>
-        <h2>聽發音：</h2>
-        <p>先按喇叭聽題目音訊，可重播。</p>
+        <h2 id="mgc1t">聽發音：</h2>
+        <p id="mgc1b">先按喇叭聽題目音訊，可重播。</p>
       </article>
       <article class="mg-card mg-card--rt">
         <span class="mg-num">2</span>
-        <h2>看選項：</h2>
-        <p>從 4 個選項中找出聽到的族語單字。</p>
+        <h2 id="mgc2t">看選項：</h2>
+        <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <div class="mg-prev-hud"><span>HP ❤❤❤</span><span>SCORE 0</span><span>LEVEL 1</span></div>
+        <div class="mg-prev-hud"><span>HP ❤❤❤</span><span>SCORE 0</span><span id="mgPrevLevel">LEVEL 1</span></div>
         <div class="mg-prev-title" id="mgPrevLang">TRUKU</div>
-        <div class="mg-prev-audio">🔊 聽發音</div>
-        <div class="mg-prev-options"><span>選項 A</span><span>選項 B</span><span>選項 C</span><span>選項 D</span></div>
+        <div class="mg-prev-cue" id="mgPrevCue"><div class="mg-prev-audio">🔊 聽發音</div></div>
+        <div class="mg-prev-answer" id="mgPrevAnswer"><div class="mg-prev-options"><span>選項 A</span><span>選項 B</span><span>選項 C</span><span>選項 D</span></div></div>
         <div class="mg-prev-progress">題目 1 / 8</div>
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
-        <h2>選出答案：</h2>
-        <p>點選你認為正確的選項。</p>
+        <h2 id="mgc3t">選出答案：</h2>
+        <p id="mgc3b">點選你認為正確的選項。</p>
       </article>
       <article class="mg-card mg-card--rb">
         <span class="mg-num">4</span>
-        <h2>答對得分：</h2>
-        <p>完成題目後進入下一題。</p>
+        <h2 id="mgc4t">答對得分：</h2>
+        <p id="mgc4b">完成題目後進入下一題。</p>
       </article>
     </div>
     <footer class="mg-footer">
-      <p class="mg-goal">目標：聽懂發音，學習並記住正確的族語單字。</p>
+      <p class="mg-goal" id="mgGoal">目標：聽懂發音，學習並記住正確的族語單字。</p>
       <button type="button" class="img-btn" id="mgStartBtn" onclick="hideBanner()">開始挑戰</button>
       <p class="mg-shortcut">按「開始挑戰」或 ENTER 開始</p>
     </footer>
@@ -3768,15 +3807,13 @@ function initLevel() {
 function showBanner(isNew) {
   const b = document.getElementById('levelBanner');
   const mg = document.getElementById('modeInstructionOverlay');
-  // L1 音選詞走海報式「遊戲說明看板」#modeInstructionOverlay（規格 docs/08）；
-  // 其他模式維持原 #levelBanner + #howtoCard。兩者互斥，同用 bannerWaiting/hideBanner 流程。
-  const useGuide = (G.mode === 'audio-choice') && !!mg;
-  fillHowto(G.mode); // 依本關模式 + 當前語別填入說明卡片標題/步驟（非 L1 用）
+  // 五模式一律走海報式「遊戲說明看板」#modeInstructionOverlay（原本只有 L1；使用者定案
+  // L2-L5 也升級成同款）。內容由 fillModeGuide(G.mode) 依 mode+語別動態填。#howtoCard
+  // 保留為 fallback（modeGuideData 無此 mode 才用），正常五模式都不會走到。 */
+  const useGuide = !!mg && !!modeGuideData(G.mode);
+  fillHowto(G.mode); // fallback #howtoCard 內容（理論上不再顯示）
   if (useGuide) {
-    // 預覽框語別徽章依當前語別動態填（有原名用大寫原名如 TRUKU，否則中文名）
-    const langEl = document.getElementById('mgPrevLang');
-    if (langEl) langEl.textContent =
-      (G.lang && ((G.lang.nameNative || '').toUpperCase() || G.lang.nameZh)) || '太魯閣語';
+    fillModeGuide(G.mode); // 標題/副標/四卡/預覽/目標 全依 mode+語別填
     mg.classList.add('show');
     b.classList.remove('show');
   } else {
@@ -3893,6 +3930,85 @@ function fillHowto(mode) {
       stepsEl.appendChild(li);
     });
   }
+}
+
+// ── 海報式遊戲說明看板（#modeInstructionOverlay）五模式內容 ──────────────
+// 每個 mode 回傳 { sub 副標, cards[4] 四張編號卡{t標題,b內文}, goal 目標句,
+// cue 預覽線索型, answer 預覽作答型 }。{語別} 依當前 G.lang.nameZh 動態。
+// 只是引導文字/示意預覽，不影響任何判定/計分/解鎖。
+function modeGuideData(mode) {
+  const langZh = (G.lang && G.lang.nameZh) || '太魯閣語';
+  const scored = { t:'答對得分：', b:'完成題目後進入下一題。' };
+  switch (mode) {
+    case 'audio-choice': return {
+      sub:'音選詞模式怎麼玩',
+      cards:[ {t:'聽發音：', b:'先按喇叭聽題目音訊，可重播。'},
+              {t:'看選項：', b:`從 4 個選項中找出聽到的${langZh}單字。`},
+              {t:'選出答案：', b:'點選你認為正確的選項。'}, scored ],
+      goal:`目標：聽懂發音，學習並記住正確的${langZh}單字。`, cue:'audio', answer:'choice' };
+    case 'blank': return {
+      sub:'填空模式怎麼玩',
+      cards:[ {t:'看提示卡：', b:'看右側中文提示與打散的字母提示。'},
+              {t:'填入答案：', b:`依提示在下方答案格打字，補出完整的${langZh}單字。`},
+              {t:'送出答案：', b:'完成後按「送出答案」確認。'}, scored ],
+      goal:`目標：學習並記住正確的${langZh}單字。`, cue:'blank', answer:'type' };
+    case 'listen': return {
+      sub:'聽打模式怎麼玩',
+      cards:[ {t:'聽發音：', b:'按喇叭聽題目音訊，可重播。'},
+              {t:'輸入單字：', b:`把聽到的${langZh}單字打進輸入框。`},
+              {t:'送出答案：', b:'完成後按送出確認。'}, scored ],
+      goal:`目標：聽懂發音，學習並記住正確的${langZh}單字。`, cue:'audio', answer:'type' };
+    case 'choice': return {   // 看圖選詞
+      sub:'看圖選詞模式怎麼玩',
+      cards:[ {t:'看圖片：', b:'先看中央圖片，判斷代表的詞義。'},
+              {t:'看選項：', b:`從 4 個選項中選出正確的${langZh}單字。`},
+              {t:'選出答案：', b:'點選你認為正確的選項。'}, scored ],
+      goal:`目標：看圖辨義，學習並記住正確的${langZh}單字。`, cue:'picture', answer:'choice' };
+    case 'blind': return {
+      sub:'盲打模式怎麼玩',
+      cards:[ {t:'看中文：', b:'畫面只給中文，沒有其他提示。'},
+              {t:'憑記憶：', b:`回想對應的${langZh}單字怎麼拼。`},
+              {t:'打出單字：', b:'把完整單字打進輸入框後送出。'}, scored ],
+      goal:`目標：憑記憶輸入，鞏固${langZh}單字記憶。`, cue:'blind', answer:'type' };
+    default: return null;
+  }
+}
+
+// 中央預覽的 cue（線索示意）HTML，依 cue 型別。純示意、無互動。
+function mgPreviewCueHtml(cue) {
+  switch (cue) {
+    case 'audio':   return '<div class="mg-prev-audio">🔊 聽發音</div>';
+    case 'picture': return '<div class="mg-prev-pic">🖼️</div>';
+    case 'blank':   return '<div class="mg-prev-hintcard"><span class="mg-prev-hc-zh">中文提示</span><span class="mg-prev-hc-scramble">a · s · m · a</span></div>';
+    case 'blind':   return '<div class="mg-prev-zh">中文詞</div>';
+    default:        return '';
+  }
+}
+// 中央預覽的 answer（作答示意）HTML：選項關=4選項、打字關=答案格+送出。
+function mgPreviewAnswerHtml(answer) {
+  if (answer === 'choice')
+    return '<div class="mg-prev-options"><span>選項 A</span><span>選項 B</span><span>選項 C</span><span>選項 D</span></div>';
+  return '<div class="mg-prev-type"><span class="mg-prev-cells">□ □ □ □ □</span><span class="mg-prev-submit">送出</span></div>';
+}
+
+// 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
+// 不動任何判定。showBanner() 在顯示看板前呼叫。
+function fillModeGuide(mode) {
+  const d = modeGuideData(mode);
+  if (!d) return;
+  const set = (id, txt) => { const e = document.getElementById(id); if (e) e.textContent = txt; };
+  set('mgSubtitle', d.sub);
+  for (let i = 0; i < 4; i++) { set('mgc'+(i+1)+'t', d.cards[i].t); set('mgc'+(i+1)+'b', d.cards[i].b); }
+  set('mgGoal', d.goal);
+  set('mgPrevLevel', 'LEVEL ' + G.level);
+  // 語別徽章：有原名用大寫原名（如 TRUKU），否則中文名
+  const langEl = document.getElementById('mgPrevLang');
+  if (langEl) langEl.textContent =
+    (G.lang && ((G.lang.nameNative || '').toUpperCase() || G.lang.nameZh)) || '太魯閣語';
+  const cue = document.getElementById('mgPrevCue');
+  if (cue) cue.innerHTML = mgPreviewCueHtml(d.cue);
+  const ans = document.getElementById('mgPrevAnswer');
+  if (ans) ans.innerHTML = mgPreviewAnswerHtml(d.answer);
 }
 
 // 把任務文字填到對應位置：選項關（L1/L4）→ 面板頂 #choiceCueTop；
