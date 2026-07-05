@@ -2335,6 +2335,58 @@ body.choice-active #stage { bottom: 0; }
 #hintBtn:disabled { opacity:0.5; cursor:default; filter:grayscale(0.3); }
 /* 選項關被提示刪掉的錯誤選項：淡出、不可點 */
 .choice-opt.hint-removed { opacity:0.18; pointer-events:none; filter:grayscale(0.8); transition:opacity .25s, filter .25s; }
+/* ── 語別選擇：觸發鈕（取代原生 select）＋ modal 清單 ── */
+.lang-trigger {
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  font-family:'Fredoka One',sans-serif; font-size:13px; cursor:pointer;
+  padding:7px 16px; border-radius:10px; max-width:280px;
+  color:#FFE9B0; background:linear-gradient(#3A2915,#241708);
+  border:2px solid #8B5500; box-shadow:0 4px 0 #2A1500, inset 0 1px 0 rgba(255,220,150,0.18);
+  transition:filter .12s, box-shadow .12s, border-color .12s;
+}
+.lang-trigger:hover { filter:brightness(1.08); border-color:#F5A623; }
+.lang-trigger:active { box-shadow:0 1px 0 #2A1500; }
+.lang-trigger-caret { color:#F5A623; font-size:11px; }
+/* modal 遮罩：覆蓋全畫面（在 #gameWrap 內、隨縮放，div hit-test 正常）。 */
+#langModal {
+  /* z-index 要高於 #authScreen(500)/#titleScreen(400)——語別選單從這兩個畫面開，
+     否則 modal 會被畫面蓋住看不到。比照 #lbModal(600) 之上。 */
+  position:absolute; inset:0; z-index:620; display:none;
+  align-items:center; justify-content:center;
+  background:rgba(5,20,3,0.72);
+}
+#langModal.show { display:flex; }
+#langModalBox {
+  width:min(460px,88%); max-height:78%; display:flex; flex-direction:column;
+  background:linear-gradient(#2b241e,#1a140e); border:3px solid #6b5a48; border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.6); overflow:hidden;
+}
+.lang-modal-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-bottom:2px solid rgba(255,220,150,0.15);
+  font-family:'Fredoka One',sans-serif; font-size:15px; color:#FFE9B0;
+  background:linear-gradient(#4a4038,#2b241e);
+}
+.lang-modal-close {
+  border:none; background:rgba(0,0,0,0.3); color:#FFE9B0; cursor:pointer;
+  width:26px; height:26px; border-radius:7px; font-size:13px;
+}
+.lang-modal-close:hover { background:rgba(180,30,30,0.6); color:#fff; }
+#langModalList {
+  overflow-y:auto; padding:10px;
+  display:grid; grid-template-columns:1fr 1fr; gap:7px;
+}
+.lang-modal-item {
+  text-align:center; cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif; font-size:12px; font-weight:700;
+  padding:9px 8px; border-radius:8px; line-height:1.25;
+  color:#FFE9B0; background:rgba(58,41,21,0.75); border:1.5px solid #6b5a48;
+  transition:background .1s, border-color .1s, transform .06s;
+}
+.lang-modal-item:hover { background:rgba(107,90,72,0.9); border-color:#F5A623; }
+.lang-modal-item:active { transform:scale(0.97); }
+.lang-modal-item-cur { border-color:#FFD700; background:linear-gradient(#6B4A22,#4A3015); color:#FFD700; }
+@media (max-width:520px){ #langModalList { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -2361,7 +2413,9 @@ body.choice-active #stage { bottom: 0; }
          樣式基本，美化交小排版（class: lang-picker / lang-select）。 -->
     <div class="lang-picker" id="authLangPicker">
       <span class="lang-picker-label">學習語別：</span>
-      <select class="lang-select" id="authLangSelect" onchange="onLangChange(this.value)" aria-label="選擇學習語別"></select>
+      <button type="button" class="lang-trigger" id="authLangTrigger" onclick="openLangModal()" aria-haspopup="dialog" aria-label="選擇學習語別">
+        <span id="authLangTriggerLabel">太魯閣語 (Truku)</span><span class="lang-trigger-caret">▾</span>
+      </button>
     </div>
     <div class="auth-card">
       <div class="auth-tabs">
@@ -2412,7 +2466,9 @@ body.choice-active #stage { bottom: 0; }
     <!-- §任務B：標題畫面「選擇學習語別」入口（小木牌標籤 + 深木色下拉）。 -->
     <div class="lang-picker lang-picker-title" id="titleLangPicker">
       <span class="lang-picker-label">選擇學習語別</span>
-      <select class="lang-select" id="titleLangSelect" onchange="onLangChange(this.value)" aria-label="切換學習語別"></select>
+      <button type="button" class="lang-trigger" id="titleLangTrigger" onclick="openLangModal()" aria-haspopup="dialog" aria-label="切換學習語別">
+        <span id="titleLangTriggerLabel">太魯閣語 (Truku)</span><span class="lang-trigger-caret">▾</span>
+      </button>
     </div>
     <!-- 五關五玩法：每關＝一種玩法。圖示＝5 張圓形木框透明 PNG（v2-level-icon-1..5，
          文化審查已通過，LEVEL4 沿用安全版畫框+放大鏡）。DOM 結構：.lc-btn 保留 data-level
@@ -2479,6 +2535,20 @@ body.choice-active #stage { bottom: 0; }
         <button id="lbClose" onclick="closeLeaderboard()">✕ 關閉</button>
       </div>
       <div id="lbBody"><div class="lb-loading">載入中...</div></div>
+    </div>
+  </div>
+
+  <!-- 語別選擇 MODAL — #langModal. 取代原生 <select>：原生下拉在 #gameWrap 的
+       transform:scale() 縮放容器下，Chromium 會定位錯亂/一點就收（使用者回報「跳掉、
+       沒辦法好好選」）。改用 div 版清單，在縮放容器內 hit-test 正常，且 42 語別用
+       可捲清單比原生長下拉好選。顯示: openLangModal()；隱藏: closeLangModal()。 -->
+  <div id="langModal" onclick="if(event.target===this)closeLangModal()">
+    <div id="langModalBox">
+      <div class="lang-modal-head">
+        <span>🌏 選擇學習語別</span>
+        <button class="lang-modal-close" onclick="closeLangModal()">✕</button>
+      </div>
+      <div id="langModalList"></div>
     </div>
   </div>
 
@@ -5477,9 +5547,9 @@ function escapeHtml(s) {
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 }
 
-// ESC 關閉排行榜
+// ESC 關閉排行榜 / 語別 modal
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeLeaderboard();
+  if (e.key === 'Escape') { closeLeaderboard(); closeLangModal(); }
 });
 
 // ── 音效播放 ─────────────────────────────────────
@@ -5529,18 +5599,44 @@ async function fetchLanguages() {
   LANGUAGES.forEach(l => { _langByCode[l.lang_code] = l; });
 }
 
-// 把 LANGUAGES 填進兩個下拉（登入畫面 + 標題畫面），並選中當前 G.lang.code。
+// 更新兩個語別觸發鈕的顯示文字為當前 G.lang（登入畫面 + 標題畫面）。
+// （原本填原生 <select>；改用 modal 後只需更新觸發鈕標籤，故名稱保留、行為改為更新標籤。
+//  onLangChange / initLang 的既有呼叫都相容。）
 function populateLangSelects() {
-  const optsHtml = LANGUAGES.map(l => {
-    const native = l.name_native ? ` (${l.name_native})` : '';
-    return `<option value="${l.lang_code}">${l.name_zh}${native}</option>`;
-  }).join('');
-  ['authLangSelect', 'titleLangSelect'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    sel.innerHTML = optsHtml;
-    sel.value = G.lang.code;
+  const label = (G.lang && G.lang.nameNative)
+    ? `${G.lang.nameZh} (${G.lang.nameNative})`
+    : ((G.lang && G.lang.nameZh) || '太魯閣語');
+  ['authLangTriggerLabel', 'titleLangTriggerLabel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = label;
   });
+}
+
+// ── 語別選擇 modal（取代原生 select，避開 #gameWrap transform:scale 下原生下拉的定位/跳掉問題）──
+function openLangModal() {
+  if (!canSwitchLang()) { showLangToast('⚠ 遊戲進行中無法切換語別'); return; }
+  renderLangModalList();
+  document.getElementById('langModal').classList.add('show');
+}
+function closeLangModal() {
+  const m = document.getElementById('langModal');
+  if (m) m.classList.remove('show');
+}
+// 依 LANGUAGES 填 modal 清單；當前語別高亮。點某語別 → pickLang()。
+function renderLangModalList() {
+  const box = document.getElementById('langModalList');
+  if (!box) return;
+  const curCode = (G.lang && G.lang.code) || '';
+  box.innerHTML = LANGUAGES.map(l => {
+    const native = l.name_native ? ` (${escapeHtml(l.name_native)})` : '';
+    const cur = l.lang_code === curCode ? ' lang-modal-item-cur' : '';
+    return `<button type="button" class="lang-modal-item${cur}" onclick="pickLang('${escapeHtml(l.lang_code)}')">`
+         + `${escapeHtml(l.name_zh)}${native}</button>`;
+  }).join('');
+}
+function pickLang(code) {
+  closeLangModal();
+  onLangChange(code); // 沿用既有切換邏輯（canSwitchLang 擋、清快取、更新 UI、記 localStorage）
 }
 
 // 依 code 建立 G.lang 狀態物件（查無此 code → 退回預設 trv）。
