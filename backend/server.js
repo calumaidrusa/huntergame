@@ -209,9 +209,18 @@ function resolveLang(raw) {
   return langExists.get(code) ? code : DEFAULT_LANG;
 }
 
+// 帳號白名單：這些帳號永久解鎖全部關卡（admin 測試帳號），不受 scores 表過關紀錄限制。
+// 2026-07-06 使用者要求：asd8107（好看的人）是本專案 admin 本人，要能不受進度限制測試全部關卡。
+// 注意：這跟 admins 表（後台管理員登入）是不同機制——玩家帳號跟管理員帳號本來就是分開的兩張表，
+// 這裡用最簡單的 username 白名單達到「這個玩家帳號永遠解鎖」的效果，之後要加其他測試帳號就加進這個 Set。
+const ADMIN_UNLOCK_ALL_USERNAMES = new Set(['asd8107']);
+
 // 算出某玩家目前解鎖到第幾關：該玩家 cleared=1 的最高 level + 1，上限鎖在 MAX_LEVEL，
 // 沒有任何過關紀錄的新玩家從 1 開始。單一事實來源就是 scores 表本身，不額外存欄位。
+// 白名單帳號（見上）永遠回傳 MAX_LEVEL，完全繞過 scores 表判斷。
 function getUnlockedLevel(playerId) {
+  const player = db.prepare('SELECT username FROM players WHERE id = ?').get(playerId);
+  if (player && ADMIN_UNLOCK_ALL_USERNAMES.has(player.username)) return MAX_LEVEL;
   const row = db.prepare(
     'SELECT COALESCE(MAX(level), 0) AS maxLevel FROM scores WHERE player_id = ? AND cleared = 1'
   ).get(playerId);

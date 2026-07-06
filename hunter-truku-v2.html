@@ -580,6 +580,80 @@ body.listen-active #syllableDots {
 /* 填空關：底部原輸入顯示層不作為作答區（作答在中央答案格），淡出隱藏，
    避免與答案格重複顯示。#realInput 仍照舊接鍵盤（透明，見下）。 */
 body.blank-active #inputBubble { display: none !important; }
+/* ══ §L2 填空版面重排（使用者定案 2026-07-06）══
+   ①答案格放大 ②中央答案面板往下、當唯一作答區 ③收掉多餘底部輸入框
+   ④獵人＝底部進度軌道（位置＝第X/Y題）+ 題數標籤 */
+/* ① 答案格放大（再加大） */
+body.blank-active .answer-cell { min-width:40px; height:52px; font-size:28px; }
+body.blank-active #answerCells { gap:9px; }
+body.blank-active #answerAreaLabel { font-size:16px; letter-spacing:5px; }
+body.blank-active #answerExample { font-size:14px; }
+/* ② 答案面板往下貼近底部（獵人細進度條在最底）+ 放大（更寬、更高 padding）。
+   靠左置中（left:35%）避開右側放大的提示卡；長詞多格也不撞卡。 */
+body.blank-active #answerArea { left:35%; bottom:74px; padding:26px 58px 30px; min-width:440px; max-width:600px; gap:9px; }
+/* ⑤ 提示卡（字母提示）往右靠 + 放大（使用者標註：往右移動並放大）。 */
+body.blank-active #wordBubble {
+  width:284px; min-width:284px; max-width:284px; right:22px; top:16px;
+  padding:98px 36px 56px;
+}
+/* 提示字母磚放大一點，配合放大的提示卡 */
+body.blank-active .hint-letter { font-size:17px; min-width:26px; height:30px; }
+/* ③ 收掉多餘底部輸入框：填空關 #realInput 只作「接鍵盤」用（打的字顯示在中央答案格），
+   縮成看不見的接鍵盤層（仍可 focus 收鍵盤/送 input 事件），不再顯示空的深色欄。 */
+body.blank-active #realInput {
+  height:1px; min-height:0; padding:0; border:none; background:transparent;
+  opacity:0; caret-color:transparent;
+}
+/* 收掉底部深色輸入欄的木框底圖（v2-input-field.png），但保留 #realInput 接鍵盤 +
+   特殊字元列 + 計時條（它們同在 .input-wrapper 內）。 */
+body.blank-active .input-wrapper { background:none; filter:none; }
+/* 底部資訊列的「第X/Y題」已由獵人進度軌道的 label 取代，隱藏避免重複顯示。 */
+body.blank-active #bottomInfoBar { display:none !important; }
+/* ④ 獵人＝底部「關卡步道」進度條（v12 素材：木步道底圖 + 節點 + 跑姿獵人 + 終點旗/營地）。
+   位置/節點狀態由 positionHunterAsProgress 依 round/totalRounds 設。 */
+/* 跑姿獵人（v2-hunter-truku-run，applyLevelMode 換 src）站在步道上往右跑；上下小跳。 */
+@keyframes hunterRunTrack { 0%{bottom:6px} 50%{bottom:11px} 100%{bottom:6px} }
+body.blank-active #hunter {
+  width:52px; height:52px; object-fit:contain;
+  animation:hunterRunTrack 0.42s steps(2) infinite;  /* 跑姿不套 hunterSway（那是待機晃） */
+  z-index:39; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.45));
+}
+body.blank-active #hunterTrack { display:block; }
+/* 步道底圖橫幅（v2-progress-track.png）貼畫面最底；左留題號木牌、右留終點旗。 */
+#hunterTrack {
+  display:none; position:absolute; left:104px; right:60px; bottom:2px; height:38px;
+  background:url('/images/ui/v2-progress-track.png') left center/auto 100% repeat-x;
+  z-index:18; pointer-events:none;
+}
+/* 關卡節點：renderProgressNodes 依 totalRounds 生 N 顆等距圓木鈕；
+   done(金綠)/current(亮綠脈動)/未到(灰)。 */
+#trackNodes { position:absolute; inset:0; }
+.track-node {
+  position:absolute; top:52%; transform:translate(-50%,-50%);
+  width:11px; height:11px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #d8ccab, #6b5a3a 75%);
+  border:1.5px solid rgba(70,48,16,0.85); box-shadow:0 1px 2px rgba(0,0,0,0.5);
+}
+.track-node.done { background:radial-gradient(circle at 35% 30%, #baf29a, #4f9e2a 78%); border-color:#3a6a18; }
+.track-node.current {
+  width:15px; height:15px;
+  background:radial-gradient(circle at 35% 30%, #eaffce, #5cd634 68%);
+  border-color:#FFD700; box-shadow:0 0 8px 2px rgba(120,230,60,0.75);
+  animation:answerCellPulse 1s ease-in-out infinite;
+}
+/* 終點旗/營地（v2-progress-goal.png）疊在步道右端外側，當「目的地」。 */
+#trackGoal {
+  position:absolute; right:-50px; bottom:-4px; width:54px; height:54px;
+  object-fit:contain; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.5)); z-index:20;
+}
+/* 第X/Y題木牌：步道左端外側。 */
+#trackRoundLabel {
+  position:absolute; left:-92px; bottom:8px;
+  font-family:'Fredoka One',sans-serif; font-size:12px; color:#FFE9B0;
+  background:linear-gradient(180deg, rgba(20,44,10,0.9), rgba(10,30,8,0.94));
+  border:1.5px solid rgba(199,154,58,0.6); border-radius:8px; padding:4px 10px;
+  text-shadow:0 1px 0 #5A3000; box-shadow:0 2px 0 rgba(90,48,0,0.5); white-space:nowrap;
+}
 /* 裝飾分隔線：兩側漸隱橫線 + 中央菱形，呼應羊皮紙古典裝飾風 */
 .word-divider {
   position: relative;
@@ -2610,6 +2684,13 @@ body.choice-active #stage { bottom: 0; }
     </div>
 
     <img id="hunter" src="/images/ui/v2-hunter-truku-h2.png" alt="獵人">
+    <!-- §L2 填空：底部獵人進度軌道（僅 body.blank-active 顯示）。獵人站在這條軌道上，
+         位置＝本關進度；label 顯示「第 X / Y 題」。取代原本分散的題數/進度顯示。 -->
+    <div id="hunterTrack">
+      <div id="trackNodes"></div>
+      <img id="trackGoal" src="/images/ui/v2-progress-goal.png" alt="終點">
+      <div id="trackRoundLabel">第 1 / 18 題</div>
+    </div>
     <div id="prey">🐗</div>
 
     <!-- Word bubble（畫面右上）— 羊皮紙詞彙卡（由上到下階層：主視覺 / 族語詞 /
@@ -3165,11 +3246,11 @@ function _showAuthToast(msg) {
   setTimeout(() => t.remove(), 2300); // unlockPop 2.2s forwards 結束後移除節點
 }
 // 訪客模式：不登入、不發 JWT、不寫 localStorage（重新整理即回登入畫面，訪客不持久）。
-// 可正常順序闖關（解鎖進度只存在本次 session 的 AUTH.unlockedLevel 記憶體），但成績
-// 一律不送後端（submitScore 內以 AUTH.isGuest 分流略過 /api/scores）、不進排行榜。
+// 訪客直接開放全 5 關（unlockedLevel=MAX_LEVEL），不必序列闖關——使用者定案「訪客全 5 關都能玩」。
+// 成績一律不送後端（submitScore 內以 AUTH.isGuest 分流略過 /api/scores）、不進排行榜。
 function onGuestBtnClick() {
   if (window.Sfx) Sfx.sfxClick();
-  AUTH = { token: null, username: null, displayName: '訪客', unlockedLevel: 1, totalScore: 0, isGuest: true };
+  AUTH = { token: null, username: null, displayName: '訪客', unlockedLevel: MAX_LEVEL, totalScore: 0, isGuest: true };
   showTitleScreen();
 }
 
@@ -3913,6 +3994,11 @@ function applyLevelMode(lvl) {
   // 填空關（L2 新設計）：右卡片＝提示卡（打散字母磚），作答在中央下方 #answerArea
   // 的答案格（打字依序填格），底部輸入顯示層隱藏。class 由 CSS 控制顯示切換。
   document.body.classList.toggle('blank-active', G.mode === 'blank');
+  // §L2 進度條：填空關獵人換成「朝右跑姿」sprite（在進度步道上往終點跑）；其餘關維持蹲姿拉弓。
+  const hunterImg = document.getElementById('hunter');
+  if (hunterImg) hunterImg.src = (G.mode === 'blank')
+    ? '/images/ui/v2-hunter-truku-run.png'
+    : '/images/ui/v2-hunter-truku-h2.png';
 }
 
 function initLevel() {
@@ -4978,10 +5064,54 @@ function getGameScale() {
 // nextRound(). Uses getBoundingClientRect() (same approach as fireArrow())
 // so the target position is always based on the prey's real, current
 // on-screen spot/size rather than a hardcoded layout assumption.
+// §L2 填空：獵人改當「底部進度軌道」——水平位置 = 本關進度(round/totalRounds)橫跨全寬，
+// 並更新軌道上的「第 X / Y 題」標籤。不走逼近獵物那套。
+// §L2 進度條「關卡步道」：渲染節點(done/current/未到)、把跑姿獵人擺在「當前節點」上、更新題數木牌。
+function renderProgressNodes(total, cur) {
+  const box = document.getElementById('trackNodes');
+  if (!box) return;
+  if (box.childElementCount !== total) { // 數量變才重建
+    box.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const n = document.createElement('div');
+      n.className = 'track-node';
+      n.style.left = ((i + 0.5) / total * 100) + '%'; // 等距
+      box.appendChild(n);
+    }
+  }
+  [...box.children].forEach((n, i) => {
+    n.classList.remove('done', 'current');
+    if (i < cur - 1) n.classList.add('done');
+    else if (i === cur - 1) n.classList.add('current');
+  });
+}
+function positionHunterAsProgress() {
+  const stage = document.getElementById('stage');
+  const hunter = document.getElementById('hunter');
+  const track = document.getElementById('hunterTrack');
+  if (!stage || !hunter) return;
+  const ld = LEVELS[G.level];
+  const total = (ld && ld.totalRounds) || 1;
+  const cur = Math.min(total, Math.max(1, G.round)); // 1-based 當前題
+  renderProgressNodes(total, cur);
+  // 把獵人擺在「當前節點」x：節點在步道內等距 (i+0.5)/total。用步道實際 rect 換算 stage 座標。
+  const scale = getGameScale();
+  const sr = stage.getBoundingClientRect();
+  const tr = track ? track.getBoundingClientRect() : sr;
+  const trackLeft = (tr.left - sr.left) / scale;
+  const trackW = tr.width / scale;
+  const hunterW = (hunter.getBoundingClientRect().width / scale) || 52;
+  const nodeX = trackLeft + trackW * ((cur - 0.5) / total);
+  hunter.style.left = (nodeX - hunterW / 2) + 'px';
+  const lbl = document.getElementById('trackRoundLabel');
+  if (lbl) lbl.textContent = `第 ${G.round} / ${total} 題`;
+}
+
 function moveHunterTowardPrey() {
   const stage = document.getElementById('stage');
   const hunter = document.getElementById('hunter');
   const prey = document.getElementById('prey');
+  if (G.mode === 'blank') { positionHunterAsProgress(); return; } // L2：獵人＝底部進度軌道
   if (!G.currentPrey) return;
 
   const stageRect = stage.getBoundingClientRect();
