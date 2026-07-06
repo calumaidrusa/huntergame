@@ -352,6 +352,56 @@ body.choice-active #modeTaskHint { display: none; }
   to   { transform: translate(var(--arrow-dx), var(--arrow-dy)) rotate(var(--arrow-angle, 0deg)); opacity: 0.2; }
 }
 
+/* ── 全站禁 emoji：純向量機能圖示（取代 ✓✗✕▶▾⬇➤ 等符號字元）────────────
+   用 CSS mask + SVG（僅取形狀 alpha），顏色一律吃父層 currentColor，可像文字一樣著色/縮放。
+   使用：<span class="vico vico-check"></span>；尺寸 = 父層 font-size（1em）。 */
+.vico {
+  display:inline-block; width:1em; height:1em; vertical-align:-0.13em; flex:none;
+  background-color: currentColor;
+  -webkit-mask: var(--vico) center/contain no-repeat;
+          mask: var(--vico) center/contain no-repeat;
+}
+.vico-check { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8.5l3.4 3.4 7.6-8' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.vico-cross { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4l8 8M12 4l-8 8' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.vico-down  { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2.5v8M4 7l4 4 4-4' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.vico-play  { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 3l8.5 5-8.5 5z' fill='%23000'/%3E%3C/svg%3E"); }
+.vico-arrow { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 5.6h6.4V3l5.6 5-5.6 5v-2.6H2z' fill='%23000'/%3E%3C/svg%3E"); }
+.vico-caret { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 5.5l5 5 5-5z' fill='%23000'/%3E%3C/svg%3E"); }
+.vico-star  { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1l2.05 4.28 4.7.6-3.45 3.24.9 4.68L8 11.6 3.8 13.8l.9-4.68L1.25 5.88l4.7-.6z' fill='%23000'/%3E%3C/svg%3E"); }
+/* 過關星等：金色 */
+.clear-stars { color:#FFD54A; margin-left:4px; }
+.clear-stars .vico-star { margin:0 1px; }
+/* 排行結果訊息前綴標記（✓成功/✗失敗）：state class + ::before，textContent 保持純文字（error 免注入風險） */
+.rank-ok::before, .rank-bad::before {
+  content:''; display:inline-block; width:1em; height:1em; vertical-align:-0.13em; margin-right:5px;
+  background-color: currentColor;
+  -webkit-mask: var(--vico) center/contain no-repeat; mask: var(--vico) center/contain no-repeat;
+}
+.rank-ok::before  { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8.5l3.4 3.4 7.6-8' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); color:#5BE85B; }
+.rank-bad::before { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4l8 8M12 4l-8 8' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E"); color:#FF6B6B; }
+.vico-leaf  { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2C5 5 3 7 3 10a5 5 0 0 0 10 0c0-3-2-5-5-8z' fill='%23000'/%3E%3C/svg%3E"); }
+/* 緞帶葉飾（取代 🍃）：綠色小葉 */
+.ribbon-leaf.vico { width:18px; height:18px; color:#7DCB4E; }
+/* 命中閃光小星（取代 ✨）：金色 */
+.hit-sparkle.vico { color:#FFE04A; }
+/* 排行榜前三名數字獎牌（取代 🥇🥈🥉）：圓底＋名次數字，沿用金/銀/銅配色 */
+.lb-rank-1 .lb-medal, .lb-rank-2 .lb-medal, .lb-rank-3 .lb-medal {
+  display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;
+  border-radius:50%; color:#3a2a00 !important; font-weight:900; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,.4);
+}
+.lb-rank-1 .lb-medal { background:linear-gradient(160deg,#FFE87A,#F2B800); }
+.lb-rank-2 .lb-medal { background:linear-gradient(160deg,#F0F0F0,#B9B9B9); }
+.lb-rank-3 .lb-medal { background:linear-gradient(160deg,#F0B27A,#C77A34); }
+/* 木盤 UI icon 圖（v13，取代 🔊💡🏆👤🚪🗑📖❤）：尺寸吃父層 em、與文字基線對齊 */
+.ui-ico { display:inline-block; vertical-align:-0.32em; width:1.55em; height:1.55em; object-fit:contain; }
+/* 「怎麼玩」示意預覽內的 icon 縮小、貼合小字 */
+.mg-prev-hud .ui-ico, .mg-prev-audio .ui-ico { width:1.15em; height:1.15em; vertical-align:-0.2em; }
+.mg-prev-hud .mg-heart { margin:0 0.5px; }
+/* 鎖（🔒，小畫家未出圖→純向量 padlock） */
+.vico-lock { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.6 7.2V5a3.4 3.4 0 0 1 6.8 0v2.2' fill='none' stroke='%23000' stroke-width='1.6'/%3E%3Crect x='3.3' y='7' width='9.4' height='6.3' rx='1.2' fill='%23000'/%3E%3C/svg%3E"); }
+/* 燈泡（提示鈕：金膠囊上用深色向量燈泡，比白盤木牌 icon 更清楚合身） */
+.vico-bulb { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.4a4.4 4.4 0 0 0-2.7 7.9c.6.5 1 1.1 1.1 1.9h3.2c.1-.8.5-1.4 1.1-1.9A4.4 4.4 0 0 0 8 1.4z' fill='%23000'/%3E%3Crect x='6.1' y='11.7' width='3.8' height='1.1' rx='.5' fill='%23000'/%3E%3Crect x='6.6' y='13.5' width='2.8' height='1.1' rx='.5' fill='%23000'/%3E%3C/svg%3E"); }
+
 /* Hunter running animation
    兩支動畫並存：hunterRun 只動 `bottom`（腳步彈跳，維持原狀），
    hunterSway 只動 `transform`（輕微待機晃動：左右微擺 + 呼吸縮放）。
@@ -400,17 +450,19 @@ body.choice-active #modeTaskHint { display: none; }
    分區標題 + 標靶 icon）。純 CSS::before，僅 body.blank-active 顯示，不動 DOM。
    浮在卡片頂端木桿下、hero 主視覺上方，與題目 emoji/插畫並存。 */
 body.blank-active #wordBubble::before {
-  content: '🎯 提示卡';
+  content: '提示卡';   /* 全站禁 emoji：🎯 改成左側 gold 標靶向量 icon（多層 background） */
   position: absolute;
   top: 58px; left: 50%; transform: translateX(-50%);
   z-index: 2;
   font-family: 'Noto Sans TC', sans-serif;
   font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
   color: #FFF3C4;
-  background: linear-gradient(180deg, rgba(45,138,26,0.95), rgba(26,74,16,0.95));
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.4' fill='none' stroke='%23FFD24A' stroke-width='1.6'/%3E%3Ccircle cx='8' cy='8' r='2.9' fill='none' stroke='%23FFD24A' stroke-width='1.6'/%3E%3Ccircle cx='8' cy='8' r='1' fill='%23FFD24A'/%3E%3C/svg%3E") 10px center / 13px no-repeat,
+    linear-gradient(180deg, rgba(45,138,26,0.95), rgba(26,74,16,0.95));
   border: 1.5px solid rgba(255,215,0,0.6);
   border-radius: 999px;
-  padding: 2px 12px;
+  padding: 2px 12px 2px 28px;
   white-space: nowrap;
   box-shadow: 0 2px 5px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,229,102,0.15);
 }
@@ -569,6 +621,16 @@ body.listen-active #syllableDots {
   box-shadow: 0 1px 2px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.35);
 }
 .syl-dash { color: rgba(255,220,150,0.7); font-weight: 900; margin: 0 3px; }
+/* §提示加強：長字露約 20% 字母（其餘仍是點）。露出的字母做成小金字磚，與點列同一排。 */
+.syl-letter {
+  min-width: 14px; height: 16px; padding: 0 3px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka One', 'Noto Sans TC', 'Charis SIL', 'Segoe UI', sans-serif;
+  font-size: 12px; color: #3A2410; line-height: 1;
+  background: linear-gradient(180deg, #FFE9A8, #E8B84A);
+  border: 1px solid #8B5500; border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+}
 /* 範例小字「例如：a-m-a-s-a-m」 */
 #answerExample {
   font-family: 'Fredoka One', 'Noto Sans TC', 'Segoe UI', 'Charis SIL',
@@ -608,7 +670,10 @@ body.blank-active #realInput {
    特殊字元列 + 計時條（它們同在 .input-wrapper 內）。 */
 body.blank-active .input-wrapper { background:none; filter:none; }
 /* 底部資訊列的「第X/Y題」已由獵人進度軌道的 label 取代，隱藏避免重複顯示。 */
-body.blank-active #bottomInfoBar { display:none !important; }
+/* §進度條統一：有步道時，題號由步道左端木牌(#trackRoundLabel)顯示，底部資訊列整條隱藏，
+   避免「第X/Y題」重複、且 #bottomInfoBar(stage 底 bottom:6) 會與步道(bottom:2) 重疊。
+   答對正解對照改由 showCorrectBanner 緞帶(各關皆觸發)呈現。 */
+body.has-track #bottomInfoBar { display:none !important; }
 /* L3 聽打同 L2：作答已移到中央答案格（#answerArea），底部那個深色輸入框變多餘——
    收掉它（#realInput 只留接鍵盤、透明；.input-wrapper 拿掉 v2-input-field.png 木框底圖）。
    保留送出鈕/計時/特殊字元列/COMBO。⚠️L5 盲打「不套」——它靠這個底部輸入框打字。 */
@@ -618,16 +683,40 @@ body.listen-active #realInput {
   opacity:0; caret-color:transparent;
 }
 body.listen-active .input-wrapper { background:none; filter:none; }
+/* §使用者回報「L2/L3 底部很空」（小排版評估：壓縮填實）：作答已移到中央答案格後，
+   .input-wrapper 只剩接鍵盤的隱形 #realInput，卻還撐著 flex:1/max-width:520px/height:64px 的空盒，
+   中段就一大片透明空洞、只有一條浮在上緣的細計時條。這裡把 wrapper 塌成內容寬、
+   把「剩餘時間」標籤與計時條從絕對定位改回 flow 的實體膠囊並拉長加高，讓 #bottomBar
+   （justify-content:center）自然收成「COMBO ─ 剩餘時間 ▓▓▓░ ─ 送出」精實置中一條，中段不再空。
+   僅 L2(blank)/L3(listen)；L5(blind) 不套（它靠這個底部輸入框打字，維持原樣）。純 CSS，不動 JS/DOM/id。 */
+body.blank-active .input-wrapper,
+body.listen-active .input-wrapper {
+  flex: 0 0 auto; width: auto; max-width: none; min-width: 0;
+  height: auto; padding: 0; gap: 8px;
+}
+body.blank-active #realInput,
+body.listen-active #realInput { width: 0; flex: 0 0 auto; }
+body.blank-active #timerBarLabel,
+body.listen-active #timerBarLabel {
+  position: static; top: auto; left: auto; margin: 0;
+}
+body.blank-active #timerBarLabel::after,
+body.listen-active #timerBarLabel::after { display: none; }
+body.blank-active #timerBarWrap,
+body.listen-active #timerBarWrap {
+  position: static; top: auto; left: auto; right: auto;
+  width: 300px; height: 14px;
+}
 /* ④ 獵人＝底部「關卡步道」進度條（v12 素材：木步道底圖 + 節點 + 跑姿獵人 + 終點旗/營地）。
    位置/節點狀態由 positionHunterAsProgress 依 round/totalRounds 設。 */
 /* 跑姿獵人（v2-hunter-truku-run，applyLevelMode 換 src）站在步道上往右跑；上下小跳。 */
 @keyframes hunterRunTrack { 0%{bottom:6px} 50%{bottom:11px} 100%{bottom:6px} }
-body.blank-active #hunter {
+body.has-track #hunter {
   width:52px; height:52px; object-fit:contain;
   animation:hunterRunTrack 0.42s steps(2) infinite;  /* 跑姿不套 hunterSway（那是待機晃） */
   z-index:39; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.45));
 }
-body.blank-active #hunterTrack { display:block; }
+body.has-track #hunterTrack { display:block; }
 /* 步道底圖橫幅（v2-progress-track.png）貼畫面最底；左留題號木牌、右留終點旗。 */
 #hunterTrack {
   display:none; position:absolute; left:104px; right:60px; bottom:2px; height:38px;
@@ -729,6 +818,7 @@ body.blank-active #hunterTrack { display:block; }
 #wordPronounce:hover { background: rgba(45,138,26,0.26); }
 #wordPronounce:active { transform: scale(0.94); }
 #wordPronounce .wp-speaker { font-size: 15px; line-height: 1; }
+#wordPronounce .wp-speaker .ui-ico { width: 1.15em; height: 1.15em; vertical-align: -0.22em; }
 #wordPronounceText {
   font-family: 'Fredoka One', sans-serif;
   font-size: 13px;
@@ -800,9 +890,17 @@ body.blank-active #hunterTrack { display:block; }
 }
 /* L2 填空關：中央答案木框已抬到 bottom:58，特殊字元列改貼近輸入框上方
    （降低浮起高度），與答案區拉開上下距離，窄螢幕也不會相互重疊。 */
-body.blank-active #specialCharBar {
-  bottom: calc(100% + 8px);
-  max-width: 62%;
+/* §特殊字元列 re-parent 進中央答案面板（L2/L3，applyLevelMode 搬 DOM）：改成面板內的
+   靜態流式一排、置中排在答案格下方，不再絕對浮動；面板 flex column 會自動長高容納。
+   底色改淡、與木框和諧不搶眼。L5(盲打)不套（它仍掛在底部 .input-wrapper 上方，維持原絕對定位）。 */
+body.blank-active #specialCharBar,
+body.listen-active #specialCharBar {
+  position: static;
+  bottom: auto; right: auto; left: auto;
+  max-width: 100%; margin-top: 5px;
+  justify-content: center;
+  background: rgba(10,30,8,0.5);
+  border-color: rgba(199,154,58,0.4);
 }
 #specialCharHint {
   font-family: 'Noto Sans TC', sans-serif;
@@ -1019,30 +1117,32 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
 #realInput.err + #inputBubble { animation: inputShake 0.3s; }
 @keyframes inputShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
+/* 送出鈕：原素材 v2-shoot-button.png 烤了一個「播放三角形 ▶」進去，配「送出」超違和
+   （像播放鍵）。改成乾淨金質漸層按鈕（跟 #hintBtn 同語言）+ 大字「送出」置中，去掉三角形。 */
 .shoot-btn {
-  background: url('/images/ui/v2-shoot-button.png') center/contain no-repeat;
-  border: none;
+  position: relative;
+  background: linear-gradient(180deg, #FFD86A 0%, #F0B23C 55%, #E8A22C 100%);
+  border: 2px solid #8B5500;
+  border-radius: 13px;
   width: 108px; height: 58px;
   font-size: 0;
   cursor: pointer;
-  filter: drop-shadow(0 5px 0 rgba(90,48,0,0.55)) drop-shadow(0 0 14px rgba(245,166,35,0.4));
-  transition: transform 0.1s, filter 0.1s;
+  box-shadow: 0 5px 0 #5A3000, inset 0 1px 0 rgba(255,245,200,0.6), inset 0 0 0 1px rgba(139,85,0,0.25);
+  transition: transform 0.1s, box-shadow 0.1s, filter 0.1s;
   display: flex; align-items:center; justify-content:center;
   padding: 0;
 }
 .shoot-btn img { display: none; }
-/* 「送出」文字標籤：疊在弓箭素材下緣，圓潤金字 + 深描邊，語意清楚不誤解為播放。
-   .shoot-btn 有 font-size:0（藏原文字），這裡明確重設字級。 */
+/* 「送出」大字置中，深金棕字在金底上清楚可讀。 */
 .shoot-btn-label {
-  position: absolute; left: 0; right: 0; bottom: 2px;
-  font-family: 'Fredoka One', sans-serif; font-size: 12px; letter-spacing: 1px;
-  color: #FFF3C4;
-  text-shadow: 0 1px 0 #5A3000, 0 2px 4px rgba(0,0,0,0.6);
+  position: static;
+  font-family: 'Fredoka One', sans-serif; font-size: 21px; letter-spacing: 3px;
+  color: #4A2E10;
+  text-shadow: 0 1px 0 rgba(255,240,200,0.6);
   pointer-events: none;
 }
-.shoot-btn { position: relative; }
-.shoot-btn:hover { transform: translateY(-3px); filter: drop-shadow(0 8px 0 rgba(90,48,0,0.55)) drop-shadow(0 0 22px rgba(245,166,35,0.55)); }
-.shoot-btn:active { transform: translateY(3px); filter: drop-shadow(0 2px 0 rgba(90,48,0,0.6)); }
+.shoot-btn:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 7px 0 #5A3000, inset 0 1px 0 rgba(255,245,200,0.6); }
+.shoot-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #5A3000, inset 0 1px 0 rgba(255,245,200,0.6); }
 
 /* combo meter */
 .combo-area { display:flex; flex-direction:column; align-items:center; gap:4px; }
@@ -1279,7 +1379,7 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   letter-spacing: 1px;
   text-shadow: 0 1px 0 rgba(255,240,200,0.6);
 }
-#howtoTitle::before, #howtoTitle::after { content:'🌿'; margin:0 8px; font-size:15px; opacity:0.8; }
+#howtoTitle::before, #howtoTitle::after { content:''; display:inline-block; width:14px; height:14px; margin:0 8px; opacity:0.8; vertical-align:middle; background-color:#7DCB4E; -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2C5 5 3 7 3 10a5 5 0 0 0 10 0c0-3-2-5-5-8z' fill='%23000'/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2C5 5 3 7 3 10a5 5 0 0 0 10 0c0-3-2-5-5-8z' fill='%23000'/%3E%3C/svg%3E") center/contain no-repeat; }  /* 全站禁 emoji：🌿 改葉 mask */
 #howtoSteps {
   list-style: none; margin: 0; padding: 0;
   text-align: left; align-self: stretch;
@@ -1360,7 +1460,7 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   font-size: 15px; font-weight: 900;
   text-shadow: 0 2px 0 rgba(0,0,0,0.62);
 }
-.mg-subtitle-plaque p::before, .mg-subtitle-plaque p::after { content:'🌿'; margin:0 7px; font-size:11px; opacity:0.85; }
+.mg-subtitle-plaque p::before, .mg-subtitle-plaque p::after { content:''; display:inline-block; width:11px; height:11px; margin:0 7px; opacity:0.85; vertical-align:middle; background-color:#7DCB4E; -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2C5 5 3 7 3 10a5 5 0 0 0 10 0c0-3-2-5-5-8z' fill='%23000'/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2C5 5 3 7 3 10a5 5 0 0 0 10 0c0-3-2-5-5-8z' fill='%23000'/%3E%3C/svg%3E") center/contain no-repeat; }  /* 全站禁 emoji：🌿 改葉 mask */
 /* 三欄看板：左說明卡 | 中央遊戲預覽 | 右說明卡（2 列） */
 .mg-board {
   position: relative;
@@ -1438,7 +1538,8 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
 }
 /* 打字關 answer：一排答案格 + 送出鈕（示意） */
 .mg-prev-type { display: flex; align-items: center; gap: 9px; }
-.mg-prev-cells { font-family: 'Fredoka One', sans-serif; font-size: 15px; letter-spacing: 3px; color: #ffe49a; }
+.mg-prev-cells { display: inline-flex; gap: 5px; vertical-align: middle; }   /* 全站禁 emoji：□ 改真邊框格 */
+.mg-prev-cells i { width: 12px; height: 15px; border: 1.6px solid #ffe49a; border-radius: 2px; }
 .mg-prev-submit {
   font-size: 11px; font-weight: 900; color: #0a2a08;
   background: linear-gradient(#7dd35a, #4f9e2a); border: 2px solid #2f6a12;
@@ -1913,7 +2014,7 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   filter:grayscale(0.9) brightness(0.85);
   color:#E0E0E0; text-shadow:1px 1px 0 #1a1a1a;
 }
-.lc-btn.locked .lc-start::before { content:'🔒 '; }
+.lc-btn.locked .lc-start::before { content:''; display:inline-block; width:0.95em; height:0.95em; margin-right:5px; vertical-align:-0.1em; background-color:currentColor; -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.6 7.2V5a3.4 3.4 0 0 1 6.8 0v2.2' fill='none' stroke='%23000' stroke-width='1.6'/%3E%3Crect x='3.3' y='7' width='9.4' height='6.3' rx='1.2' fill='%23000'/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.6 7.2V5a3.4 3.4 0 0 1 6.8 0v2.2' fill='none' stroke='%23000' stroke-width='1.6'/%3E%3Crect x='3.3' y='7' width='9.4' height='6.3' rx='1.2' fill='%23000'/%3E%3C/svg%3E") center/contain no-repeat; }  /* 全站禁 emoji：🔒 改向量 */
 .lc-unlock-note {
   display:none; font-family:'Noto Sans TC',sans-serif; font-weight:500;
   font-size:9px; color:#C9C9C9; margin-top:6px; line-height:1.3;
@@ -2079,17 +2180,10 @@ body.choice-active #choicePanel {
   transform:translate(-50%,-50%);
   width:min(650px, 90%);
 }
-/* 選項關獵人「走底部空帶」：使用者回報前進時獵人會擋到選項（選項是 2×2 置中網格，
-   獵人前進會滑到選項下方）。選項底緣約設計 y406、底部資訊列約 y504，中間有一條空帶。
-   這裡在選項關把獵人縮小並改用低走動畫，讓牠走在「選項下方、資訊列上方」的空帶裡，
-   前進時始終在選項底下、不再遮擋作答。縮小後 fireArrow/moveHunterTowardPrey 讀即時
-   rect 仍正確。z-index 38 仍在 HUD(50)/泡泡(40)之下、面板(35)之上。 */
-@keyframes hunterRunChoice { 0%{bottom:40px} 50%{bottom:45px} 100%{bottom:40px} }
-body.choice-active #hunter {
-  z-index:38;
-  width:100px; height:88px;
-  animation: hunterRunChoice 0.5s steps(2) infinite, hunterSway 2.6s ease-in-out infinite;
-}
+/* §進度條統一：選項關(L1/L4)獵人以前是「走底部空帶」的縮小蹲兵（避免擋選項）；現在改與
+   其他關一致——當底部「關卡步道」進度條的跑者（尺寸/動畫/z-index 由 body.has-track #hunter 統一，
+   站在步道最底 bottom:2 上，遠低於置中選項面板，不會擋作答）。故舊的 choice-active #hunter
+   規則已移除；hunterRunChoice keyframes 亦不再使用。 */
 /* 選項關隱藏詞彙卡（含族語詞）與底部打字輸入列 */
 body.choice-active #wordBubble { display:none; }
 body.choice-active #bottomBar { display:none; }
@@ -2415,7 +2509,7 @@ body.choice-active #stage { bottom: 0; }
   text-shadow:0 1px 0 rgba(255,240,200,0.5);
   transition:transform .1s, filter .1s, opacity .15s;
 }
-#hintBtn .hint-ic { font-size:14px; line-height:1; }
+#hintBtn .hint-ic { width:15px; height:15px; }   /* vico-bulb：深棕燈泡貼合金膠囊 */
 #hintBtn:hover:not(:disabled) { filter:brightness(1.08); transform:translateY(-1px); }
 #hintBtn:active:not(:disabled) { transform:translateY(2px); box-shadow:0 1px 0 #5A3000; }
 #hintBtn:disabled { opacity:0.5; cursor:default; filter:grayscale(0.3); }
@@ -2500,7 +2594,7 @@ body.choice-active #stage { bottom: 0; }
     <div class="lang-picker" id="authLangPicker">
       <span class="lang-picker-label">學習語別：</span>
       <button type="button" class="lang-trigger" id="authLangTrigger" onclick="openLangModal()" aria-haspopup="dialog" aria-label="選擇學習語別">
-        <span id="authLangTriggerLabel">太魯閣語 (Truku)</span><span class="lang-trigger-caret">▾</span>
+        <span id="authLangTriggerLabel">太魯閣語 (Truku)</span><span class="lang-trigger-caret vico vico-caret"></span>
       </button>
     </div>
     <div class="auth-card">
@@ -2525,7 +2619,7 @@ body.choice-active #stage { bottom: 0; }
       <div class="auth-hint">給學生/課堂使用的輕量帳號，密碼請自行妥善保管</div>
     </div>
     <div class="auth-corner-left">
-      <button class="title-small-btn" onclick="openLeaderboard()">🏆 排行榜</button>
+      <button class="title-small-btn" onclick="openLeaderboard()"><img class="ui-ico" src="/images/ui/v2-ui-icon-trophy.png" alt=""> 排行榜</button>
       <button class="auth-vol-btn" id="authVolBtn" onclick="onAuthVolBtnClick()" title="音量開關" aria-label="音量開關">
         <img id="authVolImg" src="/images/ui/login-volume-on-trim.png" alt="音量">
       </button>
@@ -2553,7 +2647,7 @@ body.choice-active #stage { bottom: 0; }
     <div class="lang-picker lang-picker-title" id="titleLangPicker">
       <span class="lang-picker-label">選擇學習語別</span>
       <button type="button" class="lang-trigger" id="titleLangTrigger" onclick="openLangModal()" aria-haspopup="dialog" aria-label="切換學習語別">
-        <span id="titleLangTriggerLabel">太魯閣語 (Truku)</span><span class="lang-trigger-caret">▾</span>
+        <span id="titleLangTriggerLabel">太魯閣語 (Truku)</span><span class="lang-trigger-caret vico vico-caret"></span>
       </button>
     </div>
     <!-- 五關五玩法：每關＝一種玩法。圖示＝5 張圓形木框透明 PNG（v2-level-icon-1..5，
@@ -2604,8 +2698,8 @@ body.choice-active #stage { bottom: 0; }
     <!-- 底部石質功能列：排行榜 / 設定(暫沿用登出位) / 音效 / 登出。
          沿用既有 onclick（openLeaderboard / logout / onVolBtnClick），排成石bar。 -->
     <div class="title-footer">
-      <button class="title-small-btn" onclick="openLeaderboard()">🏆 排行榜</button>
-      <button class="title-small-btn" onclick="logout()">🚪 登出</button>
+      <button class="title-small-btn" onclick="openLeaderboard()"><img class="ui-ico" src="/images/ui/v2-ui-icon-trophy.png" alt=""> 排行榜</button>
+      <button class="title-small-btn" onclick="logout()"><img class="ui-ico" src="/images/ui/v2-ui-icon-logout.png" alt=""> 登出</button>
       <button class="title-icon-btn" id="volBtn" onclick="onVolBtnClick()" title="音量開關" aria-label="音量開關">
         <img id="volBtnImg" src="/images/ui/ui-volume-on.png" alt="音量">
       </button>
@@ -2617,8 +2711,8 @@ body.choice-active #stage { bottom: 0; }
   <div id="lbModal">
     <div id="lbBox">
       <div id="lbHeader">
-        <span id="lbTitle">🏆 獵人排行榜 · 累計總分</span>
-        <button id="lbClose" onclick="closeLeaderboard()">✕ 關閉</button>
+        <span id="lbTitle"><img class="ui-ico" src="/images/ui/v2-ui-icon-trophy.png" alt=""> 獵人排行榜 · 累計總分</span>
+        <button id="lbClose" onclick="closeLeaderboard()"><span class="vico vico-cross"></span> 關閉</button>
       </div>
       <div id="lbBody"><div class="lb-loading">載入中...</div></div>
     </div>
@@ -2631,8 +2725,8 @@ body.choice-active #stage { bottom: 0; }
   <div id="langModal" onclick="if(event.target===this)closeLangModal()">
     <div id="langModalBox">
       <div class="lang-modal-head">
-        <span>🌏 選擇學習語別</span>
-        <button class="lang-modal-close" onclick="closeLangModal()">✕</button>
+        <span>選擇學習語別</span>
+        <button class="lang-modal-close" onclick="closeLangModal()"><span class="vico vico-cross"></span></button>
       </div>
       <div id="langModalList"></div>
     </div>
@@ -2678,7 +2772,7 @@ body.choice-active #stage { bottom: 0; }
          由 useHint() 處理；顯示/隱藏由 setHintVisible()。定位在 stage 左側中下、避開
          獵人(bottom-left)、詞卡(top-right)、面板(中央)。 -->
     <button id="hintBtn" onclick="useHint()" title="提示（會扣分）" style="display:none">
-      <span class="hint-ic">💡</span><span id="hintBtnLabel">提示</span>
+      <span class="hint-ic vico vico-bulb"></span><span id="hintBtnLabel">提示</span>
     </button>
 
     <!-- 填入答案區（L2 填空關專用）— 中央下方一排空答案格：玩家打字時字母依序
@@ -2724,7 +2818,7 @@ body.choice-active #stage { bottom: 0; }
       <div id="wordCategory" style="display:none;"></div>
       <!-- 發音列：🔊 播放鍵 + 族語詞 -->
       <div id="wordPronounce" onclick="playWordAudio(G.currentPrey)">
-        <span class="wp-speaker">🔊</span>
+        <span class="wp-speaker"><img class="ui-ico" src="/images/ui/v2-ui-icon-sound.png" alt=""></span>
         <span id="wordPronounceText">[maspat]</span>
       </div>
     </div>
@@ -2811,9 +2905,9 @@ body.choice-active #stage { bottom: 0; }
          background-image 即可無痛升級，不用動這裡的 DOM 結構。 -->
     <div id="correctBanner">
       <div class="ribbon-banner">
-        <span class="ribbon-leaf ribbon-leaf-left">🍃</span>
+        <span class="ribbon-leaf ribbon-leaf-left vico vico-leaf"></span>
         <span class="ribbon-text">正確！</span>
-        <span class="ribbon-leaf ribbon-leaf-right">🍃</span>
+        <span class="ribbon-leaf ribbon-leaf-right vico vico-leaf"></span>
       </div>
       <div class="ribbon-word" id="ribbonWord">maspat = 八</div>
       <div class="ribbon-category" id="ribbonCategory">太魯閣語詞彙</div>
@@ -2881,7 +2975,7 @@ body.choice-active #stage { bottom: 0; }
        #howtoGoal 目標句、#howtoStartBtn 開始鈕。 -->
   <div id="levelBanner">
     <div class="banner-title" id="bannerTitle">LEVEL 1</div>
-    <div class="banner-desc" id="bannerDesc">🌿 入山 — 淺山林道</div>
+    <div class="banner-desc" id="bannerDesc">入山 — 淺山林道</div>
     <!-- 玩法說明卡片：標題 + 步驟 + 目標 + 開始鈕。文字由 showBanner()/fillHowto() 依模式填入。 -->
     <div id="howtoCard">
       <div id="howtoTitle">怎麼玩</div>
@@ -2916,9 +3010,9 @@ body.choice-active #stage { bottom: 0; }
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <div class="mg-prev-hud"><span>HP ❤❤❤</span><span>SCORE 0</span><span id="mgPrevLevel">LEVEL 1</span></div>
+        <div class="mg-prev-hud"><span>HP <img class="ui-ico mg-heart" src="/images/ui/v2-ui-icon-heart.png" alt=""><img class="ui-ico mg-heart" src="/images/ui/v2-ui-icon-heart.png" alt=""><img class="ui-ico mg-heart" src="/images/ui/v2-ui-icon-heart.png" alt=""></span><span>SCORE 0</span><span id="mgPrevLevel">LEVEL 1</span></div>
         <div class="mg-prev-title" id="mgPrevLang">TRUKU</div>
-        <div class="mg-prev-cue" id="mgPrevCue"><div class="mg-prev-audio">🔊 聽發音</div></div>
+        <div class="mg-prev-cue" id="mgPrevCue"><div class="mg-prev-audio"><img class="ui-ico" src="/images/ui/v2-ui-icon-sound.png" alt=""> 聽發音</div></div>
         <div class="mg-prev-answer" id="mgPrevAnswer"><div class="mg-prev-options"><span>選項 A</span><span>選項 B</span><span>選項 C</span><span>選項 D</span></div></div>
         <div class="mg-prev-progress">題目 1 / 8</div>
       </div>
@@ -2970,7 +3064,7 @@ body.choice-active #stage { bottom: 0; }
     <div class="result-review" id="goReview"></div>
     <!-- 任務2：下載練習紀錄 .txt（純前端 Blob 下載，不上傳）。
          沿用 .img-btn 綠色木質風，放在回顧區塊下方。 -->
-    <div class="review-dl-row" id="goReviewDl"><button class="img-btn review-dl-btn" onclick="downloadPracticeLog()">⬇ 下載練習紀錄</button></div>
+    <div class="review-dl-row" id="goReviewDl"><button class="img-btn review-dl-btn" onclick="downloadPracticeLog()"><span class="vico vico-down"></span> 下載練習紀錄</button></div>
   </div>
 
   <!-- STAGE CLEAR SCREEN — #clearScreen. 該關卡全部獵物打完（過關）時顯示。
@@ -2995,7 +3089,7 @@ body.choice-active #stage { bottom: 0; }
         <div class="rank-result" id="clRankResult"></div>
       </div>
       <div class="result-btn-row">
-        <button class="img-btn" id="nextLvlBtn" onclick="nextLevel()" style="display:none">NEXT STAGE ▶</button>
+        <button class="img-btn" id="nextLvlBtn" onclick="nextLevel()" style="display:none">NEXT STAGE <span class="vico vico-play"></span></button>
         <button class="img-btn" onclick="goTitle()">回首頁</button>
       </div>
     </div>
@@ -3003,7 +3097,7 @@ body.choice-active #stage { bottom: 0; }
          renderReviewList('clReview') 填入。 -->
     <div class="result-review" id="clReview"></div>
     <!-- 任務2：下載練習紀錄 .txt（同 goReviewDl）。 -->
-    <div class="review-dl-row" id="clReviewDl"><button class="img-btn review-dl-btn" onclick="downloadPracticeLog()">⬇ 下載練習紀錄</button></div>
+    <div class="review-dl-row" id="clReviewDl"><button class="img-btn review-dl-btn" onclick="downloadPracticeLog()"><span class="vico vico-down"></span> 下載練習紀錄</button></div>
   </div>
 
 </div>
@@ -3363,8 +3457,8 @@ function showTitleScreen() {
   hideAuthScreen();
   document.getElementById('titleScreen').style.display = 'flex';
   document.getElementById('welcomeMsg').textContent = AUTH.isGuest
-    ? '👋 訪客模式・成績不會記錄'
-    : `👋 歡迎回來，${AUTH.displayName}！`;
+    ? '訪客模式・成績不會記錄'
+    : `歡迎回來，${AUTH.displayName}！`;
   applyLevelLocks();
   // 第一次進標題必然在使用者互動（登入/有效 token 載入）之後，autoplay 合規。
   if (window.Sfx) Sfx.unlock();   // 提前喚醒音效 AudioContext，讓第一聲零延遲
@@ -3447,8 +3541,7 @@ function applyLevelLocks() {
     if (locked) {
       if (!lockIcon) {
         lockIcon = document.createElement('span');
-        lockIcon.className = 'lc-lock-icon';
-        lockIcon.textContent = '🔒';
+        lockIcon.className = 'lc-lock-icon vico vico-lock'; // 全站禁 emoji：🔒 改純向量鎖
         btn.appendChild(lockIcon);
       }
     } else if (lockIcon) {
@@ -3462,7 +3555,7 @@ function showLockedHint(lvl) {
   if (existing) existing.remove();
   const toast = document.createElement('div');
   toast.className = 'unlock-toast';
-  toast.textContent = `🔒 請先完成 LEVEL ${lvl - 1} 才能挑戰 LEVEL ${lvl}`;
+  toast.textContent = `請先完成 LEVEL ${lvl - 1} 才能挑戰 LEVEL ${lvl}`; // 全站禁 emoji：🔒 前綴移除
   document.getElementById('titleScreen').appendChild(toast);
   if (window.Sfx) Sfx.sfxBanner(false); // #11b 鎖定關卡提示：兩下低音「叩叩」
   setTimeout(() => toast.remove(), 2200);
@@ -3498,11 +3591,11 @@ const LEVEL_PICK = { 1:6, 2:6, 3:6, 4:6, 5:5 };  // 每關不重複詞數（L5 �
 const TARGET_REPEAT = 3;                          // 每個詞在一關內平均目標出現次數（≈3）
 // ═══════════════════════════════════════════════════
 const LEVEL_CONFIG = {
-  1: { mode:'audio-choice', cue:'audio',   isChoice:true,  label:'LEVEL 1: 音選詞', labelShort:'音選詞', scene:'🔊 聽音辨詞', timePerRound:12, totalRounds:18, hp:120, hpLoss:15, picK:6, filter:'hasAudio' },
-  2: { mode:'blank',        cue:'type',     isChoice:false, label:'LEVEL 2: 填空',   labelShort:'填空',   scene:'✏️ 補齊缺字', timePerRound:12, totalRounds:18, hp:120, hpLoss:18, picK:6, filter:null       },
-  3: { mode:'listen',       cue:'audio',    isChoice:false, label:'LEVEL 3: 聽打',   labelShort:'聽打',   scene:'👂 聽音打字', timePerRound:14, totalRounds:18, hp:130, hpLoss:22, picK:6, filter:'hasAudio' },
-  4: { mode:'choice',       cue:'picture',  isChoice:true,  label:'LEVEL 4: 看圖選詞', labelShort:'看圖選詞', scene:'🖼️ 看圖辨詞', timePerRound:12, totalRounds:18, hp:130, hpLoss:22, picK:6, filter:'hasImage' },
-  5: { mode:'blind',        cue:'type',     isChoice:false, label:'LEVEL 5: 盲打',   labelShort:'盲打',   scene:'🌑 憑記憶打', timePerRound:9,  totalRounds:15, hp:120, hpLoss:30, picK:5, filter:null       }
+  1: { mode:'audio-choice', cue:'audio',   isChoice:true,  label:'LEVEL 1: 音選詞', labelShort:'音選詞', scene:'聽音辨詞', timePerRound:12, totalRounds:18, hp:120, hpLoss:15, picK:6, filter:'hasAudio' },
+  2: { mode:'blank',        cue:'type',     isChoice:false, label:'LEVEL 2: 填空',   labelShort:'填空',   scene:'補齊缺字', timePerRound:12, totalRounds:18, hp:120, hpLoss:18, picK:6, filter:null       },
+  3: { mode:'listen',       cue:'audio',    isChoice:false, label:'LEVEL 3: 聽打',   labelShort:'聽打',   scene:'聽音打字', timePerRound:14, totalRounds:18, hp:130, hpLoss:22, picK:6, filter:'hasAudio' },
+  4: { mode:'choice',       cue:'picture',  isChoice:true,  label:'LEVEL 4: 看圖選詞', labelShort:'看圖選詞', scene:'看圖辨詞', timePerRound:12, totalRounds:18, hp:130, hpLoss:22, picK:6, filter:'hasImage' },
+  5: { mode:'blind',        cue:'type',     isChoice:false, label:'LEVEL 5: 盲打',   labelShort:'盲打',   scene:'憑記憶打', timePerRound:9,  totalRounds:15, hp:120, hpLoss:30, picK:5, filter:null       }
 };
 // §1.5-A：用單一真相來源（LEVEL_PICK × TARGET_REPEAT）重算每關 picK/totalRounds，
 // 讓「每關聚焦幾個詞」「每詞出現幾次」集中可調，config 手寫值只是文件/上限參考。
@@ -3809,13 +3902,13 @@ function renderReviewList(containerId) {
   const dlRow = document.getElementById(containerId + 'Dl');
   if (dlRow) dlRow.style.display = items.length ? 'flex' : 'none';
   if (!items.length) { box.innerHTML = ''; return; }
-  let html = '<div class="review-title">📖 本關單詞回顧</div><div class="review-list">';
+  let html = '<div class="review-title"><img class="ui-ico" src="/images/ui/v2-ui-icon-review.png" alt=""> 本關單詞回顧</div><div class="review-list">';
   for (const it of items) {
     const ok = it.wrong === 0;
-    const mark = ok ? '✓' : '✗';
     const cls = ok ? 'review-ok' : 'review-bad';
+    const markCls = ok ? 'vico-check' : 'vico-cross'; // 全站禁 emoji：✓✗ 改純向量
     html += `<div class="review-row ${cls}">`
-      + `<span class="review-mark">${mark}</span>`
+      + `<span class="review-mark vico ${markCls}"></span>`
       + `<span class="review-word">${it.word}</span>`
       + `<span class="review-zh">${it.zh}</span>`
       + `<span class="review-count">對 ${it.correct}/${it.total}</span>`
@@ -4006,11 +4099,22 @@ function applyLevelMode(lvl) {
   // 填空關（L2 新設計）：右卡片＝提示卡（打散字母磚），作答在中央下方 #answerArea
   // 的答案格（打字依序填格），底部輸入顯示層隱藏。class 由 CSS 控制顯示切換。
   document.body.classList.toggle('blank-active', G.mode === 'blank');
-  // §L2 進度條：填空關獵人換成「朝右跑姿」sprite（在進度步道上往終點跑）；其餘關維持蹲姿拉弓。
+  // §進度條統一：所有關卡（L1-L5）獵人都當「底部關卡步道」進度條的跑者——換成「朝右跑姿」
+  // sprite、站在木步道上往終點旗跑，水平位置＝本關進度（見 positionHunterAsProgress）。
+  // 以前只有 L2(blank) 這樣，其餘關是蹲姿逼近獵物；使用者定案「進度條統一用 L2 那個」。
+  document.body.classList.add('has-track');
   const hunterImg = document.getElementById('hunter');
-  if (hunterImg) hunterImg.src = (G.mode === 'blank')
-    ? '/images/ui/v2-hunter-truku-run.png'
-    : '/images/ui/v2-hunter-truku-h2.png';
+  if (hunterImg) hunterImg.src = '/images/ui/v2-hunter-truku-run.png';
+  // §特殊字元列就近作答（使用者要求，比較直覺）：L2/L3 作答在中央答案面板 → 把特殊字元列
+  // re-parent 進答案面板（顯示在答案格下方，視線不用移到底部）；L5(盲打)靠底部輸入框打字、
+  // 其餘關 → 維持掛在底部 .input-wrapper 上方。純搬 DOM，id/JS/按鈕插入 #realInput 皆不變。
+  const scb = document.getElementById('specialCharBar');
+  if (scb) {
+    const host = (G.mode === 'blank' || G.mode === 'listen')
+      ? document.getElementById('answerArea')
+      : document.querySelector('.input-wrapper');
+    if (host && scb.parentElement !== host) host.appendChild(scb);
+  }
 }
 
 function initLevel() {
@@ -4218,8 +4322,8 @@ function modeGuideData(mode) {
 // 中央預覽的 cue（線索示意）HTML，依 cue 型別。純示意、無互動。
 function mgPreviewCueHtml(cue) {
   switch (cue) {
-    case 'audio':   return '<div class="mg-prev-audio">🔊 聽發音</div>';
-    case 'picture': return '<div class="mg-prev-pic">🖼️</div>';
+    case 'audio':   return '<div class="mg-prev-audio"><img class="ui-ico" src="/images/ui/v2-ui-icon-sound.png" alt=""> 聽發音</div>';
+    case 'picture': return '<div class="mg-prev-pic"><img src="/images/ui/v2-prey-placeholder.png" alt="" style="width:48px;height:48px;object-fit:contain"></div>';
     case 'blank':   return '<div class="mg-prev-hintcard"><span class="mg-prev-hc-zh">中文提示</span><span class="mg-prev-hc-scramble">a · s · m · a</span></div>';
     case 'blind':   return '<div class="mg-prev-zh">中文詞</div>';
     default:        return '';
@@ -4229,7 +4333,7 @@ function mgPreviewCueHtml(cue) {
 function mgPreviewAnswerHtml(answer) {
   if (answer === 'choice')
     return '<div class="mg-prev-options"><span>選項 A</span><span>選項 B</span><span>選項 C</span><span>選項 D</span></div>';
-  return '<div class="mg-prev-type"><span class="mg-prev-cells">□ □ □ □ □</span><span class="mg-prev-submit">送出</span></div>';
+  return '<div class="mg-prev-type"><span class="mg-prev-cells"><i></i><i></i><i></i><i></i><i></i></span><span class="mg-prev-submit">送出</span></div>';
 }
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
@@ -4287,19 +4391,18 @@ function renderWordCard(prey) {
     heroNum.textContent = (arabic !== null) ? String(arabic) : (prey.zh || '');
     heroNum.style.display = 'block';
   } else if (prey.image) {
-    // 有插畫：載入失敗時退回 emoji
+    // 有插畫：載入失敗時退回「缺圖預設」插畫（全站禁 emoji，不再退 emoji 字）
     heroImg.onerror = function() {
-      this.style.display = 'none';
       this.onerror = null;
-      heroEmoji.textContent = prey.emoji;
-      heroEmoji.style.display = 'block';
+      this.src = '/images/ui/v2-prey-placeholder.png';
     };
     heroImg.src = prey.image;
     heroImg.style.display = 'block';
   } else {
-    // 都沒有：emoji
-    heroEmoji.textContent = prey.emoji;
-    heroEmoji.style.display = 'block';
+    // 都沒有：顯示「缺圖預設」插畫（取代原 emoji fallback，一次消滅所有渲染的 🎯）
+    heroImg.onerror = null;
+    heroImg.src = '/images/ui/v2-prey-placeholder.png';
+    heroImg.style.display = 'block';
   }
 
   // 族語詞 / 發音列：依 mode 決定露不露出完整族語詞（答案）。
@@ -4475,20 +4578,18 @@ function renderChoiceCue(cue, prey) {
     cueHint.style.display = 'none';
     cueHint.textContent = '';
     if (prey.image) {
-      // onerror fallback：圖載入失敗退回 emoji（保留既有保護機制）。
-      //   退回時仍不露中文，只用 emoji 佔位，維持「看圖辨識」不被 fallback 破壞。
+      // onerror fallback：圖載入失敗退回「缺圖預設」插畫（全站禁 emoji），仍不露中文，維持看圖辨識。
       cueImg.onerror = function() {
-        this.style.display = 'none';
         this.onerror = null;
-        cueHint.style.display = '';
-        cueHint.textContent = prey.emoji || '❓';
+        this.src = '/images/ui/v2-prey-placeholder.png';
       };
       cueImg.src = prey.image;
       cueImg.style.display = 'block';
     } else {
-      // 無圖（理論上本關池已 hasImage 過濾）→ emoji 佔位（仍不露中文）
-      cueHint.style.display = '';
-      cueHint.textContent = prey.emoji || '❓';
+      // 無圖（理論上本關池已 hasImage 過濾）→ 缺圖預設插畫佔位（仍不露中文）
+      cueImg.onerror = null;
+      cueImg.src = '/images/ui/v2-prey-placeholder.png';
+      cueImg.style.display = 'block';
     }
   }
 }
@@ -4725,15 +4826,29 @@ function renderAnswerExample() {
 
 // §聽打（L3）「單字提示」音節/長度示意點列：依完整答案字母數排一列金點，
 // 多字詞用短線「—」分組。⚠ 誠實定位＝「長度提示」（每字母一點），非精確音節切分
-// （太魯閣語真音節切分需語言學資料，屬另案）。不露字母本身，只給長度/分組結構。
+// （太魯閣語真音節切分需語言學資料，屬另案）。長度/分組結構為主，另依字長露出約 20% 字母當提示（長字露越多，見下）。
 function renderSyllableDots() {
   const host = document.getElementById('syllableDots');
   if (!host) return;
   const answer = displayWordOf(G.currentPrey) || '';
   const parts = answer.split(/\s+/).filter(Boolean); // 多字詞分組
-  const groups = parts.map(w =>
-    Array.from(w).map(() => '<span class="syl-dot"></span>').join('')
-  );
+  const esc = s => s.replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
+  const groups = parts.map(w => {
+    const chars = Array.from(w);
+    const n = chars.length;
+    // §提示加強（使用者要求「還是太少」→ 從 20% 拉到約 40%）：字越長露越多字母，其餘仍是點。
+    //   露出位置平均分散在字中（不集中在頭尾），每次同題結果固定（依長度算，不隨機）。
+    const revealCount = Math.round(n * 0.4);
+    const revealPos = new Set();
+    for (let j = 0; j < revealCount; j++) {
+      revealPos.add(Math.min(n - 1, Math.floor((j + 1) * n / (revealCount + 1))));
+    }
+    return chars.map((ch, i) =>
+      revealPos.has(i)
+        ? `<span class="syl-letter">${esc(ch)}</span>`
+        : '<span class="syl-dot"></span>'
+    ).join('');
+  });
   host.innerHTML = '<span class="syl-label">單字提示：</span>'
     + groups.join('<span class="syl-dash">—</span>');
 }
@@ -5123,7 +5238,9 @@ function moveHunterTowardPrey() {
   const stage = document.getElementById('stage');
   const hunter = document.getElementById('hunter');
   const prey = document.getElementById('prey');
-  if (G.mode === 'blank') { positionHunterAsProgress(); return; } // L2：獵人＝底部進度軌道
+  // §進度條統一：所有關卡獵人都當「底部進度軌道」跑者（水平位置＝本關進度、渲染節點/題號木牌），
+  // 不再走「逼近獵物」那套。以下 targetLeft 逼近邏輯保留為 legacy（已無呼叫路徑）。
+  positionHunterAsProgress(); return;
   if (!G.currentPrey) return;
 
   const stageRect = stage.getBoundingClientRect();
@@ -5175,7 +5292,7 @@ function fireArrow() {
 
   const el = document.createElement('div');
   el.className = 'arrow';
-  el.textContent = '➤';
+  el.innerHTML = '<i class="vico vico-arrow"></i>'; // 全站禁 emoji：飛箭 ➤ 改純向量
   el.style.color = '#ffd700';
   el.style.left = startX + 'px';
   el.style.top = startY + 'px';
@@ -5238,7 +5355,7 @@ function caughtPrey() {
   document.getElementById('comboNum').textContent = 'x' + G.combo;
   updateComboDots();
 
-  const msg = G.combo >= 3 ? `🔥 COMBO x${G.combo}!` : `+${pts}`;
+  const msg = G.combo >= 3 ? `COMBO x${G.combo}!` : `+${pts}`; // 全站禁 emoji：🔥 移除，金字＋HUD 已表達連擊
   showHit(msg, '#FFD700', true);
   showHunterBubble(G.combo >= 3 ? `連擊 x${G.combo}！` : '答對了！', 'good');
   showCorrectBanner();
@@ -5348,8 +5465,7 @@ function showHitSparkle(left, top) {
   const STAR_COUNT = 5;
   for (let i = 0; i < STAR_COUNT; i++) {
     const star = document.createElement('span');
-    star.className = 'hit-sparkle';
-    star.textContent = '✨';
+    star.className = 'hit-sparkle vico vico-star'; // 全站禁 emoji：✨ 改純向量星
     const ox = (Math.random() - 0.5) * 90;
     const oy = (Math.random() - 0.5) * 50 - 10;
     star.style.left = ox + 'px';
@@ -5423,12 +5539,12 @@ function stageClear() {
   BgmManager.stopGame(); // 過關：遊戲 BGM 淡出停止
   if (window.Sfx) Sfx.sfxClear(); // #8 過關：小凱旋旋律（過關畫面無發音競爭）
   const acc = G.totalAttempts > 0 ? Math.round(G.hitAttempts/G.totalAttempts*100) : 0;
-  const stars = acc >= 90 && G.combo >= 3 ? '⭐⭐⭐' : acc >= 70 ? '⭐⭐' : '⭐';
+  const starN = (acc >= 90 && G.combo >= 3) ? 3 : (acc >= 70 ? 2 : 1); // 全站禁 emoji：⭐ 改純向量
   document.getElementById('clScore').textContent = G.score;
   document.getElementById('clKills').textContent = G.kills;
   document.getElementById('clAcc').textContent = acc + '%';
   document.getElementById('clearIcon').textContent = '🏆';
-  document.getElementById('clearTitle').textContent = 'STAGE CLEAR! ' + stars;
+  document.getElementById('clearTitle').innerHTML = 'STAGE CLEAR! <span class="clear-stars">' + '<span class="vico vico-star"></span>'.repeat(starN) + '</span>';
   document.getElementById('clearBody').textContent = LEVELS[G.level].label + ' 完成！';
   document.getElementById('nextLvlBtn').style.display = 'none';
   document.getElementById('clRankResult').textContent = '';
@@ -5445,19 +5561,32 @@ function stageClear() {
   submitAndNext();
 }
 
+// 全站禁 emoji：排行結果訊息的 ✓/✗ 前綴改由 CSS ::before 向量畫（state class），
+// 文字仍走 textContent（error 字串免 innerHTML 注入風險）。kind: 'ok' | 'bad' | 'none'
+function setRankMsg(elId, kind, text, icon) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.className = 'rank-result' + (kind === 'ok' ? ' rank-ok' : kind === 'bad' ? ' rank-bad' : '');
+  // icon（如訪客 player 木盤圖）走 innerHTML；text 一律 escapeHtml，避免注入。
+  if (icon) el.innerHTML = '<img class="ui-ico" src="/images/ui/' + icon + '" alt=""> ' + escapeHtml(text);
+  else el.textContent = text;
+}
+
 async function submitAndRetry() {
   const btn = document.getElementById('goSubmitBtn');
   btn.disabled = true;
   btn.textContent = '送出中...';
   const result = await submitScore(false);
   if (result && result.guest) {
-    document.getElementById('goRankResult').textContent = '👤 訪客模式・成績不記錄';
+    setRankMsg('goRankResult', 'none', '訪客模式・成績不記錄', 'v2-ui-icon-player.png');
   } else if (result && result.rank) {
-    document.getElementById('goRankResult').textContent = `✓ 第 ${result.rank} 名！成績已記錄`;
+    setRankMsg('goRankResult', 'ok', `第 ${result.rank} 名！成績已記錄`);
   } else if (result && result.error) {
-    document.getElementById('goRankResult').textContent = `✗ ${result.error}`;
+    setRankMsg('goRankResult', 'bad', result.error);
+  } else if (result) {
+    setRankMsg('goRankResult', 'ok', '成績已記錄');
   } else {
-    document.getElementById('goRankResult').textContent = result ? '✓ 成績已記錄' : '（離線模式，未記錄）';
+    setRankMsg('goRankResult', 'none', '（離線模式，未記錄）');
   }
   setTimeout(() => {
     document.getElementById('gameOverScreen').classList.remove('show');
@@ -5472,26 +5601,30 @@ async function submitAndNext() {
   const prevUnlocked = AUTH.unlockedLevel;
   const result = await submitScore(true);
   if (result && result.guest) {
-    document.getElementById('clRankResult').textContent = '👤 訪客模式・成績不記錄';
+    let msg = '訪客模式・成績不記錄';
     if (AUTH.unlockedLevel > prevUnlocked) {
-      document.getElementById('clRankResult').textContent += ` 🎉 解鎖 LEVEL ${AUTH.unlockedLevel}！`;
+      msg += ` 解鎖 LEVEL ${AUTH.unlockedLevel}！`;
       if (window.Sfx) Sfx.sfxUnlock(); // 訪客本地序列解鎖也給解鎖音效
     }
+    setRankMsg('clRankResult', 'none', msg, 'v2-ui-icon-player.png');
   } else if (result && result.rank) {
-    document.getElementById('clRankResult').textContent = `🏹 本關第 ${result.rank} 名！`;
+    let msg = `本關第 ${result.rank} 名！`;
     if (AUTH.unlockedLevel > prevUnlocked) {
-      document.getElementById('clRankResult').textContent += ` 🎉 解鎖 LEVEL ${AUTH.unlockedLevel}！`;
+      msg += ` 解鎖 LEVEL ${AUTH.unlockedLevel}！`;
       if (window.Sfx) Sfx.sfxUnlock(); // #10 解鎖新關卡：「叮鈴」上行閃亮音
     }
+    setRankMsg('clRankResult', 'none', msg);
   } else if (result && result.error) {
-    document.getElementById('clRankResult').textContent = `✗ ${result.error}`;
+    setRankMsg('clRankResult', 'bad', result.error);
+  } else if (result) {
+    setRankMsg('clRankResult', 'ok', '成績已記錄');
   } else {
-    document.getElementById('clRankResult').textContent = result ? '✓ 成績已記錄' : '（離線模式，未記錄）';
+    setRankMsg('clRankResult', 'none', '（離線模式，未記錄）');
   }
   // 顯示下一關按鈕（需同時滿足：還有下一關 且 已解鎖）
   const hasNext = G.level < MAX_LEVEL && AUTH.unlockedLevel > G.level;
   document.getElementById('nextLvlBtn').style.display = hasNext ? 'inline-block' : 'none';
-  btn.textContent = '✓ 已登錄';
+  btn.innerHTML = '<span class="vico vico-check"></span> 已登錄'; // 全站禁 emoji：✓ 改純向量
 }
 
 async function nextLevel() {
@@ -5524,6 +5657,7 @@ function goTitle() {
   clearInterval(G.timer);
   G.active = false;
   document.body.classList.remove('listen-active');
+  document.body.classList.remove('has-track'); // 回標題收起底部進度步道
   document.getElementById('titleScreen').style.display = 'flex';
   applyLevelLocks();
   BgmManager.stopGame();          // 回標題：先淡出停止遊戲 BGM
@@ -5616,9 +5750,9 @@ function isLeaderboardAdmin() {
 
 function renderLbTable(rows) {
   if (!rows || rows.length === 0)
-    return '<div class="lb-empty">還沒有紀錄，快去成為第一名！🏹</div>';
+    return '<div class="lb-empty">還沒有紀錄，快去成為第一名！</div>';
 
-  const medals = ['🥇','🥈','🥉'];
+  const medals = ['1','2','3']; // 全站禁 emoji：🥇🥈🥉 改名次數字，配色由 .lb-rank-N .lb-medal 圓底獎牌處理
   const admin = isLeaderboardAdmin();
 
   let html = `<table class="lb-table">
@@ -5637,7 +5771,7 @@ function renderLbTable(rows) {
     // §管理刪除：僅 asd8107 登入時每列給 🗑️（刪該玩家×該語別整列）。player_id 由後端回傳。
     const delCell = admin
       ? `<td><button class="lb-del-btn" title="刪除此列（該玩家在此語別的所有分數）"
-           onclick="deleteLbEntry(${Number(r.player_id)}, '${escapeHtml(r.lang_code || '')}', '${escapeHtml(r.player)}')">🗑️</button></td>`
+           onclick="deleteLbEntry(${Number(r.player_id)}, '${escapeHtml(r.lang_code || '')}', '${escapeHtml(r.player)}')"><img class="ui-ico" src="/images/ui/v2-ui-icon-delete.png" alt="刪除"></button></td>`
       : '';
     html += `<tr class="${cls}">
       <td><span class="lb-medal">${medal}</span></td>
