@@ -2056,9 +2056,10 @@ body.choice-active #bgCanvas { filter:brightness(0.62) saturate(0.9); transition
   background:
     linear-gradient(rgba(6,20,6,0.55), rgba(6,20,6,0.55)),
     url('/images/ui/v2-choice-panel-frame.png') center/100% 100% no-repeat;
-  grid-template-columns:1fr auto;
+  /* 線索(cue)置中：改單欄，cue 佔滿全寬置中；沙漏改絕對定位到右上角（不再擠在右欄把 cue 推左）。 */
+  grid-template-columns:1fr;
   grid-template-rows:auto auto;
-  column-gap:22px; row-gap:20px;
+  row-gap:20px;
   align-items:center;
 }
 body.choice-active #choicePanel { display:grid; }
@@ -2072,9 +2073,11 @@ body.choice-active #choicePanel { display:grid; }
    以免較高的 L4 圖片提示面板下緣被 #stage(overflow:hidden) 裁掉底排選項。
    ⚠ 只改面板自身 left/transform/width，不碰 #hunter 的 left/transform（JS 佔用）。 */
 body.choice-active #choicePanel {
-  left:calc(240px + (100% - 240px) / 2);
+  /* 面板置中：原本靠右讓位給「左側大獵人」，但獵人已改成小小地走底部空帶(見下)，
+     中央不再被擋，故面板改回螢幕正中，線索/選項置中更平衡（使用者要求）。 */
+  left:50%;
   transform:translate(-50%,-50%);
-  width:min(600px, calc(100% - 264px));
+  width:min(650px, 90%);
 }
 /* 選項關獵人「走底部空帶」：使用者回報前進時獵人會擋到選項（選項是 2×2 置中網格，
    獵人前進會滑到選項下方）。選項底緣約設計 y406、底部資訊列約 y504，中間有一條空帶。
@@ -2157,8 +2160,8 @@ body.choice-active #stage { bottom: 0; }
 
 /* 沙漏計時（面板上排右欄）：v2-hourglass-timer.png + 「剩餘時間」標籤 + 秒數槽。 */
 #choiceTimerHourglass {
-  grid-column:2; grid-row:1;
-  position:relative;
+  /* 絕對定位到面板右上角（不再佔右欄），讓 cue 能全寬置中。 */
+  position:absolute; top:20px; right:22px;
   width:64px; height:104px;
   display:flex; align-items:center; justify-content:center;
   background:url('/images/ui/v2-hourglass-timer.png') center/contain no-repeat;
