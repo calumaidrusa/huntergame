@@ -609,6 +609,15 @@ body.blank-active #realInput {
 body.blank-active .input-wrapper { background:none; filter:none; }
 /* 底部資訊列的「第X/Y題」已由獵人進度軌道的 label 取代，隱藏避免重複顯示。 */
 body.blank-active #bottomInfoBar { display:none !important; }
+/* L3 聽打同 L2：作答已移到中央答案格（#answerArea），底部那個深色輸入框變多餘——
+   收掉它（#realInput 只留接鍵盤、透明；.input-wrapper 拿掉 v2-input-field.png 木框底圖）。
+   保留送出鈕/計時/特殊字元列/COMBO。⚠️L5 盲打「不套」——它靠這個底部輸入框打字。 */
+body.listen-active #inputBubble { display:none !important; }
+body.listen-active #realInput {
+  height:1px; min-height:0; padding:0; border:none; background:transparent;
+  opacity:0; caret-color:transparent;
+}
+body.listen-active .input-wrapper { background:none; filter:none; }
 /* ④ 獵人＝底部「關卡步道」進度條（v12 素材：木步道底圖 + 節點 + 跑姿獵人 + 終點旗/營地）。
    位置/節點狀態由 positionHunterAsProgress 依 round/totalRounds 設。 */
 /* 跑姿獵人（v2-hunter-truku-run，applyLevelMode 換 src）站在步道上往右跑；上下小跳。 */
