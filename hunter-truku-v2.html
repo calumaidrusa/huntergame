@@ -2597,6 +2597,57 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
 .lang-modal-item:active { transform:scale(0.97); }
 .lang-modal-item-cur { border-color:#FFD700; background:linear-gradient(#6B4A22,#4A3015); color:#FFD700; }
 @media (max-width:520px){ #langModalList { grid-template-columns:1fr; } }
+
+/* ═══ 詞義配對消除 小遊戲（獨立模式）═══ */
+#matchScreen {
+  display:none; position:absolute; inset:0; z-index:410;
+  flex-direction:column; align-items:center;
+  background:linear-gradient(180deg,#12301a,#0b2010 70%);
+  color:#F5EFDD; font-family:'Noto Sans TC',sans-serif;
+  padding:14px 16px; box-sizing:border-box; overflow:hidden;
+}
+#matchScreen.show { display:flex; }
+.mg-top { width:100%; max-width:660px; display:flex; align-items:center; justify-content:space-between; }
+.mg-back {
+  font-family:'Noto Sans TC',sans-serif; font-size:13px; font-weight:700; color:#F5EFDD;
+  background:linear-gradient(180deg,#3a6a2a,#234a1c); border:1.5px solid #C79A3A;
+  border-radius:999px; padding:6px 16px; cursor:pointer;
+}
+.mg-back:hover { filter:brightness(1.1); }
+.mg-hud { display:flex; gap:16px; font-size:13px; }
+.mg-hud-i b { font-family:'Fredoka One',sans-serif; color:#F0C15A; font-size:17px; margin-left:3px; }
+.mg-hud-time b { color:#FFD24A; }
+.mg-heading { font-family:'Fredoka One',sans-serif; font-size:23px; color:#F0C15A; margin-top:5px; letter-spacing:2px; }
+.mg-sub { font-size:12.5px; color:#B8C9A8; margin:3px 0 10px; }
+#matchBoard {
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:10px 12px;
+  width:100%; max-width:660px; flex:1 1 auto; align-content:center; align-items:center;
+}
+.match-tile {
+  min-height:54px; border-radius:12px; cursor:pointer; border:2px solid;
+  font-family:'Noto Sans TC',sans-serif; font-weight:700; font-size:16px; line-height:1.15;
+  display:flex; align-items:center; justify-content:center; text-align:center; padding:6px 8px;
+  word-break:break-word; overflow-wrap:anywhere;
+  transition:transform .12s, box-shadow .12s, opacity .3s;
+  box-shadow:0 3px 0 rgba(0,0,0,0.35);
+}
+.match-tile.mt-word { background:linear-gradient(180deg,#FFD86A,#E0A02A); border-color:#8B5500; color:#3A2410; }
+.match-tile.mt-zh   { background:linear-gradient(180deg,#7CC24E,#3E7E28); border-color:#255018; color:#F3FBE9; }
+.match-tile:hover:not(.matched) { transform:translateY(-2px); filter:brightness(1.06); }
+.match-tile.sel { box-shadow:0 0 0 3px #FFF2B0, 0 0 14px rgba(255,220,80,0.7); transform:translateY(-2px); }
+.match-tile.bad { box-shadow:0 0 0 3px #FF5555; animation:mgShake .3s; }
+@keyframes mgShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.match-tile.matched { opacity:0; transform:scale(0.4); pointer-events:none; }
+#matchResult { display:none; position:absolute; inset:0; z-index:5; background:rgba(6,18,8,0.82); align-items:center; justify-content:center; }
+#matchResult.show { display:flex; }
+.mg-res { text-align:center; background:linear-gradient(180deg,#234a1c,#12300f); border:2px solid #C79A3A; border-radius:18px; padding:26px 40px; box-shadow:0 8px 24px rgba(0,0,0,0.5); }
+.mg-res-t { font-family:'Fredoka One',sans-serif; font-size:26px; color:#F0C15A; }
+.mg-res-l { font-size:15px; margin:10px 0 18px; }
+.mg-res-l b { color:#FFD24A; font-family:'Fredoka One',sans-serif; font-size:19px; }
+.mg-res-b { display:flex; gap:12px; justify-content:center; }
+/* 選單第 6 張「小遊戲」卡的格子 icon（純 CSS） */
+.lc-grid-icon { display:inline-grid; grid-template-columns:repeat(2,1fr); gap:3px; width:34px; height:34px; }
+.lc-grid-icon i { background:linear-gradient(180deg,#FFD86A,#E0A02A); border-radius:4px; }
 </style>
 </head>
 <body>
@@ -2723,6 +2774,14 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
         <span class="lc-desc">憑記憶輸入單字，無提示挑戰</span>
         <span class="lc-start">開始挑戰</span>
         <span class="lc-unlock-note">完成 Level 4 後解鎖</span>
+      </div>
+      <!-- 小遊戲：詞義配對消除（不走關卡解鎖，隨時可玩） -->
+      <div class="lc-btn lc-bonus" onclick="startMatchGame()">
+        <span class="lc-grid-icon"><i></i><i></i><i></i><i></i></span>
+        <span class="lc-lvtag">小遊戲</span>
+        <span class="lc-name">詞義配對消除</span>
+        <span class="lc-desc">點族語詞＋對應中文，限時消一消</span>
+        <span class="lc-start">開始遊戲</span>
       </div>
     </div>
     <!-- 底部石質功能列：排行榜 / 設定(暫沿用登出位) / 音效 / 登出。
@@ -3128,6 +3187,31 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
     <div class="result-review" id="clReview"></div>
     <!-- 任務2：下載練習紀錄 .txt（同 goReviewDl）。 -->
     <div class="review-dl-row" id="clReviewDl"><button class="img-btn review-dl-btn" onclick="downloadPracticeLog()"><span class="vico vico-down"></span> 下載練習紀錄</button></div>
+  </div>
+
+  <!-- ═══ 詞義配對消除 小遊戲（獨立模式，startMatchGame() 啟動，不走關卡解鎖/排行）═══ -->
+  <div id="matchScreen">
+    <div class="mg-top">
+      <button class="mg-back" onclick="matchBackToTitle()">回首頁</button>
+      <div class="mg-hud">
+        <span class="mg-hud-i">配對 <b id="mgCleared">0</b></span>
+        <span class="mg-hud-i">分數 <b id="mgScore">0</b></span>
+        <span class="mg-hud-i mg-hud-time">時間 <b id="mgTime">60</b></span>
+      </div>
+    </div>
+    <div class="mg-heading">詞義配對消除</div>
+    <div class="mg-sub">點「族語詞」＋對應的「中文」，配對成功就消掉</div>
+    <div id="matchBoard"></div>
+    <div id="matchResult">
+      <div class="mg-res">
+        <div class="mg-res-t">時間到！</div>
+        <div class="mg-res-l">配對成功 <b id="mgResCleared">0</b> 組　·　總分 <b id="mgResScore">0</b></div>
+        <div class="mg-res-b">
+          <button class="img-btn" onclick="startMatchGame()">再玩一次</button>
+          <button class="img-btn" onclick="matchBackToTitle()">回首頁</button>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -4699,6 +4783,102 @@ function aimPreyAt(el) {
   prey.style.right = 'auto'; prey.style.bottom = 'auto';
   prey.style.left = ((er.left + er.width / 2 - sr.left) / sc - prey.offsetWidth / 2) + 'px';
   prey.style.top  = ((er.top + er.height / 2 - sr.top) / sc - prey.offsetHeight / 2) + 'px';
+}
+
+// ═══════════════════════════════════════════════════
+//  §詞義配對消除 小遊戲（獨立模式；不走關卡解鎖/排行）
+//  族語詞 ↔ 中文 配對消除，限時計分。用現有詞彙池（loadPool；離線退 FALLBACK_PREY_POOL）。
+// ═══════════════════════════════════════════════════
+const MATCH_PAIRS = 6, MATCH_TIME = 60, MATCH_HIT = 100, MATCH_MISS_PENALTY = 3;
+let MG = { active:false, score:0, cleared:0, timeLeft:0, timer:null, sel:null, pool:[], lock:false };
+
+async function startMatchGame() {
+  if (window.Sfx) Sfx.sfxClick();
+  document.getElementById('titleScreen').style.display = 'none';
+  document.getElementById('matchResult').classList.remove('show');
+  document.getElementById('matchScreen').classList.add('show');
+  let pool = [];
+  try { pool = await loadPool(null, false); } catch (e) {}      // 全池（filter=null→all）
+  if (!pool || pool.length < MATCH_PAIRS) pool = FALLBACK_PREY_POOL;
+  MG.pool = pool.filter(p => displayWordOf(p) && p.zh);
+  if (MG.pool.length < MATCH_PAIRS) MG.pool = FALLBACK_PREY_POOL.filter(p => displayWordOf(p) && p.zh);
+  MG.score = 0; MG.cleared = 0; MG.sel = null; MG.lock = false; MG.active = true;
+  MG.timeLeft = MATCH_TIME;
+  updateMatchHud();
+  renderMatchBoard();
+  clearInterval(MG.timer);
+  MG.timer = setInterval(() => {
+    if (!MG.active) return;
+    MG.timeLeft--;
+    updateMatchHud();
+    if (window.Sfx && MG.timeLeft > 0 && MG.timeLeft <= 5) Sfx.sfxTick();
+    if (MG.timeLeft <= 0) endMatchGame();
+  }, 1000);
+}
+
+function renderMatchBoard() {
+  const board = document.getElementById('matchBoard');
+  if (!board) return;
+  const picks = shuffle(MG.pool).slice(0, MATCH_PAIRS);
+  const esc = s => String(s).replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]));
+  const tiles = [];
+  picks.forEach((p, i) => {
+    tiles.push({ pid:i, type:'word', text: displayWordOf(p) });
+    tiles.push({ pid:i, type:'zh',   text: p.zh });
+  });
+  board.innerHTML = shuffle(tiles).map(t =>
+    `<button class="match-tile ${t.type==='word'?'mt-word':'mt-zh'}" data-pid="${t.pid}" data-type="${t.type}">${esc(t.text)}</button>`
+  ).join('');
+  Array.from(board.querySelectorAll('.match-tile')).forEach(el => { el.onclick = () => onMatchTap(el); });
+}
+
+function onMatchTap(el) {
+  if (!MG.active || MG.lock || el.classList.contains('matched')) return;
+  if (el === MG.sel) { el.classList.remove('sel'); MG.sel = null; return; }   // 再點一次取消選取
+  if (window.Sfx) Sfx.sfxClick();
+  if (!MG.sel) { MG.sel = el; el.classList.add('sel'); return; }
+  const a = MG.sel, b = el;
+  const ok = (a.dataset.pid === b.dataset.pid) && (a.dataset.type !== b.dataset.type); // 同組 + 一詞一義 = 對
+  if (ok) {
+    a.classList.add('matched'); b.classList.add('matched'); a.classList.remove('sel');
+    MG.sel = null; MG.cleared++; MG.score += MATCH_HIT;
+    if (window.Sfx) Sfx.sfxCaught();
+    updateMatchHud();
+    const board = document.getElementById('matchBoard');
+    if (Array.from(board.querySelectorAll('.match-tile')).every(t => t.classList.contains('matched'))) {
+      MG.lock = true;   // 全消 → 換新板繼續
+      setTimeout(() => { if (MG.active) { renderMatchBoard(); MG.lock = false; } }, 480);
+    }
+  } else {
+    MG.lock = true;
+    a.classList.add('bad'); b.classList.add('bad');
+    if (window.Sfx) Sfx.sfxMiss();
+    MG.timeLeft = Math.max(0, MG.timeLeft - MATCH_MISS_PENALTY);  // 配錯扣秒
+    updateMatchHud();
+    setTimeout(() => { a.classList.remove('bad','sel'); b.classList.remove('bad'); MG.sel = null; MG.lock = false; }, 480);
+  }
+}
+
+function updateMatchHud() {
+  const s = document.getElementById('mgScore'), t = document.getElementById('mgTime'), c = document.getElementById('mgCleared');
+  if (s) s.textContent = MG.score;
+  if (t) t.textContent = Math.max(0, MG.timeLeft);
+  if (c) c.textContent = MG.cleared;
+}
+
+function endMatchGame() {
+  clearInterval(MG.timer); MG.active = false; MG.sel = null;
+  if (window.Sfx) Sfx.sfxClear();
+  document.getElementById('mgResScore').textContent = MG.score;
+  document.getElementById('mgResCleared').textContent = MG.cleared;
+  document.getElementById('matchResult').classList.add('show');
+}
+
+function matchBackToTitle() {
+  clearInterval(MG.timer); MG.active = false; MG.sel = null;
+  document.getElementById('matchResult').classList.remove('show');
+  document.getElementById('matchScreen').classList.remove('show');
+  showTitleScreen();
 }
 
 function hideChoicePanel() {
