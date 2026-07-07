@@ -1,6 +1,12 @@
 .env
+.env.local
+.env*.local
 *.key
 node_modules/
+
+# Vercel serverless 版本機測試 / Vercel CLI 產物
+.verceltest/
+.vercel/
 generated_images/
 image_gen_progress.json
 .localtools/

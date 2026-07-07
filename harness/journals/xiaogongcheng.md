@@ -63,3 +63,26 @@ L3 聽打原本被排除在答案格機制外（`if (G.mode==='blind' || G.liste
 這次卡了一個環境問題：本機 `.localtools` Node 20 起服務時，`better-sqlite3` 原生 binding 直接報 `Could not locate the bindings file`（本機沒裝 build tools，之前 L-003 記過這個雷，但這次連現成的預編譯 binding 都不在了，可能是上次驗證後環境有變動）。因為之前拿真實資料重跑一次 migration 太冒險（雖然邏輯上不會，但沒法用真的 better-sqlite3 驗證），我改用使用者交辦時已經預告的備案：寫一個獨立的 Python `sqlite3` 腳本，把同一套 `ALTER TABLE`／`INSERT`／排行榜分組 SQL 原樣搬過去跑（Python 內建 sqlite3 底層引擎跟 better-sqlite3 是同一套 SQLite，SQL 語法邏輯完全等價，只有具名參數符號 `@` vs `:` 不同，無關邏輯本身），模擬「Kacaw 已有 2 筆舊紀錄 → migration → 新增桌機/手機各幾筆 → 查排行榜」全流程，五個斷言全部 PASS：migration 前後筆數不變、既有資料全部落在 `platform='desktop'`、`platform` 合法性 fallback 六種輸入全對、同一玩家 desktop/mobile 分數在排行榜是兩個獨立列不會加總在一起、`?platform=` filter 正確只回對應平台。`node --check` 也過。程式碼只動了 `backend/server.js` 三處（migration 區塊、`POST /api/scores`、`GET /api/leaderboard`），`git diff --stat` 確認沒有波及其他檔案。
 
 交棒：這次**只做後端**，`hunter-truku-v2.html`／`mobile.html`／`game-mobile.js` 完全沒動，手機前端要接上 `platform:'mobile'` 這個 body 欄位是小蘋果的工作。部署前我沒有自己上正式站——這是使用者在交辦裡明講的熔斥級動作，要先回報給他確認時機才能動手；部署步驟照鐵律：先備份 `hunter.db`、只能加欄位不能動 `scores` 既有列、部署後驗 `scores`/`players` 表筆數前後一致、記得 `pm2 restart hunter-api`（這次動了 server.js，不是純靜態檔，一定要重啟才會生效）。另外這次順便發現本機 better-sqlite3 binding 環境比 L-003 記錄的還要更缺（原本以為只是「版本不相容」，這次是「完全找不到 binding 檔」），如果下次要跑真實本機服務驗證，可能得先重新 `npm rebuild` 或補裝預編譯檔，這條我還沒去深究根因，先记录起来，之後如果本機測試又卡在同樣的錯誤，直接查這條、不用重新從頭排查。
+
+## 2026-07-07 · Vercel 平行版——後端整套搬成 serverless + Turso，DO 一根寒毛都沒動
+
+使用者要「多開一份」跑在 Vercel 上，用自己全新的雲端 DB，跟 DO 正式站完全獨立、資料不共用，在獨立 worktree 做、commit 到新分支 `vercel-deploy`，不准 push、不准真的部署。
+
+**第一個判斷（重要，差點踩坑）**：交辦是在一個舊 worktree（HEAD 停在 `e816f6f`）裡起的，那份 `server.js` 是裸的三張表版本，根本沒有 `players`/`languages`/`admins`、沒有 auth 端點——跟交辦描述（含 email 註冊、JWT、42 語別）對不上。我沒有照那份舊碼搬，先查了 `git branch -a` / `git worktree list`，確認真正最新、有帳號系統跟 42 語別的碼在 `feat/v2-overhaul-accounts-ui-vocab`（`2fc3d17`）。所以我是從**那個分支**開 `vercel-deploy`，搬的是真正的現行 601 行 `server.js`。這條記起來：以後接到「搬/改後端」的任務，先確認手上這份 `server.js` 是不是最新的（比對有沒有 `players`/`languages` 表、`getUnlockedLevel`、`platform` 欄位），別憑 worktree 當下的 HEAD 就開工。
+
+**搬法**：DO 的 `backend/server.js`（Express + 同步 better-sqlite3）我一根寒毛都沒動（`git diff --stat backend/server.js` 空的），Vercel 版是全新的 `api/` 目錄檔案。每個端點等價搬成一支 serverless function，DB 呼叫全部改 async/await 走 `@libsql/client`（Turso）。共用邏輯抽成 `api/_lib/`：`db.js`（libSQL client 單例 + `get/all/run` 三個包裝，刻意做成跟 better-sqlite3 的 `.get()/.all()/.run()` 同心智模型，搬 SQL 時幾乎原封不動）、`auth.js`（bcryptjs 雜湊、JWT、`resolveLang`、`getUnlockedLevel`、白名單、`requirePlayerAuth`/`requireAdminAuth` 都完整照搬）、`schema.js`（把 server.js 建表段 + 所有 migration 後的最終欄位狀態合併成「一次到位的 CREATE」，因為 Turso 是全新空 DB 不存在舊欄位問題）。端點清單：health、auth/{register含email,login,me}、admin/login、languages、vocabulary（GET filter/POST/[id] GET-PUT-DELETE/[word]/image·audio）、scores、leaderboard（index GET / entry DELETE / top3）、stats。
+
+**幾個關鍵決策**：
+1. **bcrypt→bcryptjs 其實不用改**——現行碼早就用 `bcryptjs`（純 JS）了，雜湊格式相容，Vercel 上不會有原生模組爆掉的問題，我沿用。
+2. **JWT_SECRET 不 hardcode**——讀 `process.env.JWT_SECRET`，本機測試 fallback 一個 `dev-only-insecure` 假值（跟 DO server.js 同一個慣例），正式值使用者在 Vercel env 填。
+3. **圖片/音檔上傳回 501**——Vercel serverless 檔案系統唯讀且短暫，沒法像 DO 那樣把上傳檔寫進 `/var/www/.../images` 永久保存。我查過這兩支端點只有 `admin.html` 在用、遊戲本身不呼叫，所以 POST 上傳回 501 並寫清楚原因（素材上傳走 DO 後台），但 DELETE（純清 DB 欄位）照常能用，保持行為一致。
+4. **serverless 不在每次請求跑 migration/seed**——那是 `scripts/seed-turso.js` 一次性建好的事（遠端 DB 建表很慢、也不該每次請求做），function 只負責給 client + 查詢。這跟 DO 的 server.js 每次啟動跑 migration 不同，是 serverless 該有的分工。
+5. **前端零改動**——查過 `API_BASE=''`（同源相對路徑 `/api/...`），Vercel 靜態前端跟 serverless API 同網域，相對路徑直接通、沒有 CORS 問題，`index.html`/`hunter-truku-v2.html`/`mobile.*` 一個字都不用改。
+
+**seed**：`scripts/seed-turso.js` 直接吃 repo 內既有的 `backend/seeds/`（index.js 自動掃 42 支 `{lang_code}.js` + languages.js，跟 DO 同一份來源），建 schema + upsert languages + 逐語別灌 vocabulary（筆數=0 才灌，冪等）。本機用 `file:./.verceltest/hunter.db` 實跑過：42 語別、45,760 筆、trv=1092，跟預期完全吻合。**seed 資料是完整的，不需要 DO 匯出**——唯一的例外是若 DO 後台有人工補過、但沒回寫進 seed 檔的本地圖片路徑，那一小撮才需要另從 DO 唯讀匯出，但不影響基本遊玩跟 42 語別詞庫，這點我在 VERCEL-SETUP.md 跟回報裡都標了。
+
+**本機測試**：這次環境問題比上次好——`@libsql/client` 是預編譯平台 binary、不用 build tools，用 `.localtools` Node 20 `npm install` 一次就過（不像 better-sqlite3 那樣找不到 binding）。我寫了兩支 e2e（直接 mock req/res 呼叫 handler，跑本機 file: DB）：主流程 32 個斷言全 PASS（register含email→login→me→送分含桌機解鎖防呆/手機endless略過→leaderboard 驗證 desktop 500 與 mobile 400 是兩筆獨立列不會被合成 900→vocabulary filter/fallback/by-id→languages/top3/stats）；admin 路徑 7 個斷言全 PASS（admin login→帶 token 增改刪詞彙→未登入 401→玩家 token 操作 admin 端點 403）。`node --check` 全部 api/scripts 檔都過，也掃過確認新檔沒有殘留 `better-sqlite3` import（只有註解提到）、沒有 hardcode 142.93 或密鑰。
+
+**設定檔**：`vercel.json`（framework:null、`/api/**` 當 functions、`/` rewrite 到 index.html、api 不快取靜態資源快取 7 天）、根 `package.json`（`@libsql/client`/`bcryptjs`/`jsonwebtoken` + seed/create-admin script）、`.env.example`、`.gitignore` 補上 `.verceltest/`/`.vercel/`/`.env.local`。另外補了 `scripts/create-admin-turso.js`（對齊 DO 的 create-admin.js，給後台管理員帳號用）跟 `VERCEL-SETUP.md`（使用者照著點：註冊 Turso→建 DB→跑 seed→Vercel import `vercel-deploy` 分支→設三個 env→驗證）。
+
+交棒：commit 在 `vercel-deploy`（從 `feat/v2-overhaul-accounts-ui-vocab` 開），**沒有 push、沒有碰 Vercel**（需要使用者帳號，交辦明講不做）。`backend/server.js` 完全沒動、DO 部署路徑零影響。使用者要上線就照 `VERCEL-SETUP.md` 走。本機測試產物 `.verceltest/` 跟 `node_modules/` 都在 .gitignore 裡、沒進版控（已驗證 staged 清單無洩漏）。若之後要把 DO 現有的真實詞彙/圖片微調同步到 Turso，那是「唯讀匯出 DO DB」的獨立任務，不在這包裡。

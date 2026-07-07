@@ -1,0 +1,15 @@
+{
+  "name": "truku-word-archer-vercel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "族語射手 TRUKU WORD ARCHER — Vercel serverless 平行版（Turso/libSQL）。DO 正式站不受影響。",
+  "scripts": {
+    "seed": "node scripts/seed-turso.js",
+    "create-admin": "node scripts/create-admin-turso.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.3"
+  }
+}
