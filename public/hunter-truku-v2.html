@@ -2824,6 +2824,7 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
     <!-- 底部石質功能列：排行榜 / 設定(暫沿用登出位) / 音效 / 登出。
          沿用既有 onclick（openLeaderboard / logout / onVolBtnClick），排成石bar。 -->
     <div class="title-footer">
+      <button class="title-small-btn" onclick="showAuthScreen()">回首頁</button>
       <button class="title-small-btn" onclick="openLeaderboard()"><img class="ui-ico" src="/images/ui/v2-ui-icon-trophy.png" alt=""> 排行榜</button>
       <button class="title-small-btn" onclick="logout()"><img class="ui-ico" src="/images/ui/v2-ui-icon-logout.png" alt=""> 登出</button>
       <button class="title-icon-btn" id="volBtn" onclick="onVolBtnClick()" title="音量開關" aria-label="音量開關">
