@@ -20,6 +20,8 @@
 - L-013 部署（scp）與 GitHub 同步（commit/push）是兩件事，只做前者會讓版控嚴重落後
 - L-014 `index.html` 從「桌機複製檔」變成「裝置路由檔」後，部署清單要跟著改
 - L-015 Hooks/settings.json 裝在主專案分支，worktree session 完全看不到——promote 問題在 hook 層重演
+- L-016 Journal 提醒 hook 對「背景/非同步」Agent 呼叫會太早觸發——PostToolUse 在「已launch」就算完成，不是「subagent 真的做完」
+- L-017 同一批派工的兩個 subagent，一個在主專案操作、一個在 worktree 操作——分岔出兩份不同內容的日誌檔
 
 ---
 
@@ -120,6 +122,20 @@
 - 正解：把 `settings.json`/`hooks/`/相關 `harness/` 檔手動鏡射進當次 worktree 之後，重新測試才確認 hook 機制本身完全正確（真實呼叫 Agent 工具，提醒正確灌回 model context）。長久修法不是模型能自己決定的架構題，列了三個選項回報給 User：merge PR #2 進 main／改 `worktree.baseRef` 成 `"head"`／每次開新 worktree 手動重新 promote
 - 通則：**任何「裝在專案裡的持久機制」（CLAUDE.md、harness、hooks、settings.json）都要用「這次 session 實際的 project root 在哪」去驗證，不能只驗證「檔案存在於我以為的主專案路徑」**。在會用 worktree-per-session 的工作模式下，這條特別重要——寫完基礎設施類的東西，若要證明「未來 session 真的會生效」，至少要跑一次真實驗證（不是只做 pipe-test/語法檢查），而且要注意 worktree 的分支基準點是不是真的包含這些檔案
 - 關聯：[[L-009]]（同一種 promote 問題，這次發生在 hook 層而非文件層）/ harness/appendix-recommended-hooks.md 護欄 D
+
+### L-016 · Journal 提醒 hook 對「背景/非同步」Agent 呼叫會太早觸發 · 2026-07-06
+- 症狀：同時派了 2 個 subagent（小工程+小排版）回顧補寫日誌，兩個 Agent 呼叫都還在背景跑，`PostToolUse` 提醒就已經跳出來說「日誌似乎沒有更新」——但實際上 subagent 根本還沒完成、還沒機會寫日誌
+- 根因：這個環境的 Agent 工具是**非同步**的——呼叫立刻回傳「Async agent launched successfully」，真正的 subagent 工作在背景另外跑，完成時才觸發獨立的 `task-notification`。而我裝的 `PostToolUse` on `matcher:"Agent"` 是綁在「Agent 工具呼叫本身回傳」那一刻，也就是「已成功派出去」的當下，不是「subagent 真的做完」的當下——兩者對非同步呼叫是不同時間點
+- 正解：對非同步 Agent 呼叫，這個 hook 的提醒只能當「派工當下的參考雜訊」，真正該檢查日誌有沒有更新的時機是**收到 `task-notification`（status: completed）之後**，不要看到 `PostToolUse` 的提醒就以為 agent 真的漏寫了——那可能只是還沒做完
+- 通則：幫非同步/背景工具設計「完成後檢查」類的 hook，要先確認 `PostToolUse` 對這個工具的語意是「呼叫已發出」還是「呼叫已完成」，這在同步/非同步工具上意義完全不同；純同步呼叫（本次前面測試用的都是等待完成的呼叫）就沒有這個問題
+- 關聯：[[L-015]]、harness/appendix-recommended-hooks.md 護欄 D（日後若要修正，可考慮改成只在收到 task-notification 時另外觸發檢查，而非依賴 PostToolUse）
+
+### L-017 · 同一批平行派工的 2 個 subagent，各自落在不同的工作目錄——日誌分岔成兩份 · 2026-07-06
+- 症狀：同時派了小工程、小排版兩個 Agent 呼叫，要求都用相對路徑 `harness/journals/<檔名>.md` append 自己的日誌。小工程完成後回報「檔案從 39 行增加到 57 行」（跟主專案正本吻合，操作對了地方）；小排版完成後回報「新建，因為此檔案先前不存在」——查證發現小排版的 Read/Write 實際落在這個對話所在的 **worktree**（`.claude/worktrees/nervous-kare-81ae61`）裡，那裡從來沒有 `harness/journals/xiaopaiban.md`（只有我先前為了測 hook 手動鏡射過 `xiaohuajia.md`），於是小排版憑空新建了一份「只有今天 4 條、沒有 07-02~07-05 歷史」的檔案，跟主專案正本（32 行、5 條歷史）完全分岔成兩份不同內容
+- 根因：兩個 subagent 用一模一樣的相對路徑寫法，但各自實際執行時的 cwd／專案根目錄解析結果不同（推測跟各自子任務內部是否有下達過 `cd` 或讀到絕對路徑線索有關，非我方派工指令本身寫錯）。這是 [[L-009]]、[[L-015]] 同一種「這個 session 到底錨定在哪個目錄」問題的第三次重演，這次不是文件/hook 沒被載入，而是**两個並行 subagent 對『我在哪』的認知彼此不一致**
+- 正解：發現分岔後，把 worktree 那份的 4 條新內容手動合併回主專案正本（保留正本的歷史序列），再刪除 worktree 那份分岔副本，避免之後有人誤讀到不完整版本
+- 通則：**派工要求 subagent 寫入某個檔案時，若專案同時存在 worktree 與主專案兩種可能的『當下位置』，一律在派工指令裡給絕對路徑，不要只給相對路徑**——相對路徑在「這個 session 錨定在 worktree、但你要它動的東西其實在主專案」這種情境下無法保證兩個 subagent 解析到同一個地方。派工後也要實際核對「檔案真的變到哪去了」，不能只信 subagent 回報的「行數變化」數字（那個數字本身沒騙人，只是相對於一個錯的起點）
+- 關聯：[[L-009]]、[[L-015]]、harness/H-agent-journals.md
 
 ### L-014 · `index.html` 從「桌機複製檔」變成「裝置路由檔」後，部署清單要跟著改 · 2026-07-05
 - 症狀：手機版上線後，`index.html` 的角色從「桌機 `hunter-truku-v2.html` 的複製品」改成「依裝置特徵判斷導向桌機或手機版的薄路由檔」。如果部署時沿用舊習慣把桌機 HTML 覆蓋到 `index.html`，會直接讓所有使用者（含手機）都看到桌機版，路由整個失效

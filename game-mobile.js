@@ -35,6 +35,12 @@ const CFG = {
   HINT_FADE_MS: 4000,          // 從初始透明度淡到 HINT_MIN_OPACITY 所需時間(ms)
   HINT_MIN_OPACITY: 0.0,       // 淡出到的最低透明度（0=完全消失；可設小值保留微量殘影）
   HINT_FADE_DELAY_MS: 700,     // 出題後先完整顯示這段時間再開始淡出（讓初學者來得及看）
+
+  // ── 關卡里程碑（累積擊殺數分段；只是 HUD 顯示+輕量反饋，不影響 endless 遊戲迴圈本身） ──
+  // 0-9→LEVEL1、10-19→LEVEL2、20-29→LEVEL3、30-39→LEVEL4、40+→LEVEL5（上限，不再往上）
+  MILESTONE_KILLS_PER_LEVEL: 10,
+  MILESTONE_MAX_LEVEL: 5,
+  LEVEL_UP_TOAST_MS: 1400,      // 跨門檻提示條顯示時長(ms)
 };
 
 // 內部座標系：以「設計高度」為基準畫，再等比縮放貼到實際 canvas，維持長寬比不變形。
@@ -50,7 +56,8 @@ const rotateHint = $('rotateHint');
 const app = $('app');
 const canvas = $('game'), ctx = canvas.getContext('2d');
 const hpFill = $('hpFill'), hpNum = $('hpNum');
-const scoreNum = $('scoreNum'), comboNum = $('comboNum');
+const scoreNum = $('scoreNum'), comboNum = $('comboNum'), levelNum = $('levelNum');
+const levelUpToast = $('levelUpToast');
 const wordMeaning = $('wordMeaning'), wmZh = $('wmZh'), wmCat = $('wmCat');
 const audioBtn = $('audioBtn');
 const progressRow = $('progressRow'), tileRow = $('tileRow');
@@ -62,6 +69,16 @@ const howto = $('howto');   // 玩法說明卡「怎麼玩」：開始畫面顯�
 // 語別選擇相關
 const langSelect = $('langSelect'), langError = $('langError');
 const langBar = $('langBar'), langBarName = $('langBarName'), langBarNative = $('langBarNative');
+// 帳號 / 排行榜相關（輕量登入，訪客路徑不受影響）
+const acctBar = $('acctBar'), acctBarLabel = $('acctBarLabel'),
+      acctBarLoginBtn = $('acctBarLoginBtn'), acctBarBoardBtn = $('acctBarBoardBtn');
+const ovAcctRow = $('ovAcctRow'), ovAcctLabel = $('ovAcctLabel'), ovLoginLink = $('ovLoginLink'),
+      ovBoardBtn = $('ovBoardBtn');
+const authOverlay = $('authOverlay'), authTabLoginM = $('authTabLoginM'), authTabRegisterM = $('authTabRegisterM'),
+      authUserM = $('authUserM'), authPassM = $('authPassM'),
+      authDisplayRow = $('authDisplayRow'), authDisplayM = $('authDisplayM'),
+      authErrorM = $('authErrorM'), authSubmitM = $('authSubmitM'), authCancelM = $('authCancelM');
+const boardOverlay = $('boardOverlay'), boardList = $('boardList'), boardCloseBtn = $('boardCloseBtn');
 
 // ─────────────────────────────────────────────────────────────
 // 素材（引用桌機同一份路徑，不複製）
@@ -83,6 +100,7 @@ const PREY_SPRITES = [
 let pool = [];            // 可用單字池（已過濾）
 let state = 'menu';       // menu | playing | over
 let hp, score, combo, kills, correctTaps, totalTaps;
+let milestoneLevel = 1;   // 本局目前里程碑等級（依累積 kills 分段，見 CFG.MILESTONE_*），只是 HUD/反饋層
 let current = null;       // 目前題目 { letters:[], word, zh, cat, audio, spriteIdx }
 let progress = 0;         // 已拼到第幾格
 let tileState = [];       // 每個磚：{ch, used:bool, el}
@@ -295,6 +313,173 @@ const FALLBACK = [
 ];
 
 // ─────────────────────────────────────────────────────────────
+// 帳號（輕量登入；沿用桌機同一組 /api/auth/* API，但 token 分開存）
+//   - 訪客模式維持最短路徑：不呼叫 /api/auth/*、不呼叫 POST /api/scores、成績純本機。
+//   - token key 特意跟桌機的 'hunter_auth_token' 分開存，兩邊各自獨立登入狀態。
+// ─────────────────────────────────────────────────────────────
+const MOBILE_AUTH_TOKEN_KEY = 'hunter_mobile_token';
+let AUTH = { token:null, username:null, displayName:null, unlockedLevel:1, isGuest:true };
+let _authTabMode = 'login';   // 'login' | 'register'
+
+function mobileAuthHeaders(){
+  return AUTH.token ? { 'Authorization': 'Bearer ' + AUTH.token } : {};
+}
+function readSavedMobileToken(){
+  try { return localStorage.getItem(MOBILE_AUTH_TOKEN_KEY); } catch(e){ return null; }
+}
+function saveMobileToken(token){
+  try { localStorage.setItem(MOBILE_AUTH_TOKEN_KEY, token); } catch(e){}
+}
+function clearMobileToken(){
+  try { localStorage.removeItem(MOBILE_AUTH_TOKEN_KEY); } catch(e){}
+}
+
+// 驗證已存 token 是否仍有效，同步 displayName / unlockedLevel。失效則清掉、退回訪客。
+async function refreshMobileAuthMe(){
+  if (!AUTH.token) return false;
+  try {
+    const res = await fetch('/api/auth/me', { headers: mobileAuthHeaders() });
+    if (!res.ok) throw new Error('me api ' + res.status);
+    const data = await res.json();
+    AUTH.username = data.username;
+    AUTH.displayName = data.display_name;
+    AUTH.unlockedLevel = data.unlockedLevel || 1;
+    AUTH.isGuest = false;
+    return true;
+  } catch(e){
+    AUTH = { token:null, username:null, displayName:null, unlockedLevel:1, isGuest:true };
+    clearMobileToken();
+    return false;
+  }
+}
+
+// 更新帳號狀態相關 UI（HUD 帳號條 + 開始畫面帳號列）
+function refreshAcctUI(){
+  const label = AUTH.isGuest ? '訪客模式' : ('已登入：' + (AUTH.displayName || AUTH.username));
+  if (acctBarLabel) acctBarLabel.textContent = label;
+  if (acctBarLoginBtn) acctBarLoginBtn.hidden = !AUTH.isGuest;
+  if (ovAcctLabel) ovAcctLabel.textContent = AUTH.isGuest ? '訪客模式（成績不記錄）' : ('已登入：' + (AUTH.displayName || AUTH.username) + '（成績會記錄）');
+  if (ovLoginLink) ovLoginLink.hidden = !AUTH.isGuest;
+}
+
+function openAuthOverlay(){
+  if (authErrorM){ authErrorM.hidden = true; authErrorM.textContent = ''; }
+  if (authOverlay) authOverlay.hidden = false;
+}
+function closeAuthOverlay(){
+  if (authOverlay) authOverlay.hidden = true;
+}
+function switchAuthTabM(mode){
+  _authTabMode = mode;
+  const isRegister = mode === 'register';
+  if (authTabLoginM) authTabLoginM.classList.toggle('active', !isRegister);
+  if (authTabRegisterM) authTabRegisterM.classList.toggle('active', isRegister);
+  if (authDisplayRow) authDisplayRow.hidden = !isRegister;
+  if (authSubmitM) authSubmitM.textContent = isRegister ? '註冊' : '登入';
+  if (authErrorM){ authErrorM.hidden = true; authErrorM.textContent = ''; }
+}
+
+async function submitAuthM(){
+  const username = (authUserM && authUserM.value || '').trim();
+  const password = (authPassM && authPassM.value) || '';
+  const displayName = (authDisplayM && authDisplayM.value || '').trim();
+  if (!authErrorM) return;
+  authErrorM.hidden = true; authErrorM.textContent = '';
+
+  if (!username || !password){ authErrorM.textContent = '請輸入帳號與密碼'; authErrorM.hidden = false; return; }
+  if (_authTabMode === 'register' && !displayName){ authErrorM.textContent = '請輸入顯示名稱'; authErrorM.hidden = false; return; }
+
+  authSubmitM.disabled = true;
+  const original = authSubmitM.textContent;
+  authSubmitM.textContent = '處理中…';
+  try {
+    const url = _authTabMode === 'register' ? '/api/auth/register' : '/api/auth/login';
+    const body = _authTabMode === 'register'
+      ? { username, password, display_name: displayName }
+      : { username, password };
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok){
+      authErrorM.textContent = data.error || '發生錯誤，請再試一次';
+      authErrorM.hidden = false;
+      return;
+    }
+    AUTH.token = data.token;
+    saveMobileToken(data.token);
+    const ok = await refreshMobileAuthMe();
+    if (ok){
+      refreshAcctUI();
+      closeAuthOverlay();
+    } else {
+      authErrorM.textContent = '登入成功但讀取資料失敗，請重新整理頁面';
+      authErrorM.hidden = false;
+    }
+  } catch(e){
+    authErrorM.textContent = '無法連線到伺服器';
+    authErrorM.hidden = false;
+  } finally {
+    authSubmitM.disabled = false;
+    authSubmitM.textContent = original;
+  }
+}
+
+if (authTabLoginM) authTabLoginM.addEventListener('click', () => switchAuthTabM('login'));
+if (authTabRegisterM) authTabRegisterM.addEventListener('click', () => switchAuthTabM('register'));
+if (authSubmitM) authSubmitM.addEventListener('click', submitAuthM);
+if (authCancelM) authCancelM.addEventListener('click', closeAuthOverlay);
+if (acctBarLoginBtn) acctBarLoginBtn.addEventListener('click', openAuthOverlay);
+if (ovLoginLink) ovLoginLink.addEventListener('click', openAuthOverlay);
+
+// ─────────────────────────────────────────────────────────────
+// 排行榜（GET /api/leaderboard?platform=mobile；簡潔清單，跟桌機羊皮紙風格分開）
+// ─────────────────────────────────────────────────────────────
+async function loadLeaderboardM(){
+  if (!boardList) return;
+  boardList.innerHTML = '<div class="board-empty">載入中…</div>';
+  try {
+    const res = await fetch('/api/leaderboard?platform=mobile&limit=20');
+    if (!res.ok) throw new Error('leaderboard api ' + res.status);
+    const json = await res.json();
+    const rows = (json && Array.isArray(json.data)) ? json.data : [];
+    if (!rows.length){
+      boardList.innerHTML = '<div class="board-empty">目前還沒有手機版排行榜紀錄</div>';
+      return;
+    }
+    boardList.innerHTML = rows.map((r, i) => {
+      const langLabel = (langByCode[r.lang_code] && langByCode[r.lang_code].name_zh) || r.lang_code || '';
+      return `<div class="board-row">
+        <span class="board-rank">${i+1}</span>
+        <span class="board-name">${escapeHtmlM(r.player)}</span>
+        <span class="board-lang">${escapeHtmlM(langLabel)}</span>
+        <span class="board-score">${r.score}</span>
+      </div>`;
+    }).join('');
+  } catch(e){
+    boardList.innerHTML = '<div class="board-empty">排行榜載入失敗，請稍後再試</div>';
+  }
+}
+// 排行榜資料含玩家自訂顯示名稱，做基本 HTML escape 避免 innerHTML 注入。
+function escapeHtmlM(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+function openBoardOverlay(){
+  if (boardOverlay) boardOverlay.hidden = false;
+  loadLeaderboardM();
+}
+function closeBoardOverlay(){
+  if (boardOverlay) boardOverlay.hidden = true;
+}
+if (acctBarBoardBtn) acctBarBoardBtn.addEventListener('click', openBoardOverlay);
+if (ovBoardBtn) ovBoardBtn.addEventListener('click', openBoardOverlay);
+if (boardCloseBtn) boardCloseBtn.addEventListener('click', closeBoardOverlay);
+
+// ─────────────────────────────────────────────────────────────
 // 出題
 // ─────────────────────────────────────────────────────────────
 function pick(){
@@ -476,11 +661,36 @@ clearBtn.addEventListener('click', clearSpelling);
 // ─────────────────────────────────────────────────────────────
 // 單字完成 → 往上射箭 → 擊中 → 加分/combo
 // ─────────────────────────────────────────────────────────────
+// 依累積擊殺數算里程碑等級（0-9→1、10-19→2…40+→5，上限 MILESTONE_MAX_LEVEL）。
+// 純函式，跟 HP/endless/出題節奏無關，只用來驅動 HUD 顯示與跨關輕量反饋。
+function computeMilestoneLevel(killCount){
+  const lvl = Math.floor(killCount / CFG.MILESTONE_KILLS_PER_LEVEL) + 1;
+  return Math.min(CFG.MILESTONE_MAX_LEVEL, lvl);
+}
+
+// 跨門檻時的輕量反饋：短暫提示條 + 震動，不中斷遊戲迴圈、不跳 modal。
+function showLevelUpToast(){
+  if (!levelUpToast) return;
+  levelUpToast.hidden = false;
+  levelUpToast.textContent = 'LEVEL ' + milestoneLevel + '!';
+  // 觸發 CSS transition：先移除再強制 reflow 再加回，確保每次都重新播放
+  levelUpToast.classList.remove('show'); void levelUpToast.offsetWidth;
+  levelUpToast.classList.add('show');
+  if (navigator.vibrate) navigator.vibrate([0,25,60,25]);
+  clearTimeout(showLevelUpToast._t);
+  showLevelUpToast._t = setTimeout(() => { levelUpToast.classList.remove('show'); }, CFG.LEVEL_UP_TOAST_MS);
+}
+
 function completeWord(){
   combo++;
   const gained = CFG.BASE_SCORE + (combo-1)*CFG.COMBO_BONUS;
   score += gained;
   kills++;
+  const newMilestone = computeMilestoneLevel(kills);
+  if (newMilestone > milestoneLevel){
+    milestoneLevel = newMilestone;
+    showLevelUpToast();
+  }
   updateHUD();
   if (navigator.vibrate) navigator.vibrate(CFG.VIBRATE_HIT);
   // 射箭：從獵人(底部中央)往上飛向 prey（螢幕座標）
@@ -504,6 +714,7 @@ function updateHUD(){
   scoreNum.textContent = score;
   comboNum.textContent = combo;
   comboNum.classList.toggle('hot', combo >= 3);
+  if (levelNum) levelNum.textContent = milestoneLevel;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -630,6 +841,7 @@ function startGame(){
   hp = CFG.START_HP; score = 0; combo = 0; kills = 0;
   correctTaps = 0; totalTaps = 0;
   arrows = []; prey = null;
+  milestoneLevel = 1;                  // 每局重新從里程碑 LEVEL1 開始
   wordsSeen = 0;                       // 重置鷹架計數：每局重新從第一關開始給提示
   cancelAnimationFrame(hintFadeRaf);
   updateHUD();
@@ -639,6 +851,44 @@ function startGame(){
   lastT = performance.now();
   cancelAnimationFrame(rafId);
   rafId = requestAnimationFrame(loop);
+}
+
+// 送分（只有已登入呼叫；訪客完全不打這支 API）。只送「這局最高里程碑等級」一筆，
+// 不會每跨一個門檻就送一筆（那個邏輯在 completeWord 的 showLevelUpToast，純視覺不送分）。
+//
+// ⚠️ 已知風險（前端無法自行解決，如實送出、不偽造資料）：/api/scores 會拒絕
+// level 高於 getUnlockedLevel() 的請求（該函式以 scores 表 cleared=1 的最高
+// level+1 計算，新帳號從 1 開始）。手機 endless 模式沒有「過關」概念，若某局
+// 一路衝到里程碑 LEVEL3 但帳號還沒解鎖到 3，這裡如實送 level:milestoneLevel、
+// cleared:false（endless 沒有「過關」這件事，不謊報 cleared 去騙後端解鎖），
+// 後端可能回 403、這筆分數就送不進去。這是 endless 模式硬塞進「回合制解鎖」
+// API 的真實摩擦，不是前端能私自修的東西——已在方案提案中向主管說明過，
+// 這裡選擇「如實送出、失敗就放棄」而非「偽造 cleared 騙過驗證」，避免寫入
+// 不實的過關紀錄污染 scores 表。403 會被下面的 catch/res.ok 檢查吃掉，不擋結算畫面。
+async function submitMobileScore(){
+  if (AUTH.isGuest) return;   // 訪客：不送分、不進榜
+  const acc = totalTaps ? Math.round(correctTaps/totalTaps*100) : 0;
+  try {
+    const res = await fetch('/api/scores', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...mobileAuthHeaders() },
+      body: JSON.stringify({
+        level: milestoneLevel,
+        score,
+        kills,
+        accuracy: acc,
+        combo,
+        cleared: false,
+        lang_code: currentLang.code,
+        platform: 'mobile',
+      })
+    });
+    const data = await res.json();
+    if (res.ok && typeof data.unlockedLevel === 'number') AUTH.unlockedLevel = data.unlockedLevel;
+    if (!res.ok) console.warn('[mobile] 送分失敗（可能是里程碑等級尚未解鎖）', data && data.error);
+  } catch(e){
+    // 網路失敗靜默處理，不擋結算畫面
+  }
 }
 
 function gameOver(){
@@ -659,6 +909,7 @@ function gameOver(){
     <div class="ov-stat"><span class="k">MAX COMBO</span><span class="v">${combo}</span></div>`;
   startBtn.textContent = '再玩一次';
   overlay.hidden = false; overlay.classList.remove('hidden');
+  submitMobileScore();          // HP 歸零那刻恰好送這一筆；訪客在函式內直接 return 不送
 }
 
 startBtn.addEventListener('click', async () => {
@@ -747,6 +998,13 @@ if (window.visualViewport){
 // ─────────────────────────────────────────────────────────────
 (async function init(){
   decideEntry();
+  // 帳號：有存 token 才驗證（訪客完全不打 /api/auth/*，維持零呼叫）
+  const savedToken = readSavedMobileToken();
+  if (savedToken){
+    AUTH.token = savedToken;
+    await refreshMobileAuthMe();
+  }
+  refreshAcctUI();
   // 網址參數 ?lang=<code> 可覆寫（測試用），優先於 localStorage
   await initLang();
   const forced = query('lang');

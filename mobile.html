@@ -43,10 +43,14 @@
       <span id="hpNum" class="hp-num">5</span>
     </div>
     <div class="hud-right">
+      <div class="hud-level"><span class="hud-label">LEVEL</span><span id="levelNum">1</span></div>
       <div class="hud-score"><span class="hud-label">SCORE</span><span id="scoreNum">0</span></div>
       <div class="hud-combo"><span class="hud-label">COMBO</span><span id="comboNum">0</span></div>
     </div>
   </header>
+
+  <!-- 里程碑跨關輕量提示條：短暫顯示「LEVEL UP」不中斷 endless 節奏，不是整頁 modal -->
+  <div id="levelUpToast" class="level-up-toast" hidden>LEVEL UP!</div>
 
   <!-- 目前語別條：顯示遊玩中的語別（中文＋族語），像桌機 HUD 副標。點擊回開始畫面換語別。 -->
   <button id="langBar" class="lang-bar" type="button" aria-label="目前語別，點擊可更換">
@@ -54,6 +58,13 @@
     <span id="langBarNative" class="lang-bar-native">Truku</span>
     <span class="lang-bar-caret vico vico-caret"></span>
   </button>
+
+  <!-- 帳號狀態條：訪客顯示「訪客模式」+登入入口；已登入顯示暱稱+排行榜入口。放語別條下方，不擋遊戲區。 -->
+  <div id="acctBar" class="acct-bar">
+    <span id="acctBarLabel" class="acct-bar-label">訪客模式</span>
+    <button id="acctBarLoginBtn" class="acct-bar-btn" type="button">登入</button>
+    <button id="acctBarBoardBtn" class="acct-bar-btn" type="button">排行榜</button>
+  </div>
 
   <!-- 中段遊戲區：canvas 自適應，敵人由上而下 -->
   <main id="stage">
@@ -118,7 +129,54 @@
         </ol>
       </div>
 
+      <!-- 帳號狀態列：訪客顯示「登入」邀請（非強制），已登入顯示暱稱。不擋在開始鈕之前，
+           訪客路徑維持「選語別→看說明→開始」最短路徑，登入是加值不是門檻。 -->
+      <div id="ovAcctRow" class="ov-acct-row">
+        <span id="ovAcctLabel" class="ov-acct-label">訪客模式（成績不記錄）</span>
+        <button id="ovLoginLink" class="ov-acct-link" type="button">登入 / 註冊</button>
+      </div>
+
       <button id="startBtn" class="btn-gold">開始遊戲</button>
+      <button id="ovBoardBtn" class="btn-wood ov-board-btn" type="button">查看排行榜</button>
+    </div>
+  </div>
+
+  <!-- ============ 登入 / 註冊 覆蓋層（輕量，非強制；訪客可完全略過） ============ -->
+  <div id="authOverlay" class="overlay" hidden>
+    <div class="overlay-card auth-card-m">
+      <div class="ov-title" style="font-size:22px;margin-bottom:4px;">登入 / 註冊</div>
+      <div class="ov-sub" style="margin-bottom:14px;">登入後成績會記錄到排行榜</div>
+
+      <div class="auth-tabs-m">
+        <button id="authTabLoginM" class="auth-tab-m active" type="button">登入</button>
+        <button id="authTabRegisterM" class="auth-tab-m" type="button">註冊</button>
+      </div>
+
+      <div class="auth-field-row">
+        <input id="authUserM" class="auth-input-m" type="text" placeholder="帳號（至少 3 字元）" autocomplete="username">
+      </div>
+      <div class="auth-field-row">
+        <input id="authPassM" class="auth-input-m" type="password" placeholder="密碼（至少 4 字元）" autocomplete="current-password">
+      </div>
+      <div id="authDisplayRow" class="auth-field-row" hidden>
+        <input id="authDisplayM" class="auth-input-m" type="text" placeholder="顯示名稱（排行榜上顯示）">
+      </div>
+
+      <div id="authErrorM" class="lang-error" hidden></div>
+
+      <button id="authSubmitM" class="btn-gold" style="width:100%;margin-top:6px;">登入</button>
+      <button id="authCancelM" class="btn-wood ov-board-btn" type="button">先不登入，去玩遊戲</button>
+    </div>
+  </div>
+
+  <!-- ============ 排行榜覆蓋層（手機平台 platform=mobile，簡潔清單，不照抄桌機羊皮紙） ============ -->
+  <div id="boardOverlay" class="overlay" hidden>
+    <div class="overlay-card">
+      <div class="ov-title" style="font-size:22px;margin-bottom:12px;">手機版排行榜</div>
+      <div id="boardList" class="board-list">
+        <div class="board-empty">載入中…</div>
+      </div>
+      <button id="boardCloseBtn" class="btn-gold" style="width:100%;margin-top:14px;">關閉</button>
     </div>
   </div>
 

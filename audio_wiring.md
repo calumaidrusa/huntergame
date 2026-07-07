@@ -172,18 +172,40 @@ localStorage.setItem('ht_muted', nextMuted ? '1' : '0');
 
 ---
 
-## 5. 遊戲進行中 BGM（有節奏的 chiptune loop）★本次新增，給小工程
+## 5. 遊戲進行中 BGM ★給小工程
 
-**檔案**：`C:\Users\asd81\Documents\Claude\01-Game\public\audio\bgm\game-loop.mp3`
-**用途**：只在**遊戲進行中**播放（標題畫面不放這首，標題放環境音）。溫馨奇幻繪本管弦樂——豎琴 + 木笛（recorder）主奏的柔和 RPG 情境曲，襯托打字狩獵的探索感，與 v2 細緻繪本/RPG 美術調性相搭。
+**檔案（現行）**：`C:\Users\asd81\Documents\Claude\01-Game\public\audio\bgm\game-bgm-suno.mp3`
+`#gameBgm` 的 src 現為 `/audio/bgm/game-bgm-suno.mp3`。**用途**：只在**遊戲進行中**播放（標題畫面放環境音，不放這首）。接線 / ducking / 切換邏輯不變，只換 src + 調低音量常數即生效。
 
-> 🔄 **更換紀錄（2026-07-03）**：原本此位置為 8-bit chiptune（HydroGene「Slay The Evil」），使用者反映「太出戲、跟細緻繪本/RPG 美術完全不搭」，已否決 chiptune 方向。**本次改為溫馨奇幻繪本管弦樂**（下表）。**檔名不變（`game-loop.mp3`），小工程既有的第 5 節接線 / ducking / 切換邏輯完全不用改，換檔即生效。**
+> 🔄 **更換紀錄（2026-07-07）**：使用者指定改用 **Suno 生成曲「Moss Arrow Loop」**（分享頁 https://suno.com/s/MHlNXxj3r6zMO4Dk）。已從 Suno CDN 抓下主音檔放為 `game-bgm-suno.mp3`。`#gameBgm` src 由 `game-ambient.wav` 改為此檔。**同時依使用者「要更小聲」把音量再降**：`GAME_BGM_VOL_NORMAL` 0.10→**0.05**、`GAME_BGM_VOL_DUCK` 0.06→**0.025**（見 5.1a）。標題環境音（`title-ambience.mp3`）**不動**。
+>
+> ⚠️ **授權注意（重要，給主管拍板）**：這是 AI（Suno）生成、由使用者指定的曲子，**不是 CC0 素材庫音樂**。Suno 生成內容的商用/散布權利依使用者的 Suno 訂閱方案而定（付費方案通常授予使用者商用權）。此曲的授權責任歸使用者，非素材庫的公有領域授權。若正式對外發布，請使用者確認其 Suno 方案允許此用途。
+>
+> 🔄 更換紀錄（2026-07-05）：曾把遊戲 BGM 由旋律曲改為無旋律環境 pad（`game-ambient.wav`），因旋律型 BGM 頻譜較易與語音發音清晰頻段打架。本次改回旋律型（Suno 曲）為使用者明確指定，**以更低音量（0.05/0.025）補償**，維持「發音永遠最清楚」的第一原則。
+> 🔄 更換紀錄（2026-07-03）：更早曾為 8-bit chiptune（已否決），與 CC0「Town Theme RPG」（見 5.1b 歷史）。
 
-### 5.1 素材來源與授權（CC0，學校教學場景，已核實乾淨）
+### 5.1a 現行素材來源與音量（2026-07-07 起）
 
 | 項目 | 內容 |
 |---|---|
-| 檔名 | `game-loop.mp3`（檔名沿用，換內容） |
+| 檔名 | `game-bgm-suno.mp3` |
+| 曲名 | **Moss Arrow Loop**（Suno v4.5, model chirp-auk） |
+| 來源 | Suno 分享頁 `https://suno.com/s/MHlNXxj3r6zMO4Dk`；主音檔 CDN `https://cdn1.suno.ai/95f4a9d5-9d60-4eb2-8b0a-9d3a626c9dae.mp3` |
+| 授權 | **AI 生成（Suno），非 CC0**；權利依使用者 Suno 方案（見上方授權注意）。使用者指定使用。 |
+| 格式 | MP3, MPEG-1 Layer III, 48kHz, Stereo, VBR |
+| 長度 | **150.9 秒（2:31）**（幀解析驗證，與 Suno metadata 150.88s 吻合，無截斷） |
+| 檔案大小 | **3.68 MB**（略高於 1–3MB 建議；本環境無 ffmpeg 無法重編碼壓縮。web loop 可接受，舊 title-ambience.mp3 亦 3.43MB。若要壓到 ~128kbps mono 需在有 ffmpeg 的機器做） |
+| 正常音量 | `GAME_BGM_VOL_NORMAL = 0.05`（純襯底） |
+| ducking 音量 | `GAME_BGM_VOL_DUCK = 0.025`（詞彙發音時，幾乎聽不見） |
+| loop | HTML5 `<audio loop>`，到頭自動接回；非無縫剪裁，管弦收尾柔和接縫不明顯，可接受 |
+
+### 5.1b（歷史）舊 CC0 素材來源與授權（`game-loop.mp3`，已非現行）
+
+> 以下為 2026-07-03～05 期間 `game-loop.mp3`（Town Theme RPG, CC0）的紀錄，現已被 Suno 曲取代，保留供追溯。`game-loop.mp3` 檔案仍在 bgm 目錄但已無 `<audio>` 引用（孤兒檔，可留可刪）。
+
+| 項目 | 內容 |
+|---|---|
+| 檔名 | `game-loop.mp3`（已停用） |
 | 曲名 | **Town Theme RPG** |
 | 內容 | 溫馨奇幻 RPG 情境配樂：**豎琴（harp）＋ 木笛（recorder）**為主的柔和管弦樂，溫暖、輕柔、帶探索/冒險感，**無人聲**、非戰鬥史詩、無電子/chiptune、無族群音樂元素。作者原描述：「Town theme for an RPG. Typical harps and recorders fare perfect for your RPG.」 |
 | 格式 | MP3, 44.1kHz, Joint Stereo, VBR |
@@ -207,16 +229,16 @@ localStorage.setItem('ht_muted', nextMuted ? '1' : '0');
 - ducking 只作用在**遊戲 BGM**（標題畫面不會有詞彙發音，不需 ducking）。
 - 統一靜音（`setAudioMuted`）要同時管兩首。
 
-HTML 加一個元素（放 body 內，與 `#titleBgm` 並列）：
+HTML 元素（已實作，body 內與 `#titleBgm` 並列）：
 ```html
-<audio id="gameBgm" src="public/audio/bgm/game-loop.mp3" loop preload="auto"></audio>
+<audio id="gameBgm" src="/audio/bgm/game-bgm-suno.mp3" loop preload="auto"></audio>
 ```
 
-建議常數（可調）：
+音量常數（現行值，已寫進 `hunter-truku-v2.html`；以 5.1a 為準）：
 ```js
-const GAME_BGM_VOL_NORMAL = 0.15;  // 遊戲 BGM 正常音量（比標題 0.2 再低一點，因會一直播）
-const GAME_BGM_VOL_DUCK   = 0.06;  // 詞彙發音播放時壓低到這裡（0.05–0.08 區間）
-const GAME_BGM_VOL_LISTEN = 0.03;  // 聽聲辨字模式：極低（或直接 pause，見 5.5）
+const GAME_BGM_VOL_NORMAL = 0.05;  // 遊戲 BGM 正常音量（Suno 旋律曲，純襯底，2026-07-07 由 0.10 降）
+const GAME_BGM_VOL_DUCK   = 0.025; // 詞彙發音播放時壓低到這裡（幾乎聽不見）
+// 聽聲辨字模式：由 BgmManager 處理（極低或 pause，見 5.5）
 ```
 
 ### 5.3 啟動 / 停止接線點（對齊現有函式名）

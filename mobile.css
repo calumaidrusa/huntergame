@@ -103,10 +103,25 @@ body{
   background:linear-gradient(90deg,#ff5a3c,#ffcf3c); transition:width .3s ease;}
 .hp-num{font-family:'Fredoka One',cursive; font-size:16px; color:#fff; min-width:18px;}
 .hud-right{display:flex; align-items:center; gap:16px;}
-.hud-score,.hud-combo{display:flex; flex-direction:column; align-items:flex-end; line-height:1.05;}
+.hud-level,.hud-score,.hud-combo{display:flex; flex-direction:column; align-items:flex-end; line-height:1.05;}
+#levelNum{font-family:'Fredoka One',cursive; font-size:20px; color:#7CFC9A;}
 #scoreNum{font-family:'Fredoka One',cursive; font-size:20px; color:var(--gold-lt);}
 #comboNum{font-family:'Fredoka One',cursive; font-size:20px; color:#fff;}
 #comboNum.hot{color:#ff7a3c; text-shadow:0 0 10px #ff7a3c;}
+
+/* ---------- 里程碑跨關輕量提示條（不中斷 endless、不是整頁 modal） ---------- */
+.level-up-toast{
+  position:fixed; left:50%; top:14%; transform:translateX(-50%) translateY(-8px);
+  z-index:60; pointer-events:none;
+  font-family:'Fredoka One',cursive; font-size:22px; letter-spacing:2px;
+  color:#0A2A08; padding:8px 22px; border-radius:999px;
+  background:linear-gradient(#FFE9A8,var(--gold-lt) 55%,var(--gold-dk));
+  border:3px solid var(--wood-dk);
+  box-shadow:0 6px 16px rgba(0,0,0,.45);
+  opacity:0;
+  transition:opacity .18s ease, transform .18s ease;
+}
+.level-up-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
 /* ---------- 目前語別條（HUD 下方，顯示遊玩中語別，點擊回開始畫面換語別） ---------- */
 #langBar{
@@ -124,6 +139,23 @@ body{
 .lang-bar-name{font-weight:700; font-size:15px; color:var(--gold-lt); letter-spacing:.5px;}
 .lang-bar-native{font-size:12px; opacity:.75; font-style:italic;}
 .lang-bar-caret{margin-left:auto; font-size:18px; color:var(--gold-lt); line-height:0;}
+
+/* ---------- 帳號狀態條（語別條下方；訪客顯示登入邀請，登入後顯示暱稱+排行榜） ---------- */
+.acct-bar{
+  flex:0 0 auto;
+  display:flex; align-items:center; gap:8px;
+  min-height:30px; padding:4px 14px;
+  width:100%;
+  background:rgba(10,42,8,.4);
+  border-bottom:1px solid rgba(245,166,35,.2);
+}
+.acct-bar-label{font-size:12px; opacity:.8; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.acct-bar-btn{
+  font-family:'Noto Sans TC',sans-serif; font-size:11px; font-weight:700;
+  color:var(--gold-lt); background:transparent; border:1px solid rgba(245,166,35,.5);
+  border-radius:8px; padding:4px 10px; cursor:pointer; min-height:26px;
+}
+.acct-bar-btn:active{background:rgba(245,166,35,.2);}
 
 /* ---------- 開始畫面語別選單 ---------- */
 .lang-picker{margin:0 0 18px; text-align:left;}
@@ -328,6 +360,53 @@ body{
 .ov-stat .k{display:block; font-size:11px; color:var(--gold-lt); letter-spacing:1px;}
 .ov-stat .v{display:block; font-family:'Fredoka One',cursive; font-size:24px; color:#fff;}
 .overlay-card .btn-gold{width:100%; margin-top:4px;}
+
+/* ---------- 開始畫面：帳號狀態列（訪客邀請登入，不擋開始鈕；登入是加值不是門檻） ---------- */
+.ov-acct-row{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  margin:0 0 12px; padding:8px 10px;
+  background:rgba(0,0,0,.22); border:1px solid rgba(245,166,35,.3); border-radius:10px;
+}
+.ov-acct-label{font-size:12px; opacity:.85; text-align:left; flex:1; min-width:0;}
+.ov-acct-link{
+  font-family:'Noto Sans TC',sans-serif; font-size:12px; font-weight:700;
+  color:#0A2A08; background:linear-gradient(var(--gold-lt),var(--gold));
+  border:2px solid var(--wood-dk); border-radius:8px; padding:5px 10px; cursor:pointer;
+  min-height:30px; flex:0 0 auto;
+}
+.ov-board-btn{width:100%; margin-top:10px;}
+
+/* ---------- 登入 / 註冊覆蓋層（輕量版，非桌機羊皮紙風） ---------- */
+.auth-card-m{max-width:320px;}
+.auth-tabs-m{display:flex; gap:8px; margin-bottom:14px;}
+.auth-tab-m{
+  flex:1; font-family:'Fredoka One',cursive; font-size:14px;
+  color:var(--cream); background:rgba(0,0,0,.3); border:2px solid var(--wood-dk);
+  border-radius:10px; padding:8px 0; cursor:pointer;
+}
+.auth-tab-m.active{background:linear-gradient(var(--gold-lt),var(--gold)); color:#0A2A08; border-color:var(--gold-dk);}
+.auth-field-row{margin-bottom:10px;}
+.auth-input-m{
+  width:100%; min-height:46px; padding:0 14px;
+  font-family:'Noto Sans TC',sans-serif; font-size:15px; color:#4a2f00;
+  background:linear-gradient(#FFF3CC,#FFE082 60%,var(--gold));
+  border:3px solid var(--wood-dk); border-radius:12px;
+}
+.auth-input-m::placeholder{color:rgba(74,47,0,.55);}
+.auth-input-m:focus{outline:none; filter:brightness(1.05);}
+
+/* ---------- 排行榜覆蓋層（簡潔清單，維持手機風格，不照抄桌機羊皮紙） ---------- */
+.board-list{max-height:50vh; overflow-y:auto; display:flex; flex-direction:column; gap:8px;}
+.board-row{
+  display:flex; align-items:center; gap:10px;
+  background:rgba(0,0,0,.28); border:2px solid var(--gold-dk); border-radius:10px;
+  padding:8px 12px;
+}
+.board-rank{font-family:'Fredoka One',cursive; font-size:16px; color:var(--gold-lt); width:26px; flex:0 0 auto;}
+.board-name{flex:1; min-width:0; text-align:left; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.board-lang{font-size:11px; opacity:.65; flex:0 0 auto;}
+.board-score{font-family:'Fredoka One',cursive; font-size:16px; color:#fff; flex:0 0 auto; min-width:52px; text-align:right;}
+.board-empty{padding:20px 0; text-align:center; opacity:.7; font-size:14px;}
 
 /* ---------- 玩法說明卡「怎麼玩」（開局前，羊皮紙米色底、木質金黃邊） ---------- */
 .howto{

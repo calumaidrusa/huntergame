@@ -36,3 +36,30 @@
 可點特殊字元列是為了解決喉塞音（ʼ）這類字元玩家打不出來、又不知道其實打 `'` 就會判定成功的問題——我寫了偵測邏輯，掃當前語別詞庫抓出真正需要的拉丁擴充字元跟撇號家族，排除掉某些語別 `word` 欄裡混進去的中文註記雜訊，做成按鈕列插入輸入框。
 
 L3 聽打原本被排除在答案格機制外（`if (G.mode==='blind' || G.listenMode)` 那條擋掉了），小畫家評估完 L3 改版後指出這個關鍵點，我把 L3 接上了 L2 已經有的動態答案格（`#answerCells`，依單字實際長度動態生格，不是寫死幾格），並補了一排音節/長度示意點。這個功能本質上是「降低聽打難度換取更友善的提示」，我請使用者拍板了「可以露長度當提示」才做，不是我自己決定的。
+
+## 2026-07-06 · asd8107 全關解鎖白名單 + 訪客全 5 關開放 + 關卡步道進度條的邏輯計算部分
+
+這次補寫是回溯性的——commit `6c99ade` 當時混了排版跟邏輯一起交，我事後只挑屬於自己職責的部分記錄。
+
+後端 `server.js` 加了 `ADMIN_UNLOCK_ALL_USERNAMES`（目前只有 `asd8107`，使用者本人的玩家帳號）：`getUnlockedLevel()` 一開始先查這個玩家的 `username` 是否在白名單裡，是的話直接回傳 `MAX_LEVEL`，完全繞過原本「查 `scores` 表裡 `cleared=1` 的最高關卡+1」那套判斷。這跟 `admins` 表（後台管理員登入）是兩回事，我特地在程式碼註解裡寫清楚，避免以後誰把這兩種「admin」搞混。用途是讓使用者自己測試時不用每次真的破關才能往後面關卡走，純粹是白名單特例，不影響其他玩家的序列闖關邏輯。
+
+前端訪客模式那邊，`onGuestBtnClick()` 裡把 `AUTH.unlockedLevel` 從原本的 `1`（訪客也要序列闖關，只是不落地存檔）改成 `MAX_LEVEL`（訪客直接五關全開）——這是使用者定案的產品決策，不是我自己判斷要放寬，訪客本來就不進排行榜、不影響 `scores` 表，改這個沒有資料風險。
+
+同一個 commit 也加了「關卡步道」這個新的進度顯示方式（獵人在底部步道上跑、跑到第幾個節點代表第幾題），畫面本身（木步道底圖、跑姿獵人 sprite、終點旗）是小畫家出圖、小排版接版面，但我另外寫了兩個算數邏輯的 JS 函式，這兩個我認定屬於我的範圍，因為做的是「算出獵人現在該站在哪」而不是切 CSS class：
+- `renderProgressNodes(total, cur)`：依總題數建立等距節點（只有數量變了才重建 DOM，避免每題都整組重繪），然後依目前第幾題把節點標成 `done`（已過）/`current`（正在做，脈動效果用既有的 CSS animation，不是我加的樣式本體）/未到。
+- `positionHunterAsProgress()`：讀 `LEVELS[G.level].totalRounds` 跟 `G.round` 算出目前是第幾題，再用 `getBoundingClientRect()` 換算步道在畫面上的實際寬度跟起點，算出獵人 sprite 該貼在哪個 x 座標（節點等距公式 `(cur-0.5)/total`），順便更新「第 X / Y 題」文字。
+- `moveHunterTowardPrey()` 裡加了一條分流：`if (G.mode === 'blank') { positionHunterAsProgress(); return; }`——L2 填空關獵人不再走「逼近獵物」那套原本的邏輯，改成呼叫步道定位。這個 if 分流本身是行為邏輯（哪個關卡用哪套獵人移動規則），我判斷這條算我的，不是純視覺調整。
+
+`applyLevelMode()` 裡多了一行依 `G.mode === 'blank'` 切換 `#hunter` 的 `src`（換成跑姿 sprite），這行嚴格說只是換圖檔路徑，但因為判斷條件是遊戲模式邏輯（不是螢幕寬度那種排版斷點），我也算進來一起記，方便以後查「獵人圖什麼時候會變成跑步姿勢」。
+
+至於同一個 commit 裡 L2 填空的版面重排（答案格放大、提示卡靠右、底部輸入框收掉、面板 CSS 位置）以及後續 `15dd8c3`（選項關線索置中、沙漏改絕對定位）、`097fb44`（L3 收底部輸入框）——我看過這三處的 diff，全部是 CSS 規則（`left`/`grid-template-columns`/`display:none` 掛在 `body.xxx-active` class 選擇器上）跟既有 class 開關的視覺呈現，沒有新的 JS 判斷邏輯、沒有動 `server.js`，判斷屬於小排版的範圍，我這邊不重複記錄。
+
+交棒：白名單目前只有 `asd8107` 一筆，之後如果要加其他測試帳號，直接在 `ADMIN_UNLOCK_ALL_USERNAMES` 這個 `Set` 裡加 username 字串即可，不用碰 DB schema。
+
+## 2026-07-07 · scores 表加 platform 欄位，桌機/手機分數分開聚合（只做後端這一半）
+
+使用者拍板了小蘋果的建議：手機 endless 模式跟桌機固定回合制分數不是同一量級，絕不能混榜，要在 `scores` 表加 `platform` 欄位分開聚合。我完全比照兩天前 `lang_code` 那次 migration 的手法做——`ALTER TABLE scores ADD COLUMN platform TEXT NOT NULL DEFAULT 'desktop'`，放在既有 `lang_code` migration 區塊正下方；既有資料一筆不動、自動標成 `desktop`，跟當初 `lang_code` 讓 Kacaw 的舊紀錄自動標成 `trv` 是同一套零搬移邏輯。`POST /api/scores` 加一個 `platform` 欄位的合法性檢查：`req.body.platform === 'mobile' ? 'mobile' : 'desktop'`，其他亂傳的字串一律 fallback `desktop`，桌機現有前端完全不用改。`GET /api/leaderboard` 的分組鍵從 `player_id, lang_code` 擴成 `player_id, lang_code, platform`（內層 MAX 聚合、外層 SUM 聚合都要一起加，這個是我當初做 lang_code 逐語別排行榜時就抓熟的手法，這次直接複用），另外加了 `?platform=mobile/desktop` 這個選填 filter，用 SQL 裡 `WHERE (@platform IS NULL OR best.platform = @platform)` 這個「傳 null 就等於不過濾」的寫法，跟 `resolveLang` 那套「未帶就不限制」的精神一致。
+
+這次卡了一個環境問題：本機 `.localtools` Node 20 起服務時，`better-sqlite3` 原生 binding 直接報 `Could not locate the bindings file`（本機沒裝 build tools，之前 L-003 記過這個雷，但這次連現成的預編譯 binding 都不在了，可能是上次驗證後環境有變動）。因為之前拿真實資料重跑一次 migration 太冒險（雖然邏輯上不會，但沒法用真的 better-sqlite3 驗證），我改用使用者交辦時已經預告的備案：寫一個獨立的 Python `sqlite3` 腳本，把同一套 `ALTER TABLE`／`INSERT`／排行榜分組 SQL 原樣搬過去跑（Python 內建 sqlite3 底層引擎跟 better-sqlite3 是同一套 SQLite，SQL 語法邏輯完全等價，只有具名參數符號 `@` vs `:` 不同，無關邏輯本身），模擬「Kacaw 已有 2 筆舊紀錄 → migration → 新增桌機/手機各幾筆 → 查排行榜」全流程，五個斷言全部 PASS：migration 前後筆數不變、既有資料全部落在 `platform='desktop'`、`platform` 合法性 fallback 六種輸入全對、同一玩家 desktop/mobile 分數在排行榜是兩個獨立列不會加總在一起、`?platform=` filter 正確只回對應平台。`node --check` 也過。程式碼只動了 `backend/server.js` 三處（migration 區塊、`POST /api/scores`、`GET /api/leaderboard`），`git diff --stat` 確認沒有波及其他檔案。
+
+交棒：這次**只做後端**，`hunter-truku-v2.html`／`mobile.html`／`game-mobile.js` 完全沒動，手機前端要接上 `platform:'mobile'` 這個 body 欄位是小蘋果的工作。部署前我沒有自己上正式站——這是使用者在交辦裡明講的熔斥級動作，要先回報給他確認時機才能動手；部署步驟照鐵律：先備份 `hunter.db`、只能加欄位不能動 `scores` 既有列、部署後驗 `scores`/`players` 表筆數前後一致、記得 `pm2 restart hunter-api`（這次動了 server.js，不是純靜態檔，一定要重啟才會生效）。另外這次順便發現本機 better-sqlite3 binding 環境比 L-003 記錄的還要更缺（原本以為只是「版本不相容」，這次是「完全找不到 binding 檔」），如果下次要跑真實本機服務驗證，可能得先重新 `npm rebuild` 或補裝預編譯檔，這條我還沒去深究根因，先记录起来，之後如果本機測試又卡在同樣的錯誤，直接查這條、不用重新從頭排查。

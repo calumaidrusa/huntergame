@@ -30,3 +30,41 @@
 L2 填空最後定案的版面是：右側純提示卡（打散字母磚鷹架）+ 中央下方一排答案格（打字依序填入）+ 送出鈕，我把小工程給的穩定 id（`#hintLetters`/`.hint-letter`/`#answerCells`/`.answer-cell`）套上木質凹槽跟散字母漂浮的視覺。特殊字元列我做了跟遊戲整體一致的木質按鈕樣式。
 
 語別下拉選單那個「要按著滑鼠才能選」的 bug 很值得記一筆：我原本在 `.lang-select:hover` 上加了 `transform:translateY(-1px)` 做一個很輕微的浮起回饋，結果這個 transform 讓 Chromium 對原生 `<select>` 的下拉互動整個壞掉——一放開滑鼠選單就收起來。這件事我在自己的沙盒環境完全重現不出來（原生下拉是瀏覽器/OS 層渲染，不是我的 DOM 能控制的），只能靠邏輯推斷「transform 加在 select 上」是嫌疑最大的東西，改成用 `filter:brightness()` 代替。以後碰到原生表單控制項（select、input[type=file] 這類），hover 效果我會直接避開 transform，改用 filter/box-shadow/border-color，省得再踩一次。
+
+## 2026-07-06 · L2 填空版面重排：答案格放大靠左、提示卡放大靠右、收掉多餘底部輸入框（`6c99ade`）
+
+使用者說 L2 填空關「底部很空、東西太散」，我把版面重新分配：答案格 `.answer-cell` 從原本尺寸放大到 `min-width:40px; height:52px; font-size:28px`，答案面板 `#answerArea` 貼近底部（`bottom:74px`）並整個放大（`min-width:440px; max-width:600px; padding:26px 58px 30px`），刻意 `left:35%` 靠左，把螢幕右側空間讓給放大後的提示卡 `#wordBubble`（`width:284px; right:22px`）。這樣答案格＋提示卡兩塊視覺重心分開、不再互相擠壓。
+
+原本 L2 底部還留著一條 `#realInput` 深色輸入框（`.input-wrapper` 套 `v2-input-field.png` 木框），但作答其實已經改成打字直接填中央答案格，那條底部框變成「空殼」——只留來接鍵盤事件，卻還顯示一個空的深色欄位，看起來像沒做完。我把它壓扁成 `height:1px; opacity:0`（仍可 focus 接鍵盤/送 input 事件，只是視覺上完全隱形），並把 `.input-wrapper` 的木框背景圖拿掉（`background:none`），底部資訊列的「第X/Y題」也一併隱藏（改由步道題號木牌顯示，避免重複）。
+
+同一個 commit 我也接了小畫家新出的「關卡步道進度條」素材（`v2-progress-track.png` 木步道橫幅、`v2-hunter-truku-run.png` 跑姿獵人、`v2-progress-goal.png` 終點旗營地），我負責的是外觀部分：`#hunterTrack` 定位在畫面最底（`left:104px; right:60px; bottom:2px`，留左側題號木牌、右側終點旗的空間）、`.track-node` 圓木鈕的 done/current/未到三種樣式（金綠/亮綠脈動/灰）、`#trackGoal` 疊圖位置、`#trackRoundLabel` 木牌樣式。節點怎麼算位置、獵人怎麼跟著進度移動（`renderProgressNodes`/`positionHunterAsProgress` 裡的座標計算）是小工程寫的邏輯，我不碰，我只管這些元素的 CSS 長相跟版面留白。
+
+交棒：這次改動讓「跑姿 vs 蹲姿」兩種獵人 sprite 只有 L2 用跑姿，其他關卡蹲姿逼近獵物——這個不一致隔天（07-06 稍晚）就在 `515bb9a` 被使用者要求「統一全部關卡都用步道進度條」而改掉了，細節見下一條。
+
+## 2026-07-06 · 選項關(L1/L4)線索與面板置中，沙漏改絕對定位右上（`15dd8c3`）
+
+使用者回報選項關（L1 音選詞/L4 看圖選詞）的線索跟選項面板「感覺偏一邊、不平衡」。原因是 `#choicePanel` 用了 grid 兩欄佈局（`1fr auto`），右欄留給沙漏計時器，導致左欄的線索(cue)被推到偏左，整個面板本身也用 `left:calc(240px + (100% - 240px) / 2)` 刻意往右挪，是為了讓位給當時「左側大隻」的獵人。
+
+這次獵人已經改成走底部窄窄的空帶（縮小蹲姿，見下一條的背景），不再佔用中央視覺空間，我就把面板改回真正置中：`grid-template-columns` 從兩欄改單欄（cue 佔滿全寬置中），`#choicePanel` 的 `left` 改回單純的 `50%`、寬度放寬到 `min(650px, 90%)`。沙漏 `#choiceTimerHourglass` 原本佔 grid 右欄，改成 `position:absolute; top:20px; right:22px` 直接定位到面板右上角，不再搶版面空間。
+
+## 2026-07-06 · L3 聽打也收掉多餘底部深色輸入框（`097fb44`）
+
+L2 填空那邊收掉空輸入框（見上）之後，發現 L3 聽打模式其實是同一種情境——作答同樣已經搬到中央答案格 `#answerArea`，底部 `#realInput`/`.input-wrapper` 一樣是多餘的空殼。這條是把同一套處理（`height:1px; opacity:0` 壓扁輸入框、`.input-wrapper` 拿掉木框背景、隱藏 `#inputBubble`）複製一份套到 `body.listen-active`。特別注意 L5 盲打不能套這招，因為 L5 沒有中央答案格，玩家真的是靠底部這個輸入框打字，動了會直接壞掉整個輸入流程。
+
+## 2026-07-06 · 全站禁 emoji：CSS mask 向量圖示 + 木盤 icon 素材套版（`515bb9a`）
+
+這是當天最大的一批排版工作，起因是使用者定案「全站禁 emoji」的房規（純符號向量化、插畫類交小畫家出圖）。我負責的部分是把畫面上會渲染的 emoji 換成兩種替代方案的 CSS/HTML 套用：
+
+1. **純符號 → `.vico` CSS mask 向量圖示**：建了一套 `.vico` 基礎 class（`width:1em; height:1em`，`background-color:currentColor` + `mask:var(--vico)`），每個符號一個 modifier class（`.vico-check`/`.vico-cross`/`.vico-down`/`.vico-play`/`.vico-arrow`/`.vico-caret`/`.vico-star`/`.vico-leaf`/`.vico-lock`/`.vico-bulb`），每個都是 inline SVG data-uri，只取形狀當 mask、顏色吃父層 `currentColor`，可以像文字一樣著色縮放。這套取代了 ✓✗▾▶➤⭐🍃🔒💡 等等所有純符號 emoji，包括 JS 動態插入的地方（連擊星星特效、飛箭、排行榜 ok/bad 前綴）也都改成插入這些 class 而不是 emoji 字元。
+2. **插畫/icon 類 → 小畫家出的木盤 PNG**：小畫家這批出了 9 張 icon（trophy/logout/sound/hint/heart/delete/review/player/target-small）+ 1 張缺圖預設插畫（`v2-prey-placeholder.png`），我建了 `.ui-ico` class（`width:1.55em; height:1.55em; vertical-align:-0.32em` 貼齊文字基線）把這些圖嵌進按鈕/HUD/彈窗裡取代 🏆🚪🔊💡❤🗑📖👤🎯。素材本身背景是不透明的圓木盤（跟既有 `v2-audio-button-wood` 家族一致的視覺語言），不需要額外裁切遮罩，直接當 icon 用就融入既有風格。
+
+排行榜前三名獎牌原本用 🥇🥈🥉，我改成「圓底 + 名次數字」的 `.lb-medal`（`.lb-rank-1/2/3` 各自套金/銀/銅漸層），沿用既有配色但去掉 emoji 依賴。
+
+這批也順手做了幾個小排版優化：
+- L2/L3 底部一路壓縮：`.input-wrapper` 塌成內容寬（`flex:0 0 auto; width:auto`），「剩餘時間」標籤跟計時條從絕對定位改回 flow 排列並拉長加高，讓底部欄自然收成一條精實置中的「COMBO─剩餘時間─送出」，不再有大片空的透明區塊。
+- 特殊字元列 `#specialCharBar` 從絕對定位改成 re-parent 進中央答案面板內（`position:static`，JS 端 `applyLevelMode` 用 `appendChild` 搬 DOM），排在答案格下方就近作答；L5 盲打維持原本掛在底部的絕對定位版本不動。
+- 送出鈕 `.shoot-btn`：原素材裡烤了個播放三角形進去配「送出」文字很違和（像播放鍵），改成乾淨的金漸層按鈕（跟 `#hintBtn` 同一套視覺語言：`box-shadow:0 5px 0 #5A3000` 立體按壓感），字體放大置中。
+- 提示鈕圖示從 emoji 💡 換成 `.vico-bulb` 向量燈泡，深棕色貼合金膠囊底色，比之前用木盤 icon 更合身（這個特例沒有用 `.ui-ico`，因為向量版在這個小尺寸下比木盤 PNG 更清楚）。
+- L3 聽打的單字提示點列：使用者覺得提示太少，字母揭露比例從約 20% 拉到約 40%（`revealCount = Math.round(n * 0.4)`），這行是我跟小工程共同確認的參數調整，數值邏輯歸小工程，但 `.syl-letter` 揭露字母磚的樣式（金字磚 + 木框陰影）是我做的。
+
+交棒：`mobile.css`/`mobile.html` 這次也有對應的去 emoji 改動，但那是手機版排版，屬於小蘋果的職責範圍，我沒有動，也不打算在這份日誌裡記那部分。另外這批把所有關卡的獵人統一成「底部步道跑者」（`body.has-track` 取代原本只有 L2 用的 `body.blank-active #hunter`），舊的 `choice-active #hunter` 縮小蹲姿規則跟 `hunterRunChoice` keyframes 已經沒用但物理上還留在 CSS 裡當作 legacy 註解說明，之後如果要徹底大掃除可以清掉。

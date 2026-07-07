@@ -114,6 +114,7 @@ db.exec(`
     username      TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     display_name  TEXT NOT NULL,
+    email         TEXT,
     created_at    TEXT DEFAULT (datetime('now','localtime'))
   );
 
@@ -159,6 +160,17 @@ try {
 // 只作標注，不參與解鎖/聚合，故不加索引。
 try {
   db.exec(`ALTER TABLE scores ADD COLUMN lang_code TEXT NOT NULL DEFAULT 'trv'`);
+} catch(e) { /* 欄位已存在，跳過 */ }
+
+// scores.platform：DEFAULT 'desktop' → 既有紀錄全部自動標注桌機，一筆不動、零資料搬移。
+// 手機 endless 模式跟桌機固定回合制分數量級不同，絕不能混榜（使用者拍板）。
+try {
+  db.exec(`ALTER TABLE scores ADD COLUMN platform TEXT NOT NULL DEFAULT 'desktop'`);
+} catch(e) { /* 欄位已存在，跳過 */ }
+
+// players.email：抽獎用（選填）。既有帳號補 NULL email，一筆不動、零資料搬移。
+try {
+  db.exec('ALTER TABLE players ADD COLUMN email TEXT');
 } catch(e) { /* 欄位已存在，跳過 */ }
 
 // ── languages 表 seed（逐筆 upsert；name/active 以 seed 為準，已存在則更新後設欄位）──
@@ -276,25 +288,28 @@ app.get('/api/health', (req, res) => {
 
 // ── 玩家帳號 API ────────────────────────────────
 
-// POST /api/auth/register — { username, password, display_name }
+// POST /api/auth/register — { username, password, display_name, email? }
+// email 為選填（抽獎用）；有填才驗格式並存入，未填存 NULL。
 app.post('/api/auth/register', (req, res) => {
-  const { username, password, display_name } = req.body || {};
+  const { username, password, display_name, email } = req.body || {};
   if (!username || !password || !display_name) {
     return res.status(400).json({ error: '缺少帳號 / 密碼 / 顯示名稱' });
   }
   const uname = String(username).trim();
   const dname = String(display_name).trim().slice(0, 20);
+  const mail  = email ? String(email).trim().slice(0, 120) : null;
   if (uname.length < 3) return res.status(400).json({ error: '帳號至少需要 3 個字元' });
   if (String(password).length < 4) return res.status(400).json({ error: '密碼至少需要 4 個字元' });
   if (!dname) return res.status(400).json({ error: '顯示名稱不可為空' });
+  if (mail && !/^\S+@\S+\.\S+$/.test(mail)) return res.status(400).json({ error: 'Email 格式不正確' });
 
   const existing = db.prepare('SELECT id FROM players WHERE username = ?').get(uname);
   if (existing) return res.status(409).json({ error: '這個帳號已經被使用了' });
 
   const hash = bcrypt.hashSync(String(password), 10);
   const result = db.prepare(
-    'INSERT INTO players (username, password_hash, display_name) VALUES (?, ?, ?)'
-  ).run(uname, hash, dname);
+    'INSERT INTO players (username, password_hash, display_name, email) VALUES (?, ?, ?, ?)'
+  ).run(uname, hash, dname, mail);
 
   const token = signToken({ id: result.lastInsertRowid, role: 'player' });
   res.json({ success: true, token });
@@ -466,10 +481,22 @@ app.post('/api/scores', requirePlayerAuth, (req, res) => {
   if (!level || !score) return res.status(400).json({ error: '缺少必要欄位 level / score' });
 
   const lvl = parseInt(level);
-  // 防呆：拒絕交比目前解鎖進度更高的關卡分數，避免有人繞過前端直接打 API 造假
-  const unlockedLevel = getUnlockedLevel(req.player.id);
-  if (lvl > unlockedLevel) {
-    return res.status(403).json({ error: `LEVEL ${lvl} 尚未解鎖，目前只能玩到 LEVEL ${unlockedLevel}` });
+
+  // 平台標注：手機 endless 模式跟桌機固定回合制分數量級不同，絕不能混榜。
+  // 只接受 'desktop'/'mobile' 兩個值，其他值（含未帶）一律 fallback 'desktop'，
+  // 桌機現有前端完全不用改，行為不變；手機版主動帶 platform:'mobile'。
+  const platform = req.body.platform === 'mobile' ? 'mobile' : 'desktop';
+
+  // 防呆：拒絕交比目前解鎖進度更高的關卡分數，避免有人繞過前端直接打 API 造假。
+  // 這條檢查只對桌機有意義（桌機是序列闖關，level 對應實際解鎖到的關卡）；
+  // 手機是 endless 模式，「level」只是同一局內依擊殺數換算的里程碑，同一帳號
+  // 不管用桌機或手機登入本來就該認這個分數，跟桌機的解鎖進度無關，故手機
+  // 一律跳過此檢查（2026-07-07 使用者拍板：「同一個帳號...就認分數就好」）。
+  if (platform === 'desktop') {
+    const unlockedLevel = getUnlockedLevel(req.player.id);
+    if (lvl > unlockedLevel) {
+      return res.status(403).json({ error: `LEVEL ${lvl} 尚未解鎖，目前只能玩到 LEVEL ${unlockedLevel}` });
+    }
   }
 
   // 語別標注：前端帶當次選擇的 lang_code；對照 languages 驗證，未帶/無效 fallback 'trv'。
@@ -478,9 +505,9 @@ app.post('/api/scores', requirePlayerAuth, (req, res) => {
 
   const name = req.player.display_name.slice(0, 12);
   const result = db.prepare(`
-    INSERT INTO scores (player, level, score, kills, accuracy, combo, player_id, cleared, lang_code)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(name, lvl, score, kills||0, accuracy||0, combo||0, req.player.id, cleared ? 1 : 0, lang);
+    INSERT INTO scores (player, level, score, kills, accuracy, combo, player_id, cleared, lang_code, platform)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(name, lvl, score, kills||0, accuracy||0, combo||0, req.player.id, cleared ? 1 : 0, lang, platform);
   db.prepare(`
     INSERT INTO daily_stats (date, games) VALUES (?, 1)
     ON CONFLICT(date) DO UPDATE SET games = games + 1
@@ -494,29 +521,36 @@ app.post('/api/scores', requirePlayerAuth, (req, res) => {
   });
 });
 
-// GET /api/leaderboard?limit=10 — 排行榜：每「玩家×語別」一列的累計分數。
-// = 每個玩家「在某一語別」各關最佳成績加總（不是把每次遊玩全加總，避免狂刷洗分）。
-// ⚠️ 分數**逐語別獨立計算、不跨語別加總**（使用者要求）：同一玩家玩太魯閣語 500、
-//    多納魯凱語 400 → 是兩筆各自上榜（Truku 500 / Rukai 400），不會被合成 900。
+// GET /api/leaderboard?limit=10&platform=mobile — 排行榜：每「玩家×語別×平台」一列的累計分數。
+// = 每個玩家「在某一語別、某一平台」各關最佳成績加總（不是把每次遊玩全加總，避免狂刷洗分）。
+// ⚠️ 分數**逐語別、逐平台獨立計算、不跨語別/跨平台加總**（使用者要求）：
+//    手機 endless 模式跟桌機固定回合制分數量級不同，絕不能混榜；同一玩家的
+//    desktop 500、mobile 400 → 是兩筆各自上榜，不會被合成 900。
 // 只計入有 player_id（登入身分）的分數，舊匿名分數不出現。
+// platform query 選填：不帶維持現況（回全部語別×平台的列，桌機/手機列會混排——
+// 這是預期行為，因為分組已經正確，不會有分數混算；只是列表順序上桌機手機交錯）。
 app.get('/api/leaderboard', (req, res) => {
   const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+  const platformFilter = req.query.platform === 'mobile' || req.query.platform === 'desktop'
+    ? req.query.platform : null;
   const rows = db.prepare(`
     SELECT p.display_name AS player,
            best.player_id AS player_id,
            SUM(best.score) AS score,
            COUNT(DISTINCT best.level) AS levels_played,
-           best.lang_code AS lang_code
+           best.lang_code AS lang_code,
+           best.platform AS platform
     FROM (
-      SELECT player_id, lang_code, level, MAX(score) AS score
+      SELECT player_id, lang_code, platform, level, MAX(score) AS score
       FROM scores WHERE player_id IS NOT NULL
-      GROUP BY player_id, lang_code, level
+      GROUP BY player_id, lang_code, platform, level
     ) best
     JOIN players p ON p.id = best.player_id
-    GROUP BY best.player_id, best.lang_code
+    WHERE (@platform IS NULL OR best.platform = @platform)
+    GROUP BY best.player_id, best.lang_code, best.platform
     ORDER BY score DESC
-    LIMIT ?
-  `).all(limit);
+    LIMIT @limit
+  `).all({ platform: platformFilter, limit });
   res.json({ data: rows });
 });
 
