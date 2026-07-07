@@ -2654,8 +2654,8 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
 
 <!-- 標題畫面背景音（森林環境音，Public Domain）。與詞彙發音 _currentAudio 完全獨立。 -->
 <audio id="titleBgm" src="/audio/bgm/title-ambience.mp3" loop preload="auto"></audio>
-<!-- 遊戲進行中背景音（8-bit chiptune，CC0 / HydroGene）。詞彙發音播放時會 ducking 壓低。與 _currentAudio 完全獨立。 -->
-<audio id="gameBgm" src="/audio/bgm/game-ambient.wav" loop preload="auto"></audio>
+<!-- 遊戲進行中背景音（Suno 生成「Moss Arrow Loop」，使用者指定）。詞彙發音播放時會 ducking 壓低。與 _currentAudio 完全獨立。 -->
+<audio id="gameBgm" src="/audio/bgm/game-bgm-suno.mp3" loop preload="auto"></audio>
 
 <div id="gameStage">
 <div id="gameWrap">
@@ -3245,8 +3245,8 @@ function getTitleBgm() { return document.getElementById('titleBgm'); }
 //  詞彙發音（_currentAudio）永遠不受此管理器影響——發音是教學核心。
 // ═══════════════════════════════════════════════════
 const TITLE_BGM_VOL      = 0.2;   // 標題環境音（配角）
-const GAME_BGM_VOL_NORMAL = 0.10; // 遊戲 BGM 正常音量（無旋律環境 pad，可再低更像背景空間感）
-const GAME_BGM_VOL_DUCK   = 0.06; // 詞彙發音播放時壓低到這裡
+const GAME_BGM_VOL_NORMAL = 0.05; // 遊戲 BGM 正常音量（Suno 旋律曲，比原環境 pad 更低，純襯底不搶發音）
+const GAME_BGM_VOL_DUCK   = 0.025;// 詞彙發音播放時壓低到這裡（幾乎聽不見，保護教學核心）
 const BGM_FADE_STEP_MS    = 50;   // 淡入淡出取樣間隔
 const DUCK_FADE_MS        = 160;  // ducking 過渡（120–200ms，避免突兀）
 
@@ -4217,9 +4217,6 @@ function applyLevelMode(lvl) {
   // sprite、站在木步道上往終點旗跑，水平位置＝本關進度（見 positionHunterAsProgress）。
   // 以前只有 L2(blank) 這樣，其餘關是蹲姿逼近獵物；使用者定案「進度條統一用 L2 那個」。
   document.body.classList.add('has-track');
-  // §L1 飛靶：換關時先清掉飛靶狀態（L1 音選詞會在 renderChoiceRound 重新啟動）
-  document.body.classList.remove('fly-choice');
-  stopFlyTargets();
   const hunterImg = document.getElementById('hunter');
   if (hunterImg) hunterImg.src = '/images/ui/v2-hunter-truku-run.png';
   // §特殊字元列就近作答（使用者要求，比較直覺）：L2/L3 作答在中央答案面板 → 把特殊字元列
@@ -4584,8 +4581,6 @@ function nextRound() {
   const preyEl = document.getElementById('prey');
   preyEl.textContent = G.currentPrey.emoji;
   preyEl.className = '';
-  // §L1 飛靶：清掉上次「錨到飛靶」時設的 inline 位置，讓 #prey 回到 CSS 錨點（其他關/射箭用）
-  preyEl.style.left = preyEl.style.top = preyEl.style.right = preyEl.style.bottom = '';
 
   // §填空（L2）：本題「提示字母磚」只在此打散一次（存 G.hintScramble），之後
   // render 都讀同一份，確保同題多次 render 磚順序不亂跳。非 blank 關留空陣列。
@@ -4667,15 +4662,6 @@ function renderChoiceRound(ld) {
   // 顯示中文提示 + 大播放鈕。統一由 renderChoiceCue 處理。
   renderChoiceCue(cue, G.currentPrey);
   renderChoiceButtons(opts);
-
-  // §L1 飛靶玩法：音選詞(cue=audio)把 4 個選項變成中上區飄動的飛靶；看圖選詞(L4,cue=picture)維持靜態 2×2。
-  if (cue === 'audio') {
-    document.body.classList.add('fly-choice');
-    requestAnimationFrame(startFlyTargets);   // 等版面算好尺寸再定位起飛
-  } else {
-    document.body.classList.remove('fly-choice');
-    stopFlyTargets();
-  }
 
   // audio cue：自動播音（可重播）
   if (cue === 'audio') playWordAudio(G.currentPrey);
@@ -4964,7 +4950,6 @@ function selectChoice(opt, btn) {
   clearInterval(G.timer);
   G.active = false;
   G.totalAttempts++;
-  stopFlyTargets();   // §L1 飛靶：點下後立即凍結飛靶，方便看命中/正解
 
   const box = document.getElementById('choiceOptions');
   // 標示所有按鈕：正解一律標綠，玩家點錯的那顆標紅；全部鎖點
@@ -4976,8 +4961,6 @@ function selectChoice(opt, btn) {
 
   if (opt.isCorrect) {
     G.hitAttempts++;
-    // §L1 飛靶：命中時把隱形獵物錨點移到被射中的飛靶，箭矢才會真的飛向目標
-    if (document.body.classList.contains('fly-choice')) aimPreyAt(btn);
     // 命中：沿用打字關的射箭 + 命中流程
     fireArrow();
     logRound('correct');
@@ -5935,7 +5918,6 @@ function goTitle() {
   G.active = false;
   document.body.classList.remove('listen-active');
   document.body.classList.remove('has-track'); // 回標題收起底部進度步道
-  document.body.classList.remove('fly-choice'); stopFlyTargets(); // §L1 飛靶：回標題停飛靶
   document.getElementById('titleScreen').style.display = 'flex';
   applyLevelLocks();
   BgmManager.stopGame();          // 回標題：先淡出停止遊戲 BGM
