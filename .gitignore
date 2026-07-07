@@ -24,3 +24,5 @@ image_gen_progress.json
 __pycache__/
 *.pyc
 .claude/.journal-hook-state.json
+.vercel
+.env*
