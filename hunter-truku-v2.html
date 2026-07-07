@@ -1117,32 +1117,25 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
 #realInput.err + #inputBubble { animation: inputShake 0.3s; }
 @keyframes inputShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
-/* 送出鈕：原素材 v2-shoot-button.png 烤了一個「播放三角形 ▶」進去，配「送出」超違和
-   （像播放鍵）。改成乾淨金質漸層按鈕（跟 #hintBtn 同語言）+ 大字「送出」置中，去掉三角形。 */
+/* 送出鈕：使用者要求改成「按 ENTER」木質鍵帽 icon（v14 素材 v2-ui-key-enter.png，含大 ↵ + Enter 字）。
+   鍵帽自帶木框＋金邊，故按鈕去掉金膠囊底/邊框、方形貼合 icon；隱藏「送出」文字（icon 已達意）。
+   title/aria-label 仍保留「送出 (Enter)」顧無障礙；onclick=submitWord() 不變。 */
 .shoot-btn {
   position: relative;
-  background: linear-gradient(180deg, #FFD86A 0%, #F0B23C 55%, #E8A22C 100%);
-  border: 2px solid #8B5500;
-  border-radius: 13px;
-  width: 108px; height: 58px;
+  background: url('/images/ui/v2-ui-key-enter.png') center/contain no-repeat;
+  border: none; border-radius: 0;
+  width: 66px; height: 66px;
   font-size: 0;
   cursor: pointer;
-  box-shadow: 0 5px 0 #5A3000, inset 0 1px 0 rgba(255,245,200,0.6), inset 0 0 0 1px rgba(139,85,0,0.25);
-  transition: transform 0.1s, box-shadow 0.1s, filter 0.1s;
+  filter: drop-shadow(0 4px 5px rgba(0,0,0,0.4));
+  transition: transform 0.1s, filter 0.1s;
   display: flex; align-items:center; justify-content:center;
   padding: 0;
 }
 .shoot-btn img { display: none; }
-/* 「送出」大字置中，深金棕字在金底上清楚可讀。 */
-.shoot-btn-label {
-  position: static;
-  font-family: 'Fredoka One', sans-serif; font-size: 21px; letter-spacing: 3px;
-  color: #4A2E10;
-  text-shadow: 0 1px 0 rgba(255,240,200,0.6);
-  pointer-events: none;
-}
-.shoot-btn:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 7px 0 #5A3000, inset 0 1px 0 rgba(255,245,200,0.6); }
-.shoot-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #5A3000, inset 0 1px 0 rgba(255,245,200,0.6); }
+.shoot-btn-label { display: none; }   /* icon 已含 ↵ + Enter，不再另顯示「送出」字 */
+.shoot-btn:hover { transform: translateY(-2px); filter: drop-shadow(0 6px 8px rgba(0,0,0,0.45)) brightness(1.05); }
+.shoot-btn:active { transform: translateY(2px); filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
 
 /* combo meter */
 .combo-area { display:flex; flex-direction:column; align-items:center; gap:4px; }
@@ -5065,15 +5058,16 @@ document.getElementById('realInput').addEventListener('input', function(e) {
   updateInputDisplay(normalizeAnswer(e.target.value));
 });
 
-document.getElementById('realInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') {
-    if (G.bannerWaiting) { hideBanner(); return; }
-    submitWord();
-  }
-});
-
+// §Enter 送出改「全域」（修「要按兩次 Enter」）：以前只綁在 #realInput 上，一旦焦點掉到
+// 送出鈕/特殊字元鈕/版面改動後的其他元素，第一次 Enter 就接不到、要按第二次才送。改成
+// 全域監聽——不論焦點在哪都能送出；用 shouldAutoFocusInput() 擋掉登入/排行榜/其他輸入欄開著的情況。
 document.addEventListener('keydown', function(e) {
-  if (G.bannerWaiting && e.key === 'Enter') hideBanner();
+  if (e.key !== 'Enter') return;
+  if (G.bannerWaiting) { hideBanner(); return; }   // 開始橫幅：Enter 先開始遊戲
+  if (!G.active || G.isChoice) return;             // 僅「打字關」遊戲進行中才送出（選項關用點選）
+  if (!shouldAutoFocusInput()) return;             // 彈窗/其他輸入欄（帳號密碼/語別搜尋）開著 → 不送出
+  e.preventDefault();
+  submitWord();
 });
 
 // 輸入正規化：去頭尾空白、連續空白壓成單一空格、轉小寫。
