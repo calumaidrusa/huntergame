@@ -3251,16 +3251,17 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
 
 <!-- 音樂音量滑桿（民眾自行調整；固定於螢幕右下，獨立於 #gameWrap 縮放） -->
 <style>
-#bgmVolBar{position:fixed;right:14px;bottom:12px;z-index:9999;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 10px;background:linear-gradient(180deg,#2b4a24,#1c3317);border:1.5px solid #A9741F;border-radius:999px;box-shadow:0 3px 10px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);user-select:none;opacity:.92;transition:opacity .15s}
-#bgmVolBar:hover{opacity:1}
-#bgmVolBarIcon{width:20px;height:20px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
-#bgmVolBar .bvb-label{color:#F0C15A;font-size:13px;font-weight:700;letter-spacing:1px;text-shadow:0 1px 1px rgba(0,0,0,.5)}
-#bgmVolRange{-webkit-appearance:none;appearance:none;width:108px;height:6px;border-radius:999px;background:linear-gradient(90deg,#D99A2B,#F0C15A);outline:none;cursor:pointer}
+/* 音量控制：預設縮成右上角小喇叭；桌機 hover、觸控點一下 才展開滑桿（最不擋畫面） */
+#bgmVolBar{position:fixed;right:10px;top:10px;z-index:9999;display:flex;flex-direction:row-reverse;align-items:center;height:36px;width:36px;padding:0 7px;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#2b4a24,#1c3317);border:1.5px solid #A9741F;box-shadow:0 2px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);opacity:.7;cursor:pointer;user-select:none;transition:width .22s ease,opacity .15s}
+#bgmVolBar:hover,#bgmVolBar.open{width:206px;opacity:1}
+#bgmVolBarIcon{flex:0 0 auto;width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5));pointer-events:none}
+#bgmVolBar .bvb-label{flex:0 0 auto;color:#F0C15A;font-size:12px;font-weight:700;letter-spacing:1px;text-shadow:0 1px 1px rgba(0,0,0,.5);white-space:nowrap;margin-left:6px;pointer-events:none}
+#bgmVolRange{flex:1 1 auto;min-width:0;margin:0 4px 0 8px;-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;background:linear-gradient(90deg,#D99A2B,#F0C15A);outline:none;cursor:pointer}
 #bgmVolRange::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FBE7A6,#D99A2B 70%);border:1.5px solid #7a5214;box-shadow:0 1px 3px rgba(0,0,0,.5);cursor:pointer}
 #bgmVolRange::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FBE7A6,#D99A2B 70%);border:1.5px solid #7a5214;box-shadow:0 1px 3px rgba(0,0,0,.5);cursor:pointer}
 #bgmVolRange::-moz-range-track{height:6px;border-radius:999px;background:linear-gradient(90deg,#D99A2B,#F0C15A)}
-#siteCredit{position:fixed;right:14px;bottom:60px;z-index:9999;max-width:min(60vw,420px);padding:4px 10px;background:rgba(20,32,16,.55);border:1px solid rgba(169,116,31,.5);border-radius:8px;color:#E6CE8C;font-size:11px;line-height:1.4;letter-spacing:.3px;text-align:right;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none;user-select:none}
-@media (max-width:600px){#bgmVolBar{right:8px;bottom:8px;padding:6px 9px}#bgmVolRange{width:80px}#bgmVolBar .bvb-label{display:none}#siteCredit{right:8px;bottom:52px;font-size:10px;padding:3px 8px;max-width:72vw}}
+#siteCredit{position:fixed;left:50%;transform:translateX(-50%);bottom:8px;z-index:9998;max-width:min(90vw,560px);padding:3px 12px;background:rgba(20,32,16,.5);border:1px solid rgba(169,116,31,.45);border-radius:8px;color:#E6CE8C;font-size:11px;line-height:1.4;letter-spacing:.3px;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none;user-select:none;white-space:nowrap}
+@media (max-width:600px){#bgmVolBar{right:8px;top:8px}#bgmVolBar:hover,#bgmVolBar.open{width:180px}#bgmVolBar .bvb-label{display:none}#siteCredit{font-size:9px;padding:2px 8px;max-width:94vw;white-space:normal}}
 </style>
 <div id="bgmVolBar" role="group" aria-label="音樂音量">
   <img id="bgmVolBarIcon" src="/images/ui/ui-volume-on.png" alt="">
@@ -3500,11 +3501,18 @@ window.setBgmGain = setBgmGain;
 // 滑桿 UI 初始化：thumb 對到已存比例、接上 input 事件（拖動即時生效）
 function _initBgmVolBar() {
   const range = document.getElementById('bgmVolRange');
+  const bar = document.getElementById('bgmVolBar');
   if (!range || range._wired) return;
   const raw = parseFloat(localStorage.getItem(HT_BGM_GAIN_KEY));
   const s = isNaN(raw) ? 0.5 : Math.max(0, Math.min(1, raw));
   range.value = String(Math.round(s * 100));
   range.addEventListener('input', () => setBgmGain((parseInt(range.value, 10) || 0) / 100));
+  // 收合喇叭：桌機 hover 由 CSS 展開；觸控點喇叭展開、點滑桿不收合、點外面/滑鼠移開收合
+  if (bar) {
+    bar.addEventListener('click', (e) => { if (e.target !== range) bar.classList.add('open'); });
+    bar.addEventListener('mouseleave', () => bar.classList.remove('open'));
+    document.addEventListener('click', (e) => { if (!bar.contains(e.target)) bar.classList.remove('open'); });
+  }
   range._wired = true;
 }
 _initBgmVolBar();
