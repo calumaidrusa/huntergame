@@ -52,10 +52,12 @@
   <!-- 里程碑跨關輕量提示條：短暫顯示「LEVEL UP」不中斷 endless 節奏，不是整頁 modal -->
   <div id="levelUpToast" class="level-up-toast" hidden>LEVEL UP!</div>
 
-  <!-- 目前語別條：顯示遊玩中的語別（中文＋族語），像桌機 HUD 副標。點擊回開始畫面換語別。 -->
+  <!-- 目前語別條：顯示遊玩中的語別（中文＋族語），像桌機 HUD 副標。點擊回開始畫面換語別。
+       右側顯示當前玩法模式徽章（聽打/音選詞/填空/看圖選詞）。 -->
   <button id="langBar" class="lang-bar" type="button" aria-label="目前語別，點擊可更換">
     <span id="langBarName" class="lang-bar-name">太魯閣語</span>
     <span id="langBarNative" class="lang-bar-native">Truku</span>
+    <span id="modeBadge" class="mode-badge">聽打</span>
     <span class="lang-bar-caret vico vico-caret"></span>
   </button>
 
@@ -69,12 +71,16 @@
   <!-- 中段遊戲區：canvas 自適應，敵人由上而下 -->
   <main id="stage">
     <canvas id="game"></canvas>
-    <!-- 詞義提示卡（中文/類別），疊在 canvas 上方中央 -->
+    <!-- 詞義提示卡（中文/類別），疊在 canvas 上方中央（拼字關/填空關顯示；選詞關隱藏） -->
     <div id="wordMeaning" class="word-meaning" hidden>
       <span id="wmZh" class="wm-zh"></span>
       <span id="wmCat" class="wm-cat"></span>
     </div>
-    <!-- 音檔播放鈕（有音檔的詞才顯示） -->
+    <!-- 圖片線索卡（看圖選詞關）：詞彙插畫，疊在遊戲區上方中央。無圖時內填中文（cue-fallback）。 -->
+    <div id="cueImageWrap" class="cue-image-wrap" hidden>
+      <img id="cueImage" class="cue-image" alt="詞彙圖片" hidden>
+    </div>
+    <!-- 音檔播放鈕（放音模式且有音檔的詞才顯示） -->
     <button id="audioBtn" class="audio-btn" hidden aria-label="播放發音"><span class="vico vico-speaker"></span></button>
   </main>
 
@@ -83,11 +89,14 @@
     <!-- 第一關半透明拼字提示（初學鷹架）：顯示正確族語拼字、隨時間淡出，只在開局前 N 題出現。
          純視覺，不參與判定；aria-hidden 避免報讀干擾正常拼字流程。 -->
     <div id="hintRow" class="hint-row" aria-hidden="true" hidden></div>
+    <!-- 拼字關/填空關：拼字進度格 + 字母磚 + 清除鈕 -->
     <div id="progressRow" class="progress-row" aria-label="拼字進度"></div>
     <div id="tileRow" class="tile-row" aria-label="字母磚"></div>
     <div class="ctrl-btns">
       <button id="clearBtn" class="btn-wood ctrl-clear">清除</button>
     </div>
+    <!-- 選詞關（音選詞/看圖選詞）：4 個族語詞選項，2×2 網格，每顆 ≥44px。JS 動態填入。 -->
+    <div id="choiceRow" class="choice-row" aria-label="族語詞選項" hidden></div>
   </footer>
 
   <!-- 開始 / 結束 覆蓋層 -->
@@ -100,6 +109,13 @@
       <div id="ovTitle" class="ov-title">族語射手</div>
       <div id="ovSub" class="ov-sub">點字拼字 · 直式手機版</div>
       <div id="ovStats" class="ov-stats" hidden></div>
+
+      <!-- 玩法模式選擇器：4 顆（聽打/音選詞/填空/看圖選詞），對應桌機挑出最適合觸控的 4 玩法。
+           每顆 ≥44px、直式堆疊、jungle 風、無 emoji。選中高亮。記到 localStorage('hunter_mobile_mode')。 -->
+      <div class="mode-picker-block">
+        <div class="mode-picker-label">選擇玩法（4 關）</div>
+        <div id="modePicker" class="mode-picker" role="group" aria-label="選擇玩法模式"></div>
+      </div>
 
       <!-- 語別選擇：fetch(/api/languages) 動態填 42 語別（name_zh + name_native）。
            記到 localStorage('hunter_lang')（與桌機同 key，跨端一致）。切換後重載詞、重開局。 -->
@@ -115,13 +131,13 @@
         <div id="langError" class="lang-error" hidden></div>
       </div>
 
-      <!-- 玩法說明卡：開局前顯示「怎麼玩」，選好語別 → 看說明 → 按開始進遊戲。
-           結算畫面（再玩一次）時由 JS 隱藏，避免重複佔版面。 -->
+      <!-- 玩法說明卡：開局前顯示「怎麼玩」，依所選玩法模式動態換內容（refreshHowto()）。
+           選好玩法/語別 → 看說明 → 按開始進遊戲。結算畫面時由 JS 隱藏，避免重複佔版面。 -->
       <div id="howto" class="howto">
         <div class="howto-title">
-          <span class="howto-icon vico vico-target"></span>怎麼玩 · 點字拼字
+          <span class="howto-icon vico vico-target"></span><span id="howtoTitleText">怎麼玩 · 點字拼字</span>
         </div>
-        <ol class="howto-steps">
+        <ol id="howtoSteps" class="howto-steps">
           <li><span class="howto-txt">聽發音、看上方中文提示，知道要拼哪個詞。</span></li>
           <li><span class="howto-txt">點下方的<b>字母磚</b>，照正確順序拼出族語單字。</span></li>
           <li><span class="howto-txt">拼完整個字，獵人自動<b>往上射箭</b>擊中敵人得分。</span></li>

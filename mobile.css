@@ -29,6 +29,20 @@ body{
   touch-action:manipulation;
   position:fixed; inset:0;
 }
+/* ── 版面高度穩定基準（修「畫面忽大忽小」）──────────────────────────
+   問題根因：手機瀏覽器上下網址列在捲動時漸進收合，會讓 100vh / 依賴可視高度
+   的 flex 反覆重算，畫面就抖。做法：用一個 JS 每次 resize 寫入的 --app-h（取自
+   visualViewport.height，見 game-mobile.js setAppHeight），並以固定高度鎖住
+   #app，而不是讓 flex 去追 100%/vh。優先序：--app-h（JS 實測）> 100dvh（支援的
+   瀏覽器，動態視口單位本身就穩）> 100vh（最後保底）。
+   #app 高度固定後，內部 flex 由上到下堆疊、#stage 佔剩餘空間，網址列收合不再觸發
+   連鎖重排。 */
+:root{
+  --app-h:100vh;
+}
+@supports (height:100dvh){
+  :root{ --app-h:100dvh; }
+}
 [hidden]{display:none !important;}
 
 /* ---------- 通用按鈕：金黃漸層＋咖啡邊框＋立體按壓 ---------- */
@@ -78,7 +92,10 @@ body{
 
 /* ---------- 主容器：直式 flex 由上到下堆疊 ---------- */
 #app{
-  position:fixed; inset:0;
+  position:fixed; left:0; top:0; right:0;
+  /* 高度用 JS 實測的 --app-h 鎖死，而不是 inset:0/height:100% 去追可視高度，
+     網址列收合時不再連鎖重排（見 :root --app-h 說明）。 */
+  height:var(--app-h);
   display:flex; flex-direction:column;
   padding-top:var(--safe-t);
   padding-left:var(--safe-l); padding-right:var(--safe-r);
@@ -138,7 +155,14 @@ body{
 .lang-bar-icon{font-size:15px; line-height:1;}
 .lang-bar-name{font-weight:700; font-size:15px; color:var(--gold-lt); letter-spacing:.5px;}
 .lang-bar-native{font-size:12px; opacity:.75; font-style:italic;}
-.lang-bar-caret{margin-left:auto; font-size:18px; color:var(--gold-lt); line-height:0;}
+.lang-bar-caret{font-size:18px; color:var(--gold-lt); line-height:0;}
+/* HUD 當前玩法徽章：靠右，小圓角木牌 */
+.mode-badge{
+  margin-left:auto;
+  font-family:'Fredoka One','Noto Sans TC',cursive; font-size:12px; letter-spacing:.5px;
+  color:#0A2A08; background:linear-gradient(var(--gold-lt),var(--gold));
+  border:1.5px solid var(--wood-dk); border-radius:8px; padding:2px 9px; line-height:1.4;
+}
 
 /* ---------- 帳號狀態條（語別條下方；訪客顯示登入邀請，登入後顯示暱稱+排行榜） ---------- */
 .acct-bar{
@@ -156,6 +180,45 @@ body{
   border-radius:8px; padding:4px 10px; cursor:pointer; min-height:26px;
 }
 .acct-bar-btn:active{background:rgba(245,166,35,.2);}
+
+/* ---------- 開始畫面玩法模式選擇器（4 顆，直式堆疊，≥44px，jungle 風） ---------- */
+.mode-picker-block{margin:0 0 18px; text-align:left;}
+.mode-picker-label{
+  display:block; font-family:'Fredoka One',cursive;
+  font-size:12px; letter-spacing:1px; color:var(--gold-lt);
+  margin:0 0 8px; padding-left:2px;
+}
+.mode-picker{display:flex; flex-direction:column; gap:8px;}
+.mode-opt{
+  display:flex; align-items:center; gap:10px; text-align:left;
+  width:100%; min-height:52px;                 /* 觸控目標 ≥44px */
+  padding:8px 12px;
+  font-family:'Noto Sans TC',sans-serif; color:var(--cream);
+  background:linear-gradient(180deg,rgba(46,107,30,.55),rgba(10,42,8,.6));
+  border:2px solid var(--wood-dk); border-radius:14px;
+  box-shadow:0 3px 0 #2a1a00, 0 4px 8px rgba(0,0,0,.35);
+  cursor:pointer;
+  transition:transform .06s ease, filter .1s ease, border-color .1s ease;
+}
+.mode-opt:active{transform:translateY(2px); box-shadow:0 1px 0 #2a1a00;}
+.mode-opt.active{
+  background:linear-gradient(180deg,#FFE9A8,var(--gold) 60%,var(--gold-dk));
+  border-color:var(--gold-lt);
+  box-shadow:0 3px 0 var(--wood-dk), 0 0 0 2px rgba(255,215,0,.5), 0 4px 10px rgba(0,0,0,.4);
+}
+.mode-opt-no{
+  flex:0 0 auto; width:26px; height:26px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fredoka One',cursive; font-size:14px; color:#fff;
+  background:linear-gradient(var(--gold),var(--gold-dk));
+  border:2px solid var(--wood-dk); border-radius:50%;
+}
+.mode-opt.active .mode-opt-no{background:linear-gradient(#5a3000,#3a2000); color:var(--gold-lt);}
+.mode-opt-body{display:flex; flex-direction:column; min-width:0; flex:1 1 auto;}
+.mode-opt-name{font-family:'Fredoka One','Noto Sans TC',cursive; font-size:16px; letter-spacing:.5px; line-height:1.2;}
+.mode-opt-desc{font-size:11.5px; opacity:.8; line-height:1.35; margin-top:1px;}
+.mode-opt.active .mode-opt-name{color:#4a2f00;}
+.mode-opt.active .mode-opt-desc{color:#5a3000; opacity:.85;}
 
 /* ---------- 開始畫面語別選單 ---------- */
 .lang-picker{margin:0 0 18px; text-align:left;}
@@ -270,6 +333,11 @@ body{
   text-shadow:0 0 8px rgba(255,215,0,.6);
   animation:slotPop .18s ease;
 }
+/* given：填空關「預先露出」的字母（非玩家所填），暗金、實心底線，與待補格區隔 */
+.slot.given{
+  color:rgba(255,215,0,.55);
+  border-bottom:3px solid rgba(245,166,35,.85);
+}
 @keyframes slotPop{0%{transform:scale(.6);}100%{transform:scale(1);}}
 
 /* 字母磚：四態（normal / selected 短暫 / locked 已用 / disabled 錯誤閃爍） */
@@ -322,6 +390,59 @@ body{
 }
 .ctrl-btns{display:flex; justify-content:center; margin-top:10px;}
 .ctrl-clear{min-width:120px;}
+
+/* ---------- 選詞關（音選詞/看圖選詞）：4 個族語詞選項，2×2 網格 ---------- */
+.choice-row{
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  padding:2px 2px 4px;
+}
+.choice-opt{
+  min-height:56px;                          /* 觸控目標 ≥44px，兩顆一列間距足夠防誤觸 */
+  display:flex; align-items:center; justify-content:center;
+  padding:8px 10px;
+  font-family:'Fredoka One','Noto Sans TC',cursive;
+  font-size:22px; line-height:1.15; word-break:break-word;
+  color:#4a2f00;
+  background:linear-gradient(#FFE9A8,var(--gold) 60%,var(--gold-dk));
+  border:3px solid var(--wood-dk); border-radius:14px;
+  box-shadow:0 4px 0 var(--wood-dk), 0 5px 8px rgba(0,0,0,.35);
+  cursor:pointer;
+  transition:transform .07s ease, filter .1s ease, opacity .2s ease;
+  text-shadow:0 1px 0 rgba(255,255,255,.45);
+}
+.choice-opt:active{transform:translateY(3px); box-shadow:0 1px 0 var(--wood-dk);}
+.choice-opt.correct{
+  background:linear-gradient(#bfff9a,#5fd23c 60%,#2e8a12);
+  color:#0A2A08; filter:brightness(1.08);
+}
+.choice-opt.wrong{
+  animation:tileShake .32s ease;
+  background:linear-gradient(#ff9a8a,#e04a3c 60%,#a01a10); color:#fff;
+}
+.choice-opt:disabled{opacity:.4; cursor:default; box-shadow:0 2px 0 var(--wood-dk);}
+
+/* ---------- 圖片線索卡（看圖選詞）：詞彙插畫，疊在遊戲區上方中央 ---------- */
+.cue-image-wrap{
+  position:absolute; top:10px; left:50%; transform:translateX(-50%);
+  z-index:5; width:132px; height:132px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,253,232,.94); border:3px solid var(--gold-dk); border-radius:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,.4); overflow:hidden;
+}
+.cue-image{max-width:100%; max-height:100%; object-fit:contain; display:block;}
+/* 無圖備援：卡片內顯示中文，避免看圖關無圖無法作答 */
+.cue-fallback{
+  font-family:'Noto Sans TC',sans-serif; font-weight:900; font-size:26px;
+  color:#3a2a00; text-align:center; padding:6px;
+}
+@media (min-width:600px){
+  .cue-image-wrap{width:170px; height:170px;}
+  .choice-opt{font-size:26px; min-height:64px;}
+}
+@media (max-width:360px){
+  .cue-image-wrap{width:112px; height:112px;}
+  .choice-opt{font-size:19px; min-height:52px;}
+}
 
 /* ---------- 開始 / 結束覆蓋層 ---------- */
 .overlay{
