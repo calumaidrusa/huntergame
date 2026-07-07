@@ -42,6 +42,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- 裝置分流：手機/窄螢幕/觸控裝置 → 自動導到手機版 mobile.html（判定與 game-mobile.js 的
+     isMobileLike 一致：pointer:coarse 或 寬≤820）。放在最前面（在 CSS/遊戲載入前）執行，
+     手機不會先閃一下桌機再跳。escape hatch：加 ?mode=desktop 可強制留在桌機版。 -->
+<script>
+(function(){
+  try {
+    var q = new URLSearchParams(location.search);
+    if (q.get('mode') === 'desktop') return;                 // 明確要桌機 → 不轉址
+    var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    var narrow = (window.innerWidth || document.documentElement.clientWidth || 0) <= 820;
+    if (coarse || narrow) location.replace('mobile.html' + location.search); // 手機 → 導到手機版（保留 query）
+  } catch (e) { /* 判定失敗就留在桌機版，不擋使用者 */ }
+})();
+</script>
 <title>族語射手 TRUKU WORD ARCHER</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
 <style>
