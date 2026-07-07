@@ -106,3 +106,36 @@ placeholder 我特意設計成「木質同心圓準星靶」而非任何動物�
 順帶查了 v14 提過的 `Codex/02-game/` 複製目錄——這支 worktree 沒這個目錄（應是別的環境路徑），所以放置位置就是專案根，跟其餘 v2~v14 一致。舊檔 `match-game-art-prompts.md` 我沒直接刪，改在檔頭標「⛔已由 v15 取代、勿用」+ 說明原因，留作歷史、避免 Codex/使用者再誤讀（要刪也行，但標註更安全）。
 
 交棒教訓：**以後寫任何要交 Codex 的生圖規格，檔名一律 `Truku_{主題}_Codex_v{下一個空號}.md`、放專案根，先 Glob 確認目前最高版號再+1，別自創檔名。** 內容格式照最近一份 v14 的骨架排。這是工作流硬慣例，不是可自由發揮的地方。
+
+## 2026-07-07 · Codex 還是讀不到 v15——查清根因是「沒 push」不是「放錯位置」
+
+上一條我把 v15 改名放進專案根對齊 v14，但使用者回報 Codex **還是**抓不到，問我「有沒有存在對的地方」，還提醒我上次講過 v14 內文寫「會另複製一份到 `Codex/02-game/`」、要我重評估是否該建那個目錄放 v15。這次我把每個假設都用證據釘死，結論翻轉了我之前的猜測：
+
+**先推翻我自己的記憶錯誤。** 我 grep 了整份 v14（`Codex/02-game`、`複製`、`讀取` 全部無 match），v14 內文根本**沒有**「會另複製一份到 Codex/02-game/」這句話。我上次日誌跟上上次的說法是**記憶捏造/串線錯誤**——把某個環境的想像當成 v14 白紙黑字。教訓：引用文件內容前一定要 grep 驗證，不要憑印象轉述，尤其別把「我以為文件會這樣寫」寫成「文件寫了」。
+
+**再確認磁碟沒有那個目錄。** Glob `**/Codex/**`、`**/02-game/**` 全空；上層 `Documents/Claude` 只有 `01-Game`/`02-Painter`/`03-教學`。所有 Codex 工作單 v2~v15 全部平放在 `01-Game` 專案根同一層，v15 位置跟 v14 **完全對齊**。所以「放錯位置」不成立——我**沒有**去憑空建 `Codex/02-game/`，因為專案裡本來就不存在這種目錄，硬造一個只會製造一個沒人讀的幽靈路徑、更混亂。任務要求「補到所有 v14 會被放/被複製到的位置」，但 v14 實際只有一個落點（根目錄），v15 已經在那，不需要再補。
+
+**真正的根因（證據鏈）**：
+- `git branch -r --contains b681581` → **空**（沒有任何遠端分支含這個 commit）。
+- `git status -sb` → 本機分支 `[ahead 1]`，領先遠端 1 個 commit，就是 b681581。
+- `git cat-file -e origin/…:Truku_EnterKey_Codex_v14.md` → **存在**（v14 在遠端，Codex 讀得到）。
+- `git cat-file -e origin/…:Truku_MatchGame_Codex_v15.md` → `exists on disk, but not in origin/…`（v15 只在本機、不在遠端）。
+- remote = `https://github.com/calumaidrusa/huntergame`。
+
+結論：**Codex 是從 GitHub repo 讀工作單**，v14 早已 push 所以讀得到、v15 commit 了但**還沒 push** 所以讀不到。差別純粹是 push 與否，跟檔名/放置位置無關（那些上一條已經修對了）。修法＝push b681581 到 origin——但 **push 是主管的事，我不做**，只在回報點明。
+
+交棒教訓：①以後 Codex「抓不到某檔」的 debug 順序是——先確認檔名/路徑對齊（上次做了），再確認**該 commit 有沒有進遠端**（`git branch -r --contains` / `git cat-file -e origin/…:檔名`），別停在本機 `ls` 看到檔案就以為 OK；本機有 ≠ Codex 讀得到，Codex 看的是 GitHub。②別再重複「v14 說會複製到 Codex/02-game/」這個說法，那是我的記憶錯誤，v14 沒這句、專案也沒這目錄。
+
+## 2026-07-07 · 找到真正的繪圖資料夾——Codex 讀的是 `Documents/Codex/02-game/`，不是 01-Game 也不是 GitHub
+
+上一條我推論「Codex 從 GitHub 讀、根因是 v15 沒 push」。**這次被使用者的新事實修正了**：Codex 其實是從**「原本我們繪圖的資料夾」**讀 md 工作單，那個資料夾是 `C:/Users/asd81/Documents/Codex/02-game/`——一個獨立的 git repo（自帶 `.git`/`AGENTS.md`/`ARCHITECTURE.md`/`assets/`/`public/`/`docs/`），跟遊戲主 repo `01-Game` 是兩碼事。v15 之前只放在 `01-Game` 根，Codex 當然讀不到。
+
+**為什麼我之前的 Glob 掃不到它**：我一直在 `C:/Users/asd81/Documents/Claude/**` 底下找（只看到 `01-Game`/`02-Painter`/`03-教學`），但繪圖 repo 在 `Documents/Codex/` 底下，**差了一層父目錄**，`Documents/Claude/**` 這個 glob 前綴永遠掃不進去。這次改用 `find "C:/Users/asd81/Documents/" -iname "Truku_*Codex*.md"`（放寬到整個 Documents）才一次撈出兩批同名檔：一批在 `01-Game`（本地作業副本）、一批在 `Documents/Codex/02-game/`（Codex 真正讀取處）。教訓：debug「Codex 讀不到某檔」，搜尋範圍別預設綁在遊戲 repo 或某個 Claude 子目錄，要放到夠高的父層（`Documents/`）撈同名檔，才會看到平行存在的第二個 repo。
+
+**`02-Painter` 是空的**：一併排除了「繪圖資料夾＝02-Painter」的猜測——`ls -la` 連隱藏檔都沒有，是空目錄，不是 Codex 讀取處。
+
+**繪圖 repo 的既有慣例（實地確認）**：工作單全部**平放在 repo 根**（不是子資料夾），命名 `Truku_{主題}_Codex_v{N}.md`，跟 `01-Game` 那批完全同名。現況版號 v3、v4、v5、v6、v7、v8、v9、v11、v12、v13、**v14 都在**（v14=Enter 鍵那份，7/7 15:40 建的，證明這裡就是最新工作單落地點），**唯獨缺 v15**。所以缺口精準就是 v15。
+
+**我做的事**：`cp` 把 `01-Game/Truku_MatchGame_Codex_v15.md` 複製到 `Documents/Codex/02-game/Truku_MatchGame_Codex_v15.md`，跟 v14 同層平放、命名對齊。驗了三項：byte 數一致（19721=19721）、`diff` 無差異、v14/v15 現已在繪圖資料夾並列。內容用現有 v15 完整版，沒改一個字。沒動 hunter-truku-v2.html、沒做 git。
+
+**交棒教訓**（更新前兩條的結論）：①Codex 生圖工作單的**權威落點是 `C:/Users/asd81/Documents/Codex/02-game/`**（獨立 repo，跟 01-Game 分開）。以後生圖規格寫完，除了留一份在 01-Game，**一定要複製一份到這個繪圖 repo**、平放根目錄、`Truku_{主題}_Codex_v{下一空號}.md`，Codex 才讀得到。②前一條「根因是沒 push 到 GitHub」的推論要打折看待——真正決定 Codex 讀不讀得到的是「有沒有進 `Documents/Codex/02-game/` 這個繪圖 repo」，不是遊戲 repo 的 push 狀態。那個繪圖 repo 自己要不要 push/怎麼同步給 Codex，是它自己的流程，但至少檔案先落到那個目錄是前提。③搜尋範圍要放到 `Documents/` 層級才撈得到這個平行 repo，別再只掃 `Documents/Claude/**`。

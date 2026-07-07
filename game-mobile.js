@@ -41,7 +41,35 @@ const CFG = {
   MILESTONE_KILLS_PER_LEVEL: 10,
   MILESTONE_MAX_LEVEL: 5,
   LEVEL_UP_TOAST_MS: 1400,      // 跨門檻提示條顯示時長(ms)
+
+  // ── 選項點選關（音選詞/看圖選詞）：一次給幾個族語詞選項（正解 + N-1 誘答） ──
+  CHOICE_OPTION_COUNT: 4,      // 4 顆 2×2 網格；每顆 ≥44px 觸控目標
+  CHOICE_WRONG_DEDUCT_HP: false,// 點錯選項是否扣血（第一版：否，只給視覺+震動，與拼字關一致）
 };
+
+// ─────────────────────────────────────────────────────────────
+// 玩法模式（把桌機 5 玩法挑「最適合觸控」的 4 種搬過來，各自獨立實作、不呼叫桌機函式）
+//   選 4 種的理由：涵蓋「點選項」與「點字母磚」兩大觸控範式各 2 關；盲打(L5)在觸控上
+//   與聽打(L3)完全同構（都是點字母磚全拼、只差給不給提示），且手機已有 hintRow 鷹架，
+//   故落選，改留視覺線索更具體、更適合小螢幕的「看圖選詞」。
+//   - 'spell-listen' 聽打：聽發音 → 點字母磚照序拼完整詞（＝原手機核心玩法）。
+//   - 'choice-audio' 音選詞：聽發音 → 從 4 個族語詞選項點正確的（不顯示中文，靠聽）。
+//   - 'blank'        填空：露出部分字母、缺 1~2 格 → 點字母磚補上缺的字母。
+//   - 'choice-image' 看圖選詞：看詞彙插畫 → 從 4 個族語詞選項點正確的（需 hasImage）。
+// interaction：'tiles'（點字母磚）| 'choice'（點選項）——決定底部渲染哪一套 UI。
+// filter：抓詞時帶給 /api/vocabulary 的過濾（hasAudio/hasImage），與桌機同一支 API。
+const MODES = {
+  'spell-listen': { key:'spell-listen', label:'聽打',     labelEn:'DICTATION', interaction:'tiles',  filter:'hasAudio', showZh:true,  playAudio:true,  desc:'聽發音，點字母磚拼出整個族語詞',
+    howtoTitle:'怎麼玩 · 聽打', howto:['聽發音、看上方中文提示，知道要拼哪個詞。','點下方的<b>字母磚</b>，照正確順序拼出整個族語詞。','拼完整個字，獵人自動<b>往上射箭</b>擊中敵人得分。','別讓敵人越過底部的<b>危險線</b>，越線會扣血。'] },
+  'choice-audio': { key:'choice-audio', label:'音選詞',   labelEn:'LISTEN',    interaction:'choice', filter:'hasAudio', showZh:false, playAudio:true,  desc:'聽發音，從四個族語詞選正確的',
+    howtoTitle:'怎麼玩 · 音選詞', howto:['先<b>聽發音</b>（可點喇叭再聽一次），不顯示中文。','從下方<b>四個族語詞</b>選項中，點出你聽到的那個。','選對了，獵人自動<b>往上射箭</b>擊中敵人得分。','別讓敵人越過底部的<b>危險線</b>，越線會扣血。'] },
+  'blank':        { key:'blank',        label:'填空',     labelEn:'FILL',      interaction:'tiles',  filter:null,       showZh:true,  playAudio:false, desc:'詞缺幾格，點字母磚把缺的補上',
+    howtoTitle:'怎麼玩 · 填空', howto:['看上方中文提示，下方進度格會露出<b>部分字母</b>。','缺的格用<b>字母磚</b>補上，照正確順序點。','補齊整個詞，獵人自動<b>往上射箭</b>擊中敵人得分。','別讓敵人越過底部的<b>危險線</b>，越線會扣血。'] },
+  'choice-image': { key:'choice-image', label:'看圖選詞', labelEn:'PICTURE',   interaction:'choice', filter:'hasImage', showZh:false, playAudio:false, desc:'看圖片，從四個族語詞選正確的',
+    howtoTitle:'怎麼玩 · 看圖選詞', howto:['看畫面上方的<b>詞彙圖片</b>，想想那是什麼。','從下方<b>四個族語詞</b>選項中，點出正確的那個。','選對了，獵人自動<b>往上射箭</b>擊中敵人得分。','別讓敵人越過底部的<b>危險線</b>，越線會扣血。'] },
+};
+const MODE_ORDER = ['spell-listen','choice-audio','blank','choice-image'];
+const DEFAULT_MODE = 'spell-listen';
 
 // 內部座標系：以「設計高度」為基準畫，再等比縮放貼到實際 canvas，維持長寬比不變形。
 const VW = 400;   // 設計寬
@@ -63,9 +91,15 @@ const audioBtn = $('audioBtn');
 const progressRow = $('progressRow'), tileRow = $('tileRow');
 const hintRow = $('hintRow');   // 第一關半透明拼字提示（鷹架）
 const clearBtn = $('clearBtn');
+// 選項點選關（音選詞/看圖選詞）：底部選項網格；圖片線索卡（看圖選詞用）
+const choiceRow = $('choiceRow');
+const cueImageWrap = $('cueImageWrap'), cueImage = $('cueImage');
+// 模式選擇器（開始畫面 4 顆）＋ HUD 當前模式徽章
+const modePicker = $('modePicker'), modeBadge = $('modeBadge');
 const overlay = $('overlay'), ovTitle = $('ovTitle'), ovSub = $('ovSub'),
       ovStats = $('ovStats'), startBtn = $('startBtn');
 const howto = $('howto');   // 玩法說明卡「怎麼玩」：開始畫面顯示、結算畫面隱藏
+const howtoTitleText = $('howtoTitleText'), howtoSteps = $('howtoSteps');   // 依模式動態換內容
 // 語別選擇相關
 const langSelect = $('langSelect'), langError = $('langError');
 const langBar = $('langBar'), langBarName = $('langBarName'), langBarNative = $('langBarNative');
@@ -97,7 +131,9 @@ const PREY_SPRITES = [
 // ─────────────────────────────────────────────────────────────
 // 遊戲狀態
 // ─────────────────────────────────────────────────────────────
-let pool = [];            // 可用單字池（已過濾）
+let pool = [];            // 可用單字池（已過濾，依當前模式的 filter）
+let allPool = [];         // 全池（不過濾，供選項關生誘答用）
+let currentMode = DEFAULT_MODE;   // 當前玩法模式（見 MODES）
 let state = 'menu';       // menu | playing | over
 let hp, score, combo, kills, correctTaps, totalTaps;
 let milestoneLevel = 1;   // 本局目前里程碑等級（依累積 kills 分段，見 CFG.MILESTONE_*），只是 HUD/反饋層
@@ -137,7 +173,8 @@ gateForce.addEventListener('click', () => { deviceGate.hidden = true; show(); })
 function show(){
   deviceGate.hidden = true;
   app.hidden = false;
-  resize();
+  setAppHeight();          // 先鎖穩定高度，再量 canvas（避免第一次量到還沒定高的過渡值）
+  applyCanvasSize();       // 首次直接同步套用一次（不走 rAF 節流，確保開場即正確）
   checkOrientation();
 }
 
@@ -154,16 +191,47 @@ function checkOrientation(){
 // 螢幕(CSS px)尺寸：縱向軸直接用螢幕座標，獵人永遠貼可視底部、危險線恆在其前方固定距離，
 // 不會因裝置長寬比不同而被裁切。水平方向以 VW 為基準等比縮放，維持磚/獵人比例一致。
 let playW = VW, playH = VH;
-function resize(){
+let _lastCanvasW = 0, _lastCanvasH = 0;   // 上次實際套用的 canvas 尺寸（CSS px×dpr）
+let _resizeRaf = 0;                        // resize 節流用的 rAF id
+
+// 把「穩定的可視高度」寫進 CSS 變數 --app-h，讓 #app 用固定高度鎖版面。
+// 用 visualViewport.height（若有）比 innerHeight 更貼近實際可視高，且在網址列收合的
+// 過程中我們用「四捨五入 + 只在明顯變化時才更新」避免每個中間值都寫進去造成抖動。
+let _lastAppH = 0;
+function setAppHeight(){
+  const vv = window.visualViewport;
+  const h = Math.round(vv ? vv.height : window.innerHeight);
+  // 只有變化超過 2px 才更新（濾掉網址列漸進收合過程的每一個亞像素中間值）
+  if (Math.abs(h - _lastAppH) < 2) return false;
+  _lastAppH = h;
+  document.documentElement.style.setProperty('--app-h', h + 'px');
+  return true;
+}
+
+// 真正重算 canvas 尺寸與縮放係數。只在「像素尺寸實際變了」時才重設 canvas 寬高
+// （重設 canvas.width 會清空畫布並觸發昂貴的重配置），避免捲動時反覆清畫布造成閃爍/抖動。
+function applyCanvasSize(){
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const rect = canvas.getBoundingClientRect();
   const w = Math.max(1, rect.width), h = Math.max(1, rect.height);
-  canvas.width = Math.round(w * dpr);
-  canvas.height = Math.round(h * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   playW = w; playH = h;
-  // 元素尺寸縮放係數：以寬度相對設計寬 VW，夾在合理範圍，避免平板上物件過大/手機過小
-  scale = Math.min(1.6, Math.max(0.7, w / VW));
+  scale = Math.min(1.6, Math.max(0.7, w / VW));   // 元素縮放係數，夾在合理範圍
+  const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
+  if (cw === _lastCanvasW && ch === _lastCanvasH) return;   // 尺寸沒變 → 不動 canvas，避免清畫布
+  _lastCanvasW = cw; _lastCanvasH = ch;
+  canvas.width = cw;
+  canvas.height = ch;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+// resize：先更新 --app-h（穩定高度），再用 rAF 節流重算 canvas，避免高頻連續觸發。
+function resize(){
+  setAppHeight();
+  if (_resizeRaf) return;                 // 已排程一次，合併這一輪的多次呼叫
+  _resizeRaf = requestAnimationFrame(() => {
+    _resizeRaf = 0;
+    applyCanvasSize();
+  });
 }
 // 尺寸縮放（給 sprite/線寬等固定尺寸物件用）
 const S = v => v * scale;
@@ -269,47 +337,73 @@ function isPlayableWord(word){
   return len >= CFG.TILE_MIN && len <= CFG.TILE_MAX;
 }
 
-// 載入詞池。回傳 { ok, reason }：讓呼叫端決定 UI（非 trv 失敗時不誤用太魯閣 fallback）。
+// 把一列 API 資料清成內部單字物件（含 image，選項關/看圖關要用）。
+function mapRow(r){
+  return {
+    word: (r.word || '').trim(),
+    zh: r.chinese || r.word,
+    cat: r.category || '',
+    audio: r.audio_path || null,
+    image: r.image_path || null,
+  };
+}
+
+// 從 /api/vocabulary 抓一批（可帶 filter=hasAudio/hasImage），清洗成可玩詞陣列。
+async function fetchPool(code, filter){
+  const params = ['lang=' + encodeURIComponent(code)];
+  if (filter === 'hasAudio') params.push('hasAudio=1');
+  else if (filter === 'hasImage') params.push('hasImage=1');
+  const res = await fetch('/api/vocabulary?' + params.join('&'));
+  if (!res.ok) throw new Error('api ' + res.status);
+  const rows = await res.json();
+  return rows.map(mapRow).filter(r => isPlayableWord(r.word));
+}
+
+// 載入「當前模式所需」詞池 + 全池（供選項關生誘答）。回傳 { ok, reason }。
+//   pool    ＝ 依 currentMode.filter 過濾後的出題池。
+//   allPool ＝ 不過濾的全池（誘答庫越大越好；聽/看關的答案仍從 pool 出）。
 async function loadPool(){
   const code = currentLang.code;
+  const mode = MODES[currentMode] || MODES[DEFAULT_MODE];
   try {
-    const res = await fetch('/api/vocabulary?lang=' + encodeURIComponent(code));
-    if (!res.ok) throw new Error('api ' + res.status);
-    const rows = await res.json();
-    const cleaned = rows
-      .map(r => ({
-        word: (r.word || '').trim(),
-        zh: r.chinese || r.word,
-        cat: r.category || '',
-        audio: r.audio_path || null,
-      }))
-      .filter(r => isPlayableWord(r.word));
+    // 先抓全池（供誘答）；再抓模式過濾池。全池抓失敗就用過濾池自己當誘答庫。
+    let all = [];
+    try { all = await fetchPool(code, null); } catch(e){ all = []; }
+    const cleaned = mode.filter ? await fetchPool(code, mode.filter) : all.slice();
     if (!cleaned.length) throw new Error('empty');
     pool = cleaned;
+    allPool = all.length ? all : cleaned.slice();
     return { ok:true };
   } catch(e){
-    console.warn('[mobile] 詞彙載入失敗 lang=' + code, e.message);
+    console.warn('[mobile] 詞彙載入失敗 lang=' + code + ' mode=' + currentMode, e.message);
     // 只有太魯閣語才退回內建備援；其他語別不可用太魯閣詞冒充 → 清空 + 提示。
     if (code === 'trv'){
-      pool = FALLBACK.slice();
+      // 備援池依模式 filter 再篩一次（看圖選詞需要圖 → 備援沒圖時退回無過濾，至少可玩）
+      let fb = FALLBACK.slice();
+      if (mode.filter === 'hasImage') fb = fb.filter(r => r.image);
+      if (mode.filter === 'hasAudio') fb = fb.filter(r => r.audio);
+      if (!fb.length) fb = FALLBACK.slice();   // 備援太少就不強求過濾，保證可玩
+      pool = fb;
+      allPool = FALLBACK.slice();
       return { ok:true, fallback:true };
     }
-    pool = [];
+    pool = []; allPool = [];
     return { ok:false, reason:e.message };
   }
 }
-// 離線備援（含重複字母、含特殊字元示範）
+// 離線備援（含重複字母、含特殊字元示範）。image/audio 皆 null（離線無素材），
+// 選項關/看圖關在備援下仍可跑（看圖關無圖時退化為只顯示中文線索，見 buildCue）。
 const FALLBACK = [
-  {word:'kumay', zh:'黑熊', cat:'動物', audio:null},
-  {word:'bowyak', zh:'山豬', cat:'動物', audio:null},
-  {word:'mirit', zh:'山羊', cat:'動物', audio:null},
-  {word:'rqnux', zh:'水鹿', cat:'動物', audio:null},
-  {word:'pada', zh:'山羌', cat:'動物', audio:null},
-  {word:'kingal', zh:'一', cat:'數字', audio:null},
-  {word:'mataru', zh:'六', cat:'數字', audio:null},
-  {word:'maxal', zh:'十', cat:'數字', audio:null},
-  {word:'hidaw', zh:'太陽', cat:'自然', audio:null},
-  {word:'idas', zh:'月亮', cat:'自然', audio:null},
+  {word:'kumay', zh:'黑熊', cat:'動物', audio:null, image:null},
+  {word:'bowyak', zh:'山豬', cat:'動物', audio:null, image:null},
+  {word:'mirit', zh:'山羊', cat:'動物', audio:null, image:null},
+  {word:'rqnux', zh:'水鹿', cat:'動物', audio:null, image:null},
+  {word:'pada', zh:'山羌', cat:'動物', audio:null, image:null},
+  {word:'kingal', zh:'一', cat:'數字', audio:null, image:null},
+  {word:'mataru', zh:'六', cat:'數字', audio:null, image:null},
+  {word:'maxal', zh:'十', cat:'數字', audio:null, image:null},
+  {word:'hidaw', zh:'太陽', cat:'自然', audio:null, image:null},
+  {word:'idas', zh:'月亮', cat:'自然', audio:null, image:null},
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -491,45 +585,46 @@ function shuffle(a){
   return arr;
 }
 
+// 每種模式共用同一套「敵人下落 / 射箭 / 扣血」框架，只換底部「答題互動」層。
+// nextWord 依 currentMode 分支：'tiles'（點字母磚）走 setupTilesRound，
+// 'choice'（點選項）走 setupChoiceRound。完成條件都收斂到 completeWord()。
 function nextWord(){
+  const mode = MODES[currentMode] || MODES[DEFAULT_MODE];
   const v = pick();
   const letters = Array.from(v.word);   // 碼位安全，保留大小寫與特殊字元
   current = {
     word: v.word,
     letters,                            // 正確順序
-    zh: v.zh, cat: v.cat, audio: v.audio,
+    zh: v.zh, cat: v.cat, audio: v.audio, image: v.image,
+    prey: v,                            // 保留原詞物件（選項關生誘答/比對用）
+    mode: mode.key,
+    _locked: false,
   };
   progress = 0;
   // 敵人由頂部生成（螢幕座標：負值=從畫面上緣外進場）
   prey = { y: playH * CFG.PREY_START_Y_RATIO - 60, spriteIdx: Math.floor(Math.random()*PREY_SPRITES.length) };
 
-  // 詞義提示
-  wmZh.textContent = v.zh;
-  wmCat.textContent = v.cat || '';
-  wordMeaning.hidden = false;
+  // 線索（詞義卡/音檔/圖片）依模式決定顯不顯示族語詞、放不放音、露不露圖
+  buildCue(mode, v);
 
-  // 音檔鈕
-  if (v.audio){
-    audioBtn.hidden = false;
-    audioEl = new Audio(v.audio);
-    audioEl.play().catch(()=>{});    // 自動放一次（使用者已互動過 startBtn）
+  // 底部互動層：點字母磚 or 點選項
+  if (mode.interaction === 'choice'){
+    setupChoiceRound(mode, v);
   } else {
-    audioBtn.hidden = true; audioEl = null;
+    setupTilesRound(mode, letters);
   }
-
-  buildTiles(letters);
-  buildProgress(letters.length);
-  buildHint(letters);            // 第一關半透明拼字提示（只在前 N 題出現、隨時間淡出）
 
   wordsSeen++;                   // 這一題已出（影響下一題是否還在鷹架範圍）
 
   // 測試鉤子：?debug=1 時把目前題目暴露到 window，供自動化驗證用（不影響遊玩邏輯）
   if (query('debug') === '1'){
     window.__mobileDebug = {
+      get mode(){ return currentMode; },
+      get interaction(){ return (MODES[currentMode]||{}).interaction; },
       get word(){ return current ? current.word : null; },
       get letters(){ return current ? current.letters.slice() : []; },
       get progress(){ return progress; },
-      get needCh(){ return current ? current.letters[progress] : null; },
+      get needCh(){ return current ? nextNeededIndex()>=0 ? current.letters[nextNeededIndex()] : null : null; },
       score(){ return score; }, combo(){ return combo; }, hp(){ return hp; },
       // 鷹架提示狀態（驗證用）
       get wordsSeen(){ return wordsSeen; },
@@ -541,8 +636,102 @@ function nextWord(){
       get langName(){ return currentLang.nameZh; },
       get poolSize(){ return pool.length; },
       get tileChars(){ return tileState.map(t => t.ch); },
+      // 選項關（音選詞/看圖選詞）驗證用
+      get choiceCount(){ return choiceRow ? choiceRow.children.length : 0; },
+      get correctChoiceIdx(){ return _choiceState.correctIdx; },
+      tapChoice(i){ const b = choiceRow && choiceRow.children[i]; if (b) b.click(); },
     };
   }
+}
+
+// 目前「下一個需要點的字母」在 current.letters 的索引（填空關會跳過預填格）。
+// 回 -1 表示全部已填（拼完）。
+function nextNeededIndex(){
+  if (!current) return -1;
+  for (let i=0;i<current.letters.length;i++){
+    if (!current.filled || !current.filled[i]) return i;
+  }
+  return -1;
+}
+
+// ── 線索：依模式顯示中文詞義卡 / 音檔鈕 / 圖片線索 ──
+function buildCue(mode, v){
+  // 中文詞義卡：拼字關/填空關顯示（幫助知道要拼哪個詞）；選詞關不顯示中文（靠聽/靠圖）
+  if (mode.showZh){
+    wmZh.textContent = v.zh;
+    wmCat.textContent = v.cat || '';
+    wordMeaning.hidden = false;
+  } else {
+    wordMeaning.hidden = true;
+  }
+  // 音檔鈕：模式要放音且該詞有音檔才顯示
+  if (mode.playAudio && v.audio){
+    audioBtn.hidden = false;
+    audioEl = new Audio(v.audio);
+    audioEl.play().catch(()=>{});    // 自動放一次（使用者已互動過 startBtn）
+  } else {
+    audioBtn.hidden = true; audioEl = null;
+  }
+  // 圖片線索卡（看圖選詞）：疊在遊戲區中央上方；無圖時退化為顯示中文（至少可作答）
+  if (cueImageWrap){
+    if (mode.key === 'choice-image'){
+      if (v.image){
+        cueImage.src = v.image;
+        cueImage.hidden = false;
+        cueImageWrap.classList.remove('cue-fallback-zh');
+        cueImageWrap.querySelector('.cue-fallback')?.remove();
+        cueImageWrap.hidden = false;
+      } else {
+        // 無圖備援：顯示中文，避免看圖關無圖無法作答
+        cueImage.hidden = true;
+        cueImageWrap.classList.add('cue-fallback-zh');
+        let fb = cueImageWrap.querySelector('.cue-fallback');
+        if (!fb){ fb = document.createElement('div'); fb.className = 'cue-fallback'; cueImageWrap.appendChild(fb); }
+        fb.textContent = v.zh;
+        cueImageWrap.hidden = false;
+      }
+    } else {
+      cueImageWrap.hidden = true;
+    }
+  }
+}
+
+// ── tiles 互動關（聽打 / 填空）：建進度格 + 字母磚 ──
+function setupTilesRound(mode, letters){
+  // 顯示底部拼字 UI，隱藏選項 UI
+  if (progressRow) progressRow.hidden = false;
+  if (tileRow) tileRow.hidden = false;
+  if (clearBtn) clearBtn.parentElement && (clearBtn.parentElement.hidden = false);
+  if (choiceRow) choiceRow.hidden = true;
+
+  // 填空關：預填一部分字母（露出 word 的部分），玩家只補「缺的格」。
+  //  - givenMask[i]=true：第 i 格是「預先露出」的字母（不可被 clear 清掉、不上磚）。
+  //  - filled[i]=true：第 i 格目前已有字母（含 given 與玩家補上的），拼完＝全 true。
+  // 聽打關 givenMask 全 false（整詞都要拼）。
+  current.givenMask = new Array(letters.length).fill(false);
+  if (mode.key === 'blank'){
+    const blanks = pickBlankPositions(letters.length);
+    for (let i=0;i<letters.length;i++){ if (!blanks.has(i)) current.givenMask[i] = true; }
+  }
+  current.filled = current.givenMask.slice();   // 起始已填＝預先露出的格
+
+  buildProgress(letters);
+  buildTiles(mode, letters);
+  // 半透明全拼鷹架只給「聽打」關的開局前幾題（填空本身已露字母、選項關不拼字，故不給）
+  if (mode.key === 'spell-listen') buildHint(letters);
+  else { cancelAnimationFrame(hintFadeRaf); if (hintRow){ hintRow.hidden = true; hintRow.style.opacity='0'; } }
+}
+
+// 填空缺格位置：詞長 <5 缺 1 格、>=5 缺 2 格；不缺首格（首格當定位錨）；避免相鄰重疊。
+function pickBlankPositions(n){
+  const set = new Set();
+  const want = n >= 5 ? 2 : 1;
+  const candidates = [];
+  for (let i=1;i<n;i++) candidates.push(i);   // 從第 2 格起（保留首格露出）
+  const sh = shuffle(candidates);
+  for (const i of sh){ if (set.size >= want) break; if (set.has(i-1)||set.has(i+1)) continue; set.add(i); }
+  if (!set.size && n>1) set.add(n-1);          // 保底至少缺 1 格
+  return set;
 }
 
 // ── 第一關半透明拼字提示：顯示正確拼字（族語，含特殊字元），隨時間淡出 ──
@@ -585,17 +774,19 @@ function buildHint(letters){
   hintFadeRaf = requestAnimationFrame(tick);
 }
 
-// 建字母磚（第一版：只放正確字母打散，不加干擾字母）
-function buildTiles(letters){
+// 建字母磚。聽打：整個詞打散上磚。填空：只把「缺格」的字母打散上磚（缺幾個字母就幾顆磚）。
+function buildTiles(mode, letters){
   tileRow.innerHTML = '';
   tileState = [];
-  const order = shuffle(letters.map((ch,i)=>({ch, srcIdx:i})));
+  // 需要玩家點的字母＝未預填的格（filled[i]===false）。填空關只上這些；聽打關全部。
+  const need = [];
+  for (let i=0;i<letters.length;i++){ if (!current.filled || !current.filled[i]) need.push(letters[i]); }
+  const order = shuffle(need.map((ch,i)=>({ch, srcIdx:i})));
   order.forEach(item => {
     const el = document.createElement('button');
     el.className = 'tile';
     el.type = 'button';
     el.textContent = item.ch;
-    // aria
     el.setAttribute('aria-label', '字母 ' + item.ch);
     const rec = { ch:item.ch, used:false, el };
     el.addEventListener('click', () => onTapTile(rec));
@@ -604,13 +795,18 @@ function buildTiles(letters){
   });
 }
 
-// 建拼字進度格（底線 → 填字）
-function buildProgress(n){
+// 建拼字進度格。預填格（填空關露出的字母）直接顯示字母並標 filled；缺格顯示底線待補。
+function buildProgress(letters){
   progressRow.innerHTML = '';
-  for (let i=0;i<n;i++){
+  for (let i=0;i<letters.length;i++){
     const s = document.createElement('div');
     s.className = 'slot';
-    s.textContent = '';
+    if (current.filled && current.filled[i]){
+      s.textContent = letters[i];
+      s.classList.add('given');           // 預先露出的字母（填空關），淡金色、非玩家所填
+    } else {
+      s.textContent = '';
+    }
     progressRow.appendChild(s);
   }
 }
@@ -619,23 +815,26 @@ function buildProgress(n){
 // 點磚判定（重複字母以「進度位置」判定，不只比字元）
 // ─────────────────────────────────────────────────────────────
 function onTapTile(rec){
-  if (state !== 'playing' || !current) return;
+  if (state !== 'playing' || !current || current._locked) return;
   if (rec.used) return;
-  const needCh = current.letters[progress];   // 目前這一格需要的字母
+  const idx = nextNeededIndex();               // 下一個要補的格（跳過填空預填格）
+  if (idx < 0) return;
+  const needCh = current.letters[idx];         // 該格需要的字母
 
   if (rec.ch === needCh){
     // 正確：即使字串相同的磚有很多顆，任一顆對的字元都可鎖定「這一格」，
-    // 判定依 progress(位置)前進，不會因為點到另一顆相同字母的磚而算錯。
+    // 判定依「位置」前進，不會因為點到另一顆相同字母的磚而算錯（重複字母判定）。
     rec.used = true;
     rec.el.classList.remove('wrong');
     rec.el.classList.add('selected');
     setTimeout(()=>{ rec.el.classList.remove('selected'); rec.el.classList.add('locked'); }, 140);
     // 填進度格
-    const slot = progressRow.children[progress];
+    const slot = progressRow.children[idx];
     if (slot){ slot.textContent = rec.ch; slot.classList.add('filled'); }
+    current.filled[idx] = true;
     progress++;
     correctTaps++; totalTaps++;
-    if (progress >= current.letters.length){
+    if (nextNeededIndex() < 0){                 // 全部格都填好 → 完成
       completeWord();
     }
   } else {
@@ -649,12 +848,134 @@ function onTapTile(rec){
   }
 }
 
+// ─────────────────────────────────────────────────────────────
+// 選項點選關（音選詞 / 看圖選詞）：4 個族語詞選項，點正確的射箭；點錯不扣血只回饋。
+//   誘答用 Levenshtein 相似度從全池挑（與桌機同概念、獨立實作，不呼叫桌機函式）。
+// ─────────────────────────────────────────────────────────────
+let _choiceState = { correctIdx:-1, locked:false };
+
+// 編輯距離（Levenshtein）：越小越像，用來挑「像的」誘答。
+function levenshtein(a, b){
+  a = a || ''; b = b || '';
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  let prev = new Array(n+1);
+  for (let j=0;j<=n;j++) prev[j] = j;
+  for (let i=1;i<=m;i++){
+    let cur = [i];
+    for (let j=1;j<=n;j++){
+      const cost = a[i-1] === b[j-1] ? 0 : 1;
+      cur[j] = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+cost);
+    }
+    prev = cur;
+  }
+  return prev[n];
+}
+
+// 產生 N 個選項 = 正解 + (N-1) 個相似誘答（去同義、去重複詞）。
+function buildChoiceOptions(correct){
+  const N = CFG.CHOICE_OPTION_COUNT;
+  const correctWord = correct.word;
+  const correctLc = correctWord.toLowerCase();
+  const correctZh = (correct.zh || '').trim();
+  const src = (allPool && allPool.length) ? allPool : pool;
+  // 排除正解本身與同義（同族語詞或同中文）
+  const candidates = src.filter(p => {
+    if (p.word === correctWord) return false;
+    if ((p.zh||'').trim() && (p.zh||'').trim() === correctZh) return false;
+    return true;
+  });
+  const startCh = correctLc[0] || '';
+  const scored = candidates.map(p => {
+    const w = p.word.toLowerCase();
+    let s = levenshtein(correctLc, w);
+    if (w[0] === startCh) s -= 3;
+    s += Math.abs(w.length - correctLc.length);
+    if (p.cat && correct.cat && p.cat === correct.cat) s -= 2;
+    return { p, s };
+  });
+  scored.sort((a,b)=>a.s-b.s);
+  const picked = [];
+  const usedWords = new Set([correctWord]);
+  for (const { p } of scored){
+    if (picked.length >= N-1) break;
+    if (usedWords.has(p.word)) continue;
+    usedWords.add(p.word); picked.push(p);
+  }
+  // 池太小補不足 → 隨機補
+  if (picked.length < N-1){
+    for (const p of shuffle(candidates)){
+      if (picked.length >= N-1) break;
+      if (usedWords.has(p.word)) continue;
+      usedWords.add(p.word); picked.push(p);
+    }
+  }
+  const opts = [{ prey:correct, word:correctWord, isCorrect:true }]
+    .concat(picked.map(p => ({ prey:p, word:p.word, isCorrect:false })));
+  return shuffle(opts);
+}
+
+// 建選項關 UI：隱藏拼字磚/進度格，顯示 2×2 選項網格。
+function setupChoiceRound(mode, v){
+  if (progressRow) progressRow.hidden = true;
+  if (tileRow) tileRow.hidden = true;
+  if (clearBtn && clearBtn.parentElement) clearBtn.parentElement.hidden = true;
+  cancelAnimationFrame(hintFadeRaf);
+  if (hintRow){ hintRow.hidden = true; hintRow.style.opacity = '0'; }
+  if (!choiceRow) return;
+  choiceRow.hidden = false;
+  choiceRow.innerHTML = '';
+  _choiceState = { correctIdx:-1, locked:false };
+  const opts = buildChoiceOptions(v);
+  opts.forEach((opt, i) => {
+    if (opt.isCorrect) _choiceState.correctIdx = i;
+    const b = document.createElement('button');
+    b.className = 'choice-opt';
+    b.type = 'button';
+    b.textContent = opt.word;      // Array.from 不需要：textContent 直接吃碼位，特殊字元正確顯示
+    b.setAttribute('aria-label', '選項 ' + opt.word);
+    b.addEventListener('click', () => onTapChoice(opt, b));
+    choiceRow.appendChild(b);
+  });
+}
+
+// 點選項判定：對 → 完成射箭；錯 → 標紅+震動、不扣血（第一版與拼字關一致）。
+function onTapChoice(opt, btn){
+  if (state !== 'playing' || !current || current._locked || _choiceState.locked) return;
+  totalTaps++;
+  if (opt.isCorrect){
+    correctTaps++;
+    _choiceState.locked = true;
+    btn.classList.add('correct');
+    completeWord();
+  } else {
+    btn.classList.remove('wrong'); void btn.offsetWidth;
+    btn.classList.add('wrong');
+    btn.disabled = true;           // 點錯的選項禁用，避免重複點
+    setTimeout(()=>btn.classList.remove('wrong'), 340);
+    if (navigator.vibrate) navigator.vibrate(CFG.VIBRATE_WRONG);
+    if (CFG.CHOICE_WRONG_DEDUCT_HP){ hp--; updateHUD(); if (hp<=0) gameOver(); }
+  }
+}
+
 // clear：清除當前拼字，磚全部復位
+// clear：清除玩家「已補的字母」讓磚復位；保留填空關預先露出的字母（given 格不清）。
 function clearSpelling(){
-  if (state!=='playing') return;
+  if (state!=='playing' || !current || current._locked) return;
+  if (current.mode && MODES[current.mode] && MODES[current.mode].interaction === 'choice') return; // 選項關無 clear
   progress = 0;
   tileState.forEach(r => { r.used=false; r.el.classList.remove('locked','selected','wrong'); });
-  [...progressRow.children].forEach(s => { s.textContent=''; s.classList.remove('filled'); });
+  const letters = current.letters;
+  [...progressRow.children].forEach((s, i) => {
+    if (current.givenMask && current.givenMask[i]){
+      // 預填格：保留露出的字母、維持 filled=true
+      s.textContent = letters[i]; s.classList.remove('filled');
+      current.filled[i] = true;
+    } else {
+      s.textContent=''; s.classList.remove('filled');
+      current.filled[i] = false;
+    }
+  });
 }
 clearBtn.addEventListener('click', clearSpelling);
 
@@ -700,6 +1021,7 @@ function completeWord(){
   current._locked = true;
   wordMeaning.hidden = true;
   audioBtn.hidden = true;
+  if (cueImageWrap) cueImageWrap.hidden = true;   // 收圖片線索卡
   // 拼完即收提示（避免淡出動畫殘留到射箭動畫期間）
   cancelAnimationFrame(hintFadeRaf);
   if (hintRow){ hintRow.hidden = true; hintRow.style.opacity = '0'; }
@@ -835,6 +1157,71 @@ function draw(){
 }
 
 // ─────────────────────────────────────────────────────────────
+// 模式選擇
+// ─────────────────────────────────────────────────────────────
+const MODE_STORAGE_KEY = 'hunter_mobile_mode';
+function readSavedMode(){ try { return localStorage.getItem(MODE_STORAGE_KEY); } catch(e){ return null; } }
+function saveMode(k){ try { localStorage.setItem(MODE_STORAGE_KEY, k); } catch(e){} }
+
+// 建開始畫面的 4 顆模式選擇器（≥44px、直式、jungle 風、無 emoji）。選中高亮。
+function buildModePicker(){
+  if (!modePicker) return;
+  modePicker.innerHTML = '';
+  MODE_ORDER.forEach((key, i) => {
+    const m = MODES[key];
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mode-opt' + (key === currentMode ? ' active' : '');
+    b.dataset.mode = key;
+    b.innerHTML =
+      `<span class="mode-opt-no">${i+1}</span>` +
+      `<span class="mode-opt-body"><span class="mode-opt-name">${escapeHtmlM(m.label)}</span>` +
+      `<span class="mode-opt-desc">${escapeHtmlM(m.desc)}</span></span>`;
+    b.setAttribute('aria-label', m.label + '：' + m.desc);
+    b.addEventListener('click', () => selectMode(key));
+    modePicker.appendChild(b);
+  });
+}
+function refreshModePickerActive(){
+  if (!modePicker) return;
+  [...modePicker.children].forEach(b => b.classList.toggle('active', b.dataset.mode === currentMode));
+}
+// HUD 當前模式徽章
+function refreshModeBadge(){
+  if (!modeBadge) return;
+  const m = MODES[currentMode] || MODES[DEFAULT_MODE];
+  modeBadge.textContent = m.label;
+}
+// 開始畫面「怎麼玩」說明卡：依當前模式換標題與步驟（各模式互動不同，說明要對應）。
+function refreshHowto(){
+  const m = MODES[currentMode] || MODES[DEFAULT_MODE];
+  if (howtoTitleText) howtoTitleText.textContent = m.howtoTitle || ('怎麼玩 · ' + m.label);
+  if (howtoSteps && Array.isArray(m.howto)){
+    howtoSteps.innerHTML = m.howto.map(s => '<li><span class="howto-txt">' + s + '</span></li>').join('');
+  }
+}
+
+// 選模式：更新狀態 + localStorage + UI，重載該模式所需詞池（不同 filter 才實際重抓）。
+async function selectMode(key){
+  if (!MODES[key]) return;
+  currentMode = key;
+  saveMode(key);
+  refreshModePickerActive();
+  refreshModeBadge();
+  refreshHowto();
+  clearLangError();
+  startBtn.textContent = '載入中…'; startBtn.disabled = true;
+  const r = await loadPool();
+  startBtn.disabled = false;
+  if (!r.ok){
+    showLangError(currentLang.nameZh + ' 的「' + MODES[key].label + '」詞彙載入失敗，請換模式或語別再試。');
+    startBtn.textContent = '重試';
+  } else {
+    startBtn.textContent = state === 'over' ? '再玩一次' : '開始遊戲';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 // 遊戲流程
 // ─────────────────────────────────────────────────────────────
 function startGame(){
@@ -844,6 +1231,7 @@ function startGame(){
   milestoneLevel = 1;                  // 每局重新從里程碑 LEVEL1 開始
   wordsSeen = 0;                       // 重置鷹架計數：每局重新從第一關開始給提示
   cancelAnimationFrame(hintFadeRaf);
+  refreshModeBadge();
   updateHUD();
   overlay.classList.add('hidden'); overlay.hidden = true;
   state = 'playing';
@@ -897,8 +1285,10 @@ function gameOver(){
   cancelAnimationFrame(hintFadeRaf);
   if (hintRow){ hintRow.hidden = true; hintRow.style.opacity = '0'; }
   wordMeaning.hidden = true; audioBtn.hidden = true;
+  if (cueImageWrap) cueImageWrap.hidden = true;
   ovTitle.textContent = '遊戲結束';
-  ovSub.textContent = '';
+  const m = MODES[currentMode] || MODES[DEFAULT_MODE];
+  ovSub.textContent = '模式：' + m.label;
   if (howto) howto.hidden = true;            // 結算畫面不顯示玩法說明，讓位給成績
   const acc = totalTaps ? Math.round(correctTaps/totalTaps*100) : 0;
   ovStats.hidden = false;
@@ -976,6 +1366,9 @@ if (langBar){
     // 顯示開始畫面（保留當前 title/sub，不覆蓋結算畫面數字）
     ovStats.hidden = true;
     if (howto) howto.hidden = false;         // 回開始畫面就再顯示玩法說明
+    if (cueImageWrap) cueImageWrap.hidden = true;
+    refreshModePickerActive();               // 回選單同步模式高亮
+    refreshHowto();
     ovTitle.textContent = '族語射手';
     ovSub.textContent = '點字拼字 · 直式手機版';
     startBtn.textContent = '開始遊戲';
@@ -988,9 +1381,12 @@ if (langBar){
 // ─────────────────────────────────────────────────────────────
 window.addEventListener('resize', () => { resize(); checkOrientation(); });
 window.addEventListener('orientationchange', () => { setTimeout(()=>{ resize(); checkOrientation(); }, 250); });
-// visualViewport：手機瀏覽器位址列收合 / 鍵盤（本版不用鍵盤，仍處理位址列造成的高度變動）
+// visualViewport：手機瀏覽器位址列收合 / 鍵盤造成的高度變動。
+// 只走 resize()（內含 setAppHeight 的 2px 門檻 + rAF 節流），不再每次事件都清重畫布，
+// 避免捲動時網址列漸進收合造成畫面忽大忽小。scroll 也綁上：部分瀏覽器收合網址列只發 scroll。
 if (window.visualViewport){
-  window.visualViewport.addEventListener('resize', () => { resize(); });
+  window.visualViewport.addEventListener('resize', resize);
+  window.visualViewport.addEventListener('scroll', setAppHeight);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1005,6 +1401,14 @@ if (window.visualViewport){
     await refreshMobileAuthMe();
   }
   refreshAcctUI();
+  // 玩法模式：localStorage 記住上次選的；?play=<modekey> 可覆寫（測試用）。
+  const savedMode = readSavedMode();
+  if (savedMode && MODES[savedMode]) currentMode = savedMode;
+  const forcedMode = query('play');
+  if (forcedMode && MODES[forcedMode]){ currentMode = forcedMode; saveMode(forcedMode); }
+  buildModePicker();
+  refreshModeBadge();
+  refreshHowto();
   // 網址參數 ?lang=<code> 可覆寫（測試用），優先於 localStorage
   await initLang();
   const forced = query('lang');

@@ -79,3 +79,17 @@
 **驗證方法值得記一筆**：這次沒有 MCP Preview 工具可用，本機 `hunter-backend-local` 一開始也起不來（`better-sqlite3` 原生模組沒編譯，`npm rebuild` 用 `.localtools` node 的 npm-cli 仍然解析到系統裝的 node 24 去跑 node-gyp，要把 PATH 指到 `.localtools/node-v20.18.1-win-x64` 最前面才會用對 node 版本編譯）。起完後端後我自己寫了一支約 150 行的最小 CDP client（純 Node 原生 `net`/`crypto`，手刻 WebSocket handshake + frame parsing，沒有裝任何 npm 套件），透過 `chrome.exe --headless=new --remote-debugging-port` 連線、用 `Runtime.evaluate`＋`Page.captureScreenshot` 實際操作遊戲：真的登入/註冊、真的用 `window.__mobileDebug` 驅動點對字母磚打完整局、真的攔截 `window.fetch` 數呼叫次數跟檢查 payload、真的截圖看畫面。全部驗證都在自己起的 headless Chrome profile（`chrome-profile-cdp`/`chrome-profile-guest`）跑，測完用 PowerShell 依 `CommandLine like '*chrome-profile*'` 精準篩選只殺這些測試用的子行程，一個都沒碰使用者真正的瀏覽器。
 
 交棒：`submitMobileScore()` 那段「新帳號 endless 衝太快會 403」的殘留風險務必讓主管知道並拍板，不要有人為了「讓分數送得進去」自己又把 `cleared:true` 之類的補回去——那條路我試過，是錯的方向。
+
+## 2026-07-07 · 修版面抖動 + 手機補 4 玩法關卡（把桌機模式搬過來，各自獨立實作）
+
+使用者兩件事一起交辦：(A) 手機版「畫面尺寸忽大忽小」；(B) 手機要「有 4 個關卡」，明確指定是把桌機的玩法模式搬過來。桌機檔一個字都沒動，全在 `mobile.html`/`mobile.css`/`game-mobile.js` 三個手機檔落地。
+
+**任務 A 根因**：不是 `100vh` 那個經典坑（我原本的 `#app` 是 `position:fixed; inset:0` 釘 layout viewport，本身還算穩），真正的抖來自 JS：`visualViewport.resize` 監聽在手機網址列捲動漸進收合時**連續高頻觸發** `resize()`，而舊 `resize()` 每次都無條件重設 `canvas.width/height`（重設寬高會清空畫布＋觸發昂貴重配置）並改 `scale`，畫面就一幀一幀跳；加上 `#stage flex:1 1 auto` 追可視高度 → getBoundingClientRect 變 → 又觸發下一輪，形成反饋抖動。修法三層：(1) CSS 用 JS 每次實測寫入的 `--app-h`（取自 `visualViewport.height`）把 `#app` 高度**鎖死**，不再讓 flex 去追 100%/vh，`@supports (height:100dvh)` 當中層 fallback、`100vh` 保底；(2) `setAppHeight()` 加 **2px 門檻**濾掉網址列收合過程的每個亞像素中間值；(3) `applyCanvasSize()` 只在「像素尺寸真的變了」才重設 canvas，`resize()` 用 **rAF 節流**合併連續事件。`show()` 開場先同步套一次不走節流確保首幀正確。
+
+**任務 B 選的 4 關**：聽打(spell-listen)、音選詞(choice-audio)、填空(blank)、看圖選詞(choice-image)。**落選盲打(L5)**——它在觸控上跟聽打完全同構（都是點字母磚全拼、只差給不給提示），手機本來就有 hintRow 鷹架，留它冗餘；改留視覺線索更具體、更適合小螢幕的看圖選詞。這樣 4 關剛好涵蓋「點字母磚」與「點選項」兩大觸控範式各 2 關。架構上共用同一套敵人下落/射箭/扣血框架，只換底部「答題互動層」：`nextWord()` 依 `currentMode` 分支到 `setupTilesRound`（拼字磚）或 `setupChoiceRound`（4 選項 2×2 網格），完成條件全收斂到既有 `completeWord()`。填空關用 `givenMask`（不可清、不上磚的預填格）和 `filled`（進度）兩層 mask，`nextNeededIndex()` 跳過預填格判定，重複字母判定沿用「以位置為準」不比字元。選項關誘答用 Levenshtein 相似度從全池挑（跟桌機同概念、獨立重寫一份，沒呼叫桌機函式）。開始畫面加 4 顆模式選擇器（≥52px、直式、jungle 風、選中高亮、無 emoji），HUD 加當前模式徽章，「怎麼玩」說明卡依模式動態換內容。`?play=<modekey>` 可覆寫、`localStorage('hunter_mobile_mode')` 記住上次選的。
+
+**驗證**（沒有 preview 工具，用 Node 搬生產邏輯跑真 seed）：`node --check` 過。把 isPlayableWord/pickBlankPositions/buildChoiceOptions/nextNeededIndex 原樣搬進 Node，用真 trv seed（903 可玩詞、有圖 513）跑：填空 903 詞 **0 dead-end**、音選詞每題恰 4 選項 1 正解 0 重複、看圖選詞 513 詞同樣全過、聽打整詞重拼 903 全解。再用賽夏語(szy)測特殊字元：**67 個含 U+02BC 撇號 ʼ 的詞**（`adidiʼ`、`akʼak` 撇號在詞中、`balucuʼ` 含重複 u）填空全可解、`Array.from` 拆碼位正確（`akʼak -> a|k|ʼ|a|k`）。腳本測完刪掉沒留專案。
+
+沒動後端（`/api/vocabulary?hasAudio=1`/`?hasImage=1` 後端本就支援、回 `image_path`/`audio_path`）、沒動桌機、沒部署。**交給主管用 8087 preview 手機視窗實測後再部署。**
+
+留給下次的自己：4 個模式的節奏參數目前共用同一組 CFG（下降速度、危險線、扣血），選項關和拼字關的難度感其實不同（選項關比較快、拼字關比較慢），若使用者玩過覺得某關太快/太慢，可以把 CFG 拆成 per-mode 覆寫（MODES 裡加 speedMul 之類），不必動框架。另外看圖選詞無圖時我做了「退化顯示中文」的備援（cue-fallback），是為了離線/缺圖不卡關，正常線上有圖時不會走到。
