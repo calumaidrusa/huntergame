@@ -2348,6 +2348,29 @@ body.choice-active #stage { bottom: 0; }
   animation-play-state:paused;
   transform:translateY(2px);
 }
+
+/* ═══ §L1 飛靶玩法（音選詞）：4 個選項變「在中上區飄動的飛靶」，聽發音後點正確的射下 ═══
+   只在 body.fly-choice（L1 audio，見 renderChoiceRound）套用；L4 看圖選詞維持 2×2 靜態網格。
+   飛行位置由 JS rAF 迴圈以 left/top 驅動（transform 留給 hover/命中回饋，不衝突）。 */
+body.fly-choice #choicePanel {
+  width: min(940px, 95%);
+  background: none;                 /* 去木框，整片當飛行舞台（暗化靠 #choiceDim） */
+  padding: 8px 0 0;
+  row-gap: 8px;
+}
+body.fly-choice #choiceOptions {
+  display: block; position: relative;
+  width: 100%; max-width: none; height: 300px; margin: 0; padding: 0;
+}
+body.fly-choice .choice-opt {
+  position: absolute; left: 0; top: 0;
+  animation: none;                  /* 關掉原地漂浮，改由 JS 大範圍巡遊 */
+  width: auto; min-width: 104px; min-height: 50px; max-width: 44%;
+  padding: 9px 20px;
+  box-shadow: 0 0 0 2px rgba(255,215,0,0.22), 0 0 14px rgba(255,200,60,0.15);
+}
+body.fly-choice .choice-opt.correct { box-shadow: 0 0 0 3px rgba(120,230,60,0.7), 0 0 18px rgba(120,230,60,0.5); }
+body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8); }
 .choice-opt.disabled { cursor:default; }
 /* 已作答（對/錯）：停住漂浮並歸零位移，讓高亮框穩定不抖 */
 .choice-opt.correct, .choice-opt.wrong {
@@ -4110,6 +4133,9 @@ function applyLevelMode(lvl) {
   // sprite、站在木步道上往終點旗跑，水平位置＝本關進度（見 positionHunterAsProgress）。
   // 以前只有 L2(blank) 這樣，其餘關是蹲姿逼近獵物；使用者定案「進度條統一用 L2 那個」。
   document.body.classList.add('has-track');
+  // §L1 飛靶：換關時先清掉飛靶狀態（L1 音選詞會在 renderChoiceRound 重新啟動）
+  document.body.classList.remove('fly-choice');
+  stopFlyTargets();
   const hunterImg = document.getElementById('hunter');
   if (hunterImg) hunterImg.src = '/images/ui/v2-hunter-truku-run.png';
   // §特殊字元列就近作答（使用者要求，比較直覺）：L2/L3 作答在中央答案面板 → 把特殊字元列
@@ -4474,6 +4500,8 @@ function nextRound() {
   const preyEl = document.getElementById('prey');
   preyEl.textContent = G.currentPrey.emoji;
   preyEl.className = '';
+  // §L1 飛靶：清掉上次「錨到飛靶」時設的 inline 位置，讓 #prey 回到 CSS 錨點（其他關/射箭用）
+  preyEl.style.left = preyEl.style.top = preyEl.style.right = preyEl.style.bottom = '';
 
   // §填空（L2）：本題「提示字母磚」只在此打散一次（存 G.hintScramble），之後
   // render 都讀同一份，確保同題多次 render 磚順序不亂跳。非 blank 關留空陣列。
@@ -4556,6 +4584,15 @@ function renderChoiceRound(ld) {
   renderChoiceCue(cue, G.currentPrey);
   renderChoiceButtons(opts);
 
+  // §L1 飛靶玩法：音選詞(cue=audio)把 4 個選項變成中上區飄動的飛靶；看圖選詞(L4,cue=picture)維持靜態 2×2。
+  if (cue === 'audio') {
+    document.body.classList.add('fly-choice');
+    requestAnimationFrame(startFlyTargets);   // 等版面算好尺寸再定位起飛
+  } else {
+    document.body.classList.remove('fly-choice');
+    stopFlyTargets();
+  }
+
   // audio cue：自動播音（可重播）
   if (cue === 'audio') playWordAudio(G.currentPrey);
 }
@@ -4613,6 +4650,55 @@ function renderChoiceButtons(opts) {
     btn.onclick = () => selectChoice(opt, btn);
     box.appendChild(btn);
   });
+}
+
+// ═══ §L1 飛靶玩法：讓 #choiceOptions 內的 .choice-opt 在飛行區大範圍巡遊+邊界反彈（rAF）═══
+// 只在 body.fly-choice（L1 音選詞）啟動；用 left/top 定位（transform 留給 hover/命中回饋）。
+function stopFlyTargets() {
+  if (G.flyRAF) { cancelAnimationFrame(G.flyRAF); G.flyRAF = null; }
+}
+function startFlyTargets() {
+  stopFlyTargets();
+  const zone = document.getElementById('choiceOptions');
+  if (!zone) return;
+  const els = Array.from(zone.querySelectorAll('.choice-opt'));
+  if (!els.length) return;
+  const zw = zone.clientWidth, zh = zone.clientHeight;
+  const items = els.map(el => {
+    const w = el.offsetWidth || 120, h = el.offsetHeight || 52;
+    const sp = 0.6 + Math.random() * 0.9;                 // 速度 px/frame（≈36–90 px/s）
+    const ang = Math.random() * Math.PI * 2;
+    const it = { el, w, h,
+      x: Math.random() * Math.max(1, zw - w),
+      y: Math.random() * Math.max(1, zh - h),
+      vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp };
+    el.style.left = it.x + 'px'; el.style.top = it.y + 'px';
+    return it;
+  });
+  const tick = () => {
+    if (!document.body.classList.contains('fly-choice')) { G.flyRAF = null; return; }
+    const W = zone.clientWidth, H = zone.clientHeight;
+    for (const it of items) {
+      it.x += it.vx; it.y += it.vy;
+      if (it.x <= 0) { it.x = 0; it.vx = Math.abs(it.vx); }
+      else if (it.x + it.w >= W) { it.x = W - it.w; it.vx = -Math.abs(it.vx); }
+      if (it.y <= 0) { it.y = 0; it.vy = Math.abs(it.vy); }
+      else if (it.y + it.h >= H) { it.y = H - it.h; it.vy = -Math.abs(it.vy); }
+      it.el.style.left = it.x + 'px'; it.el.style.top = it.y + 'px';
+    }
+    G.flyRAF = requestAnimationFrame(tick);
+  };
+  G.flyRAF = requestAnimationFrame(tick);
+}
+// 命中飛靶：把隱形獵物錨點 #prey 移到被射中目標的中心，讓 fireArrow 的箭真的飛向它。
+function aimPreyAt(el) {
+  const stage = document.getElementById('stage'), prey = document.getElementById('prey');
+  if (!stage || !prey || !el) return;
+  const sc = getGameScale();
+  const sr = stage.getBoundingClientRect(), er = el.getBoundingClientRect();
+  prey.style.right = 'auto'; prey.style.bottom = 'auto';
+  prey.style.left = ((er.left + er.width / 2 - sr.left) / sc - prey.offsetWidth / 2) + 'px';
+  prey.style.top  = ((er.top + er.height / 2 - sr.top) / sc - prey.offsetHeight / 2) + 'px';
 }
 
 function hideChoicePanel() {
@@ -4698,6 +4784,7 @@ function selectChoice(opt, btn) {
   clearInterval(G.timer);
   G.active = false;
   G.totalAttempts++;
+  stopFlyTargets();   // §L1 飛靶：點下後立即凍結飛靶，方便看命中/正解
 
   const box = document.getElementById('choiceOptions');
   // 標示所有按鈕：正解一律標綠，玩家點錯的那顆標紅；全部鎖點
@@ -4709,6 +4796,8 @@ function selectChoice(opt, btn) {
 
   if (opt.isCorrect) {
     G.hitAttempts++;
+    // §L1 飛靶：命中時把隱形獵物錨點移到被射中的飛靶，箭矢才會真的飛向目標
+    if (document.body.classList.contains('fly-choice')) aimPreyAt(btn);
     // 命中：沿用打字關的射箭 + 命中流程
     fireArrow();
     logRound('correct');
@@ -5666,6 +5755,7 @@ function goTitle() {
   G.active = false;
   document.body.classList.remove('listen-active');
   document.body.classList.remove('has-track'); // 回標題收起底部進度步道
+  document.body.classList.remove('fly-choice'); stopFlyTargets(); // §L1 飛靶：回標題停飛靶
   document.getElementById('titleScreen').style.display = 'flex';
   applyLevelLocks();
   BgmManager.stopGame();          // 回標題：先淡出停止遊戲 BGM
