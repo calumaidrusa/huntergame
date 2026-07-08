@@ -2603,7 +2603,8 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
 #matchScreen {
   display:none; position:absolute; inset:0; z-index:410;
   flex-direction:column; align-items:center;
-  background:linear-gradient(180deg,#12301a,#0b2010 70%);
+  /* 沿用全站叢林背景 v2-background-game.jpg + 暗綠 scrim（比照其他面板），不再擋成純綠 */
+  background:linear-gradient(rgba(5,20,3,0.5), rgba(5,20,3,0.78)), url('/images/ui/v2-background-game.jpg') center/cover no-repeat;
   color:#F5EFDD; font-family:'Noto Sans TC',sans-serif;
   padding:14px 16px; box-sizing:border-box; overflow:hidden;
 }
@@ -2625,15 +2626,16 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
   width:100%; max-width:660px; flex:1 1 auto; align-content:center; align-items:center;
 }
 .match-tile {
-  min-height:54px; border-radius:12px; cursor:pointer; border:2px solid;
+  min-height:56px; border-radius:14px; cursor:pointer; border:3px solid #A9741F; position:relative;
   font-family:'Noto Sans TC',sans-serif; font-weight:700; font-size:16px; line-height:1.15;
   display:flex; align-items:center; justify-content:center; text-align:center; padding:6px 8px;
   word-break:break-word; overflow-wrap:anywhere;
-  transition:transform .12s, box-shadow .12s, opacity .3s;
-  box-shadow:0 3px 0 rgba(0,0,0,0.35);
+  transition:transform .12s, box-shadow .12s, filter .12s, opacity .3s;
+  /* 木塊立體：實心棕底邊 + 內金線 + 落影，比照 .lc-btn */
+  box-shadow:0 5px 0 #5A3000, 0 0 0 2px rgba(255,215,0,0.18) inset, 0 7px 15px rgba(0,0,0,0.42);
 }
-.match-tile.mt-word { background:linear-gradient(180deg,#FFD86A,#E0A02A); border-color:#8B5500; color:#3A2410; }
-.match-tile.mt-zh   { background:linear-gradient(180deg,#7CC24E,#3E7E28); border-color:#255018; color:#F3FBE9; }
+.match-tile.mt-word { background:linear-gradient(160deg,#FFDE7A,#D99A2B); border-color:#A9741F; color:#3A2410; text-shadow:0 1px 0 rgba(255,240,180,0.55); }
+.match-tile.mt-zh   { background:linear-gradient(160deg,#6FB84A,#2E6E22); border-color:#255018; color:#F3FBE9; text-shadow:0 1px 1px rgba(0,0,0,0.45); }
 .match-tile:hover:not(.matched) { transform:translateY(-2px); filter:brightness(1.06); }
 .match-tile.sel { box-shadow:0 0 0 3px #FFF2B0, 0 0 14px rgba(255,220,80,0.7); transform:translateY(-2px); }
 .match-tile.bad { box-shadow:0 0 0 3px #FF5555; animation:mgShake .3s; }
