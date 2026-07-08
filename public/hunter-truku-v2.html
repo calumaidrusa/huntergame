@@ -4918,8 +4918,10 @@ async function startMatchGame() {
   let pool = [];
   try { pool = await loadPool(null, false); } catch (e) {}      // 全池（filter=null→all）
   if (!pool || pool.length < MATCH_PAIRS) pool = FALLBACK_PREY_POOL;
-  MG.pool = pool.filter(p => displayWordOf(p) && p.zh);
-  if (MG.pool.length < MATCH_PAIRS) MG.pool = FALLBACK_PREY_POOL.filter(p => displayWordOf(p) && p.zh);
+  // 排除「族語或中文含 +」的詞（如賽夏語「tam+人名」文法占位詞，不適合配對、會出現怪「+」磚）
+  const _mgOK = p => { const w = displayWordOf(p), z = p.zh; return w && z && !String(w).includes('+') && !String(z).includes('+'); };
+  MG.pool = pool.filter(_mgOK);
+  if (MG.pool.length < MATCH_PAIRS) MG.pool = FALLBACK_PREY_POOL.filter(_mgOK);
   MG.score = 0; MG.cleared = 0; MG.sel = null; MG.lock = false; MG.active = true;
   MG.timeLeft = MATCH_TIME;
   updateMatchHud();
