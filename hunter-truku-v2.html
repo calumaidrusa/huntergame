@@ -4688,6 +4688,10 @@ function renderWordCard(prey) {
 
 function nextRound() {
   const ld = LEVELS[G.level];
+  // 難度放寬（2026-07-08）：本關答對達「題數一半」即過關晉級，不必撐完全部題數。
+  // hitAttempts 每關 initLevel 重置、為本關累計答對數；達門檻即 stageClear。
+  const passNeed = Math.max(1, Math.ceil(ld.totalRounds / 2));
+  if (G.hitAttempts >= passNeed) { stageClear(); return; }
   // 佇列已展開成「重複出現」的長度（§1.5-A）。跑滿 totalRounds 或佇列耗盡就過關。
   if (G.round >= ld.totalRounds || G.round >= G.preyQueue.length) { stageClear(); return; }
 
