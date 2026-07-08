@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<!-- viewport-fit=cover 讓內容延伸到瀏海/圓角區，配合 env(safe-area-inset-*) 使用 -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0A2A08">
+<title>族語射手 TRUKU WORD ARCHER · 手機版</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/mobile.css">
+</head>
+<body>
+
+<!-- 裝置分流守門：桌機 / 寬螢幕 / 非觸控 → 顯示「請用手機開啟」提示（不自動轉桌機，避免動到部署入口）。
+     可用 ?mode=mobile 覆寫強制進手機版；?mode=desktop 亦保留給日後 router 用。 -->
+<div id="deviceGate" hidden>
+  <div class="gate-card">
+    <div class="gate-title">TRUKU WORD ARCHER</div>
+    <p class="gate-msg">這是<b>手機直式專用版</b>（點字拼字）。<br>請用手機開啟，或旋轉為直式。</p>
+    <p class="gate-sub">桌機版請開 <code>hunter-truku-v2.html</code></p>
+    <button id="gateForce" class="btn-wood">還是要在這裡試玩 →</button>
+  </div>
+</div>
+
+<!-- 橫向提示：手機轉橫時蓋上，請轉回直式 -->
+<div id="rotateHint" hidden>
+  <div class="rotate-inner">
+    <div class="rotate-icon vico vico-phone"></div>
+    <p>請把手機轉成<b>直式</b>來玩</p>
+  </div>
+</div>
+
+<!-- ============ 主畫面 ============ -->
+<div id="app" hidden>
+
+  <!-- 頂部固定列：HP / SCORE / COMBO -->
+  <header id="hud">
+    <div class="hud-hp">
+      <span class="hud-label">HP</span>
+      <div class="hp-track"><div id="hpFill" class="hp-fill"></div></div>
+      <span id="hpNum" class="hp-num">5</span>
+    </div>
+    <div class="hud-right">
+      <div class="hud-level"><span class="hud-label">LEVEL</span><span id="levelNum">1</span></div>
+      <div class="hud-score"><span class="hud-label">SCORE</span><span id="scoreNum">0</span></div>
+      <div class="hud-combo"><span class="hud-label">COMBO</span><span id="comboNum">0</span></div>
+    </div>
+  </header>
+
+  <!-- 里程碑跨關輕量提示條：短暫顯示「LEVEL UP」不中斷 endless 節奏，不是整頁 modal -->
+  <div id="levelUpToast" class="level-up-toast" hidden>LEVEL UP!</div>
+
+  <!-- 目前語別條：顯示遊玩中的語別（中文＋族語），像桌機 HUD 副標。點擊回開始畫面換語別。
+       右側顯示當前玩法模式徽章（聽打/音選詞/填空/看圖選詞）。 -->
+  <button id="langBar" class="lang-bar" type="button" aria-label="目前語別，點擊可更換">
+    <span id="langBarName" class="lang-bar-name">太魯閣語</span>
+    <span id="langBarNative" class="lang-bar-native">Truku</span>
+    <span id="modeBadge" class="mode-badge">聽打</span>
+    <span class="lang-bar-caret vico vico-caret"></span>
+  </button>
+
+  <!-- 帳號狀態條：訪客顯示「訪客模式」+登入入口；已登入顯示暱稱+排行榜入口。放語別條下方，不擋遊戲區。 -->
+  <div id="acctBar" class="acct-bar">
+    <span id="acctBarLabel" class="acct-bar-label">訪客模式</span>
+    <button id="acctBarLoginBtn" class="acct-bar-btn" type="button">登入</button>
+    <button id="acctBarBoardBtn" class="acct-bar-btn" type="button">排行榜</button>
+  </div>
+
+  <!-- 中段遊戲區：canvas 自適應，敵人由上而下 -->
+  <main id="stage">
+    <canvas id="game"></canvas>
+    <!-- 詞義提示卡（中文/類別），疊在 canvas 上方中央（拼字關/填空關顯示；選詞關隱藏） -->
+    <div id="wordMeaning" class="word-meaning" hidden>
+      <span id="wmZh" class="wm-zh"></span>
+      <span id="wmCat" class="wm-cat"></span>
+    </div>
+    <!-- 圖片線索卡（看圖選詞關）：詞彙插畫，疊在遊戲區上方中央。無圖時內填中文（cue-fallback）。 -->
+    <div id="cueImageWrap" class="cue-image-wrap" hidden>
+      <img id="cueImage" class="cue-image" alt="詞彙圖片" hidden>
+    </div>
+    <!-- 音檔播放鈕（放音模式且有音檔的詞才顯示） -->
+    <button id="audioBtn" class="audio-btn" hidden aria-label="播放發音"><span class="vico vico-speaker"></span></button>
+  </main>
+
+  <!-- 底部操作區：拼字進度 + 字母磚 + clear -->
+  <footer id="controls">
+    <!-- 第一關半透明拼字提示（初學鷹架）：顯示正確族語拼字、隨時間淡出，只在開局前 N 題出現。
+         純視覺，不參與判定；aria-hidden 避免報讀干擾正常拼字流程。 -->
+    <div id="hintRow" class="hint-row" aria-hidden="true" hidden></div>
+    <!-- 拼字關/填空關：拼字進度格 + 字母磚 + 清除鈕 -->
+    <div id="progressRow" class="progress-row" aria-label="拼字進度"></div>
+    <div id="tileRow" class="tile-row" aria-label="字母磚"></div>
+    <div class="ctrl-btns">
+      <button id="clearBtn" class="btn-wood ctrl-clear">清除</button>
+    </div>
+    <!-- 選詞關（音選詞/看圖選詞）：4 個族語詞選項，2×2 網格，每顆 ≥44px。JS 動態填入。 -->
+    <div id="choiceRow" class="choice-row" aria-label="族語詞選項" hidden></div>
+  </footer>
+
+  <!-- 開始 / 結束 覆蓋層 -->
+  <div id="overlay" class="overlay">
+    <div class="overlay-card">
+      <!-- 統一 logo：與桌機首頁/關卡頁同一張單行「族語射手」木牌（login-title-plaque.png，
+           1200×428≈2.8:1，透明背景）。共用素材、引用同路徑不複製。圖載入失敗時，下方文字標題
+           仍在，是為 fallback；載入成功時由 CSS 讓文字標題退為副標階層（見 mobile.css）。 -->
+      <img id="ovLogo" class="ov-logo" src="/images/ui/login-title-plaque.png?v=2" alt="族語射手 TRUKU WORD ARCHER" onerror="this.hidden=true">
+      <div id="ovTitle" class="ov-title">族語射手</div>
+      <div id="ovSub" class="ov-sub">點字拼字 · 直式手機版</div>
+      <div id="ovStats" class="ov-stats" hidden></div>
+
+      <!-- 玩法模式選擇器：4 顆（聽打/音選詞/填空/看圖選詞），對應桌機挑出最適合觸控的 4 玩法。
+           每顆 ≥44px、直式堆疊、jungle 風、無 emoji。選中高亮。記到 localStorage('hunter_mobile_mode')。 -->
+      <div class="mode-picker-block">
+        <div class="mode-picker-label">選擇玩法（4 關）</div>
+        <div id="modePicker" class="mode-picker" role="group" aria-label="選擇玩法模式"></div>
+      </div>
+
+      <!-- 語別選擇：fetch(/api/languages) 動態填 42 語別（name_zh + name_native）。
+           記到 localStorage('hunter_lang')（與桌機同 key，跨端一致）。切換後重載詞、重開局。 -->
+      <div class="lang-picker">
+        <label for="langSelect" class="lang-picker-label">選擇語別</label>
+        <div class="lang-select-wrap">
+          <select id="langSelect" class="lang-select" aria-label="選擇族語語別">
+            <option value="trv">太魯閣語 (Truku)</option>
+          </select>
+          <span class="lang-select-caret vico vico-caret" aria-hidden="true"></span>
+        </div>
+        <!-- 非 trv 語別載入失敗時的提示（不誤用太魯閣 fallback 詞） -->
+        <div id="langError" class="lang-error" hidden></div>
+      </div>
+
+      <!-- 玩法說明卡：開局前顯示「怎麼玩」，依所選玩法模式動態換內容（refreshHowto()）。
+           選好玩法/語別 → 看說明 → 按開始進遊戲。結算畫面時由 JS 隱藏，避免重複佔版面。 -->
+      <div id="howto" class="howto">
+        <div class="howto-title">
+          <span class="howto-icon vico vico-target"></span><span id="howtoTitleText">怎麼玩 · 點字拼字</span>
+        </div>
+        <ol id="howtoSteps" class="howto-steps">
+          <li><span class="howto-txt">聽發音、看上方中文提示，知道要拼哪個詞。</span></li>
+          <li><span class="howto-txt">點下方的<b>字母磚</b>，照正確順序拼出族語單字。</span></li>
+          <li><span class="howto-txt">拼完整個字，獵人自動<b>往上射箭</b>擊中敵人得分。</span></li>
+          <li><span class="howto-txt">別讓敵人越過底部的<b>危險線</b>，越線會扣血。</span></li>
+        </ol>
+      </div>
+
+      <!-- 帳號狀態列：訪客顯示「登入」邀請（非強制），已登入顯示暱稱。不擋在開始鈕之前，
+           訪客路徑維持「選語別→看說明→開始」最短路徑，登入是加值不是門檻。 -->
+      <div id="ovAcctRow" class="ov-acct-row">
+        <span id="ovAcctLabel" class="ov-acct-label">訪客模式（成績不記錄）</span>
+        <button id="ovLoginLink" class="ov-acct-link" type="button">登入 / 註冊</button>
+      </div>
+
+      <button id="startBtn" class="btn-gold">開始遊戲</button>
+      <button id="ovBoardBtn" class="btn-wood ov-board-btn" type="button">查看排行榜</button>
+    </div>
+  </div>
+
+  <!-- ============ 登入 / 註冊 覆蓋層（輕量，非強制；訪客可完全略過） ============ -->
+  <div id="authOverlay" class="overlay" hidden>
+    <div class="overlay-card auth-card-m">
+      <div class="ov-title" style="font-size:22px;margin-bottom:4px;">登入 / 註冊</div>
+      <div class="ov-sub" style="margin-bottom:14px;">登入後成績會記錄到排行榜</div>
+
+      <div class="auth-tabs-m">
+        <button id="authTabLoginM" class="auth-tab-m active" type="button">登入</button>
+        <button id="authTabRegisterM" class="auth-tab-m" type="button">註冊</button>
+      </div>
+
+      <div class="auth-field-row">
+        <input id="authUserM" class="auth-input-m" type="text" placeholder="帳號（至少 3 字元）" autocomplete="username">
+      </div>
+      <div class="auth-field-row">
+        <input id="authPassM" class="auth-input-m" type="password" placeholder="密碼（至少 4 字元）" autocomplete="current-password">
+      </div>
+      <div id="authDisplayRow" class="auth-field-row" hidden>
+        <input id="authDisplayM" class="auth-input-m" type="text" placeholder="顯示名稱（排行榜上顯示）">
+      </div>
+
+      <div id="authErrorM" class="lang-error" hidden></div>
+
+      <button id="authSubmitM" class="btn-gold" style="width:100%;margin-top:6px;">登入</button>
+      <button id="authCancelM" class="btn-wood ov-board-btn" type="button">先不登入，去玩遊戲</button>
+    </div>
+  </div>
+
+  <!-- ============ 排行榜覆蓋層（手機平台 platform=mobile，簡潔清單，不照抄桌機羊皮紙） ============ -->
+  <div id="boardOverlay" class="overlay" hidden>
+    <div class="overlay-card">
+      <div class="ov-title" style="font-size:22px;margin-bottom:12px;">手機版排行榜</div>
+      <div id="boardList" class="board-list">
+        <div class="board-empty">載入中…</div>
+      </div>
+      <button id="boardCloseBtn" class="btn-gold" style="width:100%;margin-top:14px;">關閉</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="/game-mobile.js"></script>
+</body>
+</html>

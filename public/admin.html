@@ -52,6 +52,7 @@ header a:hover { color:#ffd700; }
 .lv1 { background:rgba(68,255,68,0.15); color:#44ff44; }
 .lv2 { background:rgba(255,170,0,0.15); color:#ffaa00; }
 .lv3 { background:rgba(255,68,68,0.15); color:#ff4444; }
+.lv4 { background:rgba(180,80,255,0.15); color:#b450ff; }
 
 /* Upload zones */
 .upload-row { display:flex; gap:10px; margin-top:10px; }
@@ -143,13 +144,59 @@ tr:hover td { background:rgba(255,215,0,0.03); }
 .rank-1 td { color:#ffd700; }
 .rank-2 td { color:#c0c0c0; }
 .rank-3 td { color:#cd7f32; }
+
+/* ── LOGIN SCREEN ── */
+#loginScreen {
+  position:fixed; inset:0; z-index:1000;
+  background:#0d1117;
+  display:flex; align-items:center; justify-content:center;
+}
+#loginScreen.hidden { display:none; }
+.login-box {
+  background:#161b22; border:1px solid #30363d; border-radius:14px;
+  padding:32px 36px; width:320px;
+  display:flex; flex-direction:column; gap:12px; align-items:center;
+  box-shadow:0 0 40px rgba(255,215,0,0.08);
+}
+.login-title { font-family:'Press Start 2P',monospace; font-size:14px; color:#ffd700; margin-bottom:8px; }
+.login-field {
+  width:100%; background:#0d1117; border:1px solid #30363d;
+  border-radius:6px; padding:10px 12px; color:#e6edf3;
+  font-family:'Noto Sans TC',sans-serif; font-size:13px; outline:none;
+}
+.login-field:focus { border-color:#ffd700; }
+.login-btn {
+  width:100%; font-family:'Press Start 2P',monospace; font-size:10px;
+  background:linear-gradient(180deg,#ffd700,#b8860b);
+  border:2px solid #8b4513; border-radius:6px;
+  padding:11px; color:#3a1a00; cursor:pointer; margin-top:4px;
+}
+.login-btn:hover { opacity:0.9; }
+.login-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.login-error { font-size:11px; color:#ff6666; min-height:16px; text-align:center; }
+#app.hidden { display:none; }
+.logout-link { cursor:pointer; }
 </style>
 </head>
 <body>
 
+<!-- 登入畫面：詞彙管理後台不對外開放，需要管理員帳號密碼才能進入 -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-title">🔒 管理員登入</div>
+    <input type="text" id="loginUsername" class="login-field" placeholder="帳號" autocomplete="username">
+    <input type="password" id="loginPassword" class="login-field" placeholder="密碼" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn" onclick="doAdminLogin()">登入</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+
 <header>
   <h1>🏹 詞彙管理後台</h1>
   <a href="/">← 回遊戲</a>
+  <a class="logout-link" onclick="doAdminLogout()">🚪 登出</a>
 </header>
 
 <div class="container">
@@ -188,6 +235,7 @@ tr:hover td { background:rgba(255,215,0,0.03); }
             <option value="1">Level 1 — 入山 (自然)</option>
             <option value="2">Level 2 — 追蹤 (動物)</option>
             <option value="3">Level 3 — 獵場挑戰</option>
+            <option value="4">Level 4 — 地獄級</option>
           </select>
         </div>
         <div class="form-group">
@@ -210,6 +258,7 @@ tr:hover td { background:rgba(255,215,0,0.03); }
       <button class="filter-btn" onclick="filterVocab(1,this)">🌿 LV1</button>
       <button class="filter-btn" onclick="filterVocab(2,this)">🌳 LV2</button>
       <button class="filter-btn" onclick="filterVocab(3,this)">🏔️ LV3</button>
+      <button class="filter-btn" onclick="filterVocab(4,this)">⛰️ LV4</button>
     </div>
 
     <!-- 詞彙卡片 -->
@@ -226,27 +275,89 @@ tr:hover td { background:rgba(255,215,0,0.03); }
       <div class="stat-item"><div class="stat-val" id="s-best">—</div><div class="stat-lbl">最高分</div></div>
     </div>
     <div class="lb-section">
-      <div class="lb-filter">
-        <button class="filter-btn active" onclick="loadLb('all',this)">全部</button>
-        <button class="filter-btn" onclick="loadLb(1,this)">🌿 LV1</button>
-        <button class="filter-btn" onclick="loadLb(2,this)">🌳 LV2</button>
-        <button class="filter-btn" onclick="loadLb(3,this)">🏔️ LV3</button>
-      </div>
       <table>
         <thead><tr>
-          <th>#</th><th>獵人</th><th>關卡</th><th>分數</th><th>命中</th><th>準確率</th><th>日期</th>
+          <th>#</th><th>獵人</th><th>累計總分</th><th>已完成關卡數</th>
         </tr></thead>
-        <tbody id="lb-tbody"><tr><td colspan="7" style="color:#555;text-align:center;padding:20px">載入中...</td></tr></tbody>
+        <tbody id="lb-tbody"><tr><td colspan="4" style="color:#555;text-align:center;padding:20px">載入中...</td></tr></tbody>
       </table>
     </div>
   </div>
 
 </div>
+</div><!-- /#app -->
 
 <script>
 const API = '';
+const ADMIN_TOKEN_KEY = 'hunter_admin_token';
+let _adminToken = null;
 let _allVocab = [];
 let _filterLevel = 0;
+
+// ── 管理員登入 ─────────────────────────────────────
+function authHeader() {
+  return _adminToken ? { 'Authorization': 'Bearer ' + _adminToken } : {};
+}
+
+async function checkAdminAuth() {
+  const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+  if (!token) { showLoginScreen(); return; }
+  _adminToken = token;
+  // 用一個需要 admin 權限的寫入端點探測 token 是否還有效比較麻煩（會產生副作用），
+  // 簡化作法：直接嘗試讀取詞彙清單（公開端點，一定會成功）+ 之後任何寫入操作若回 401/403
+  // 就導回登入畫面（見 apiFetch() 的統一處理）。
+  showApp();
+}
+
+function showLoginScreen() {
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+  setTimeout(() => document.getElementById('loginUsername').focus(), 50);
+}
+
+function showApp() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  fetchVocab();
+}
+
+async function doAdminLogin() {
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  errEl.textContent = '';
+  if (!username || !password) { errEl.textContent = '請輸入帳號與密碼'; return; }
+  btn.disabled = true; btn.textContent = '登入中...';
+  try {
+    const res = await fetch(`${API}/api/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error || '登入失敗'; return; }
+    _adminToken = data.token;
+    localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+    showApp();
+  } catch (e) {
+    errEl.textContent = '無法連線到伺服器';
+  } finally {
+    btn.disabled = false; btn.textContent = '登入';
+  }
+}
+
+function doAdminLogout() {
+  _adminToken = null;
+  localStorage.removeItem(ADMIN_TOKEN_KEY);
+  document.getElementById('loginUsername').value = '';
+  document.getElementById('loginPassword').value = '';
+  showLoginScreen();
+}
+
+document.getElementById('loginPassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doAdminLogin();
+});
 
 // ── Tab 切換 ──────────────────────────────────────
 function switchTab(name, btn) {
@@ -254,7 +365,7 @@ function switchTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
-  if (name === 'leaderboard') { loadStats(); loadLb('all', document.querySelector('.lb-filter .filter-btn')); }
+  if (name === 'leaderboard') { loadStats(); loadLb(); }
 }
 
 // ── 詞彙 ─────────────────────────────────────────
@@ -273,8 +384,8 @@ function filterVocab(level, btn) {
 
 function renderVocabGrid() {
   const rows = _filterLevel ? _allVocab.filter(r => r.level == _filterLevel) : _allVocab;
-  const lvlCls = { 1:'lv1', 2:'lv2', 3:'lv3' };
-  const lvlLabel = { 1:'LV1 入山', 2:'LV2 追蹤', 3:'LV3 獵場' };
+  const lvlCls = { 1:'lv1', 2:'lv2', 3:'lv3', 4:'lv4' };
+  const lvlLabel = { 1:'LV1 入山', 2:'LV2 追蹤', 3:'LV3 獵場', 4:'LV4 地獄級' };
   if (!rows.length) {
     document.getElementById('vocab-grid').innerHTML = '<div style="color:#555;font-size:12px;">沒有詞彙</div>';
     return;
@@ -326,7 +437,9 @@ async function uploadFile(type, word, id, input) {
   const fd = new FormData();
   fd.append(type, file);
   try {
-    const res = await fetch(`${API}/api/vocabulary/${word}/${type}`, { method:'POST', body:fd }).then(r=>r.json());
+    const rawRes = await fetch(`${API}/api/vocabulary/${word}/${type}`, { method:'POST', headers: authHeader(), body:fd });
+    if (rawRes.status === 401 || rawRes.status === 403) { doAdminLogout(); return; }
+    const res = await rawRes.json();
     if (res.success) {
       st.textContent = '✓ 上傳成功'; st.className = 'status-msg status-ok';
       // 更新 UI
@@ -353,7 +466,8 @@ async function uploadFile(type, word, id, input) {
 async function deleteFile(type, word, id) {
   if (!confirm(`確定刪除 ${word} 的${type==='image'?'圖片':'音檔'}？`)) return;
   const st = document.getElementById('st-' + id);
-  await fetch(`${API}/api/vocabulary/${word}/${type}`, { method:'DELETE' });
+  const rawRes = await fetch(`${API}/api/vocabulary/${word}/${type}`, { method:'DELETE', headers: authHeader() });
+  if (rawRes.status === 401 || rawRes.status === 403) { doAdminLogout(); return; }
   st.textContent = '✓ 已刪除'; st.className = 'status-msg status-ok';
   fetchVocab();
 }
@@ -369,7 +483,9 @@ async function addVocab() {
     emoji: document.getElementById('f-emoji').value || '🎯',
     category: document.getElementById('f-cat').value,
   };
-  const res = await fetch(`${API}/api/vocabulary`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }).then(r=>r.json());
+  const rawRes = await fetch(`${API}/api/vocabulary`, { method:'POST', headers:{'Content-Type':'application/json', ...authHeader()}, body:JSON.stringify(body) });
+  if (rawRes.status === 401 || rawRes.status === 403) { doAdminLogout(); return; }
+  const res = await rawRes.json();
   const st = document.getElementById('add-status');
   if (res.success) {
     st.textContent = '✓ 新增成功 (ID: ' + res.id + ')'; st.className = 'status-msg status-ok';
@@ -382,7 +498,8 @@ async function addVocab() {
 
 async function delVocab(id, word) {
   if (!confirm(`確定刪除「${word}」？`)) return;
-  await fetch(`${API}/api/vocabulary/${id}`, { method:'DELETE' });
+  const rawRes = await fetch(`${API}/api/vocabulary/${id}`, { method:'DELETE', headers: authHeader() });
+  if (rawRes.status === 401 || rawRes.status === 403) { doAdminLogout(); return; }
   fetchVocab();
 }
 
@@ -394,32 +511,26 @@ async function loadStats() {
   document.getElementById('s-best').textContent = d.best_score ? d.best_score.score.toLocaleString() : '—';
 }
 
-async function loadLb(level, btn) {
-  document.querySelectorAll('.lb-filter .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const url = level === 'all' ? `/api/leaderboard?limit=50` : `/api/leaderboard?level=${level}&limit=50`;
-  const d = await fetch(API + url).then(r=>r.json());
+// 排行榜改為單一榜單（累計總分數，不再分關卡），對應後端 /api/leaderboard 的新格式
+async function loadLb() {
+  const d = await fetch(`${API}/api/leaderboard?limit=50`).then(r=>r.json());
   const medals = ['🥇','🥈','🥉'];
-  const lvlName = {1:'LV1 入山',2:'LV2 追蹤',3:'LV3 獵場'};
   const tbody = document.getElementById('lb-tbody');
   if (!d.data.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="color:#555;text-align:center;padding:20px">還沒有紀錄</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="color:#555;text-align:center;padding:20px">還沒有紀錄</td></tr>';
     return;
   }
   tbody.innerHTML = d.data.map((r, i) => `
     <tr class="${i<3?'rank-'+(i+1):''}">
       <td>${medals[i]||i+1}</td>
       <td>${r.player}</td>
-      <td>${lvlName[r.level]||r.level}</td>
       <td>${r.score.toLocaleString()}</td>
-      <td>${r.kills}</td>
-      <td>${r.accuracy}%</td>
-      <td style="color:#555;font-size:10px">${r.created_at?.slice(0,10)||''}</td>
+      <td>${r.levels_played}</td>
     </tr>`).join('');
 }
 
-// 初始載入
-fetchVocab();
+// 初始載入：先檢查是否已登入管理員帳號，登入成功才載入詞彙（fetchVocab 由 showApp() 觸發）
+checkAdminAuth();
 </script>
 </body>
 </html>

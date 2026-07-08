@@ -1,0 +1,76 @@
+# 特殊字元 / 清理報表 — 噶瑪蘭語 (dialectId=34, lang_code=ckv)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1070,
+  "skipped_placeholder": 24,
+  "levels": {
+    "1": 256,
+    "2": 236,
+    "3": 282,
+    "4": 296
+  },
+  "cleaned": 0,
+  "with_image": 594,
+  "with_audio": 1070,
+  "apostrophe_words": 11,
+  "slash_words": 28,
+  "caret_words": 0,
+  "special_chars": {
+    "/": 28,
+    "ʼ": 11,
+    ".": 5,
+    "-": 4,
+    "…": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 01-39	一次	'kelisa/siqalussiq'	正式拼寫特殊字:/
+[FORMAL] 02-16	那個	'ʼnay'	正式拼寫特殊字:ʼ
+[FORMAL] 04-13	孫子/孫女	'baqi/ bai'	正式拼寫特殊字:/
+[FORMAL] 04-25	(伯父；叔叔；舅舅)通稱	'tama/ baqi'	正式拼寫特殊字:/
+[FORMAL] 04-26	(伯母；嬸嬸；舅母)通稱	'tina/bai'	正式拼寫特殊字:/
+[FORMAL] 05-06	老人家	'baqian/baRqian/baibedan'	正式拼寫特殊字:/
+[FORMAL] 05-24	小姐	'kaying/lubatang'	正式拼寫特殊字:/
+[FORMAL] 06-15	肉	'ʼsi'	正式拼寫特殊字:ʼ
+[FORMAL] 06-33	胃	'puqenanan/puqenan'	正式拼寫特殊字:/
+[FORMAL] 06-34	肝臟	'penazengitan/pazengitan'	正式拼寫特殊字:/
+[FORMAL] 07-08	雞	'telaquq/taquq'	正式拼寫特殊字:/
+[FORMAL] 07-31	田鼠	'melabaw/mulabaw'	正式拼寫特殊字:/
+[FORMAL] 07-43	大象	'zuʼ'	正式拼寫特殊字:ʼ
+[FORMAL] 07-51	蝸牛	'luliʼ'	正式拼寫特殊字:ʼ
+[FORMAL] 08-16	(植物的)果實	'ʼsi'	正式拼寫特殊字:ʼ
+[FORMAL] 08-27	蕃茄	'mutideng/kemutideng'	正式拼寫特殊字:/
+[FORMAL] 08-52	柚子	'tebaqan/tubaqan'	正式拼寫特殊字:/
+[FORMAL] 08-54	辣椒(通稱)	'sidiʼ'	正式拼寫特殊字:ʼ
+[FORMAL] 09-21	船隻	'bawaʼ'	正式拼寫特殊字:ʼ
+[FORMAL] 09-27	電燈	'dingki/sinut'	正式拼寫特殊字:/
+[FORMAL] 09-38	杯子	'awa/kupu'	正式拼寫特殊字:/
+[FORMAL] 09-63	水管	'sisil/Rusu'	正式拼寫特殊字:/
+[FORMAL] 10-06	泥土	'melanay/manay'	正式拼寫特殊字:/
+[FORMAL] 10-11	洞穴	'dihib/deqi'	正式拼寫特殊字:/
+[FORMAL] 10-14	岩洞	'dihib/deqi'	正式拼寫特殊字:/
+[FORMAL] 10-18	山洞	'dihib/deqi'	正式拼寫特殊字:/
+[FORMAL] 11-13	煙	'qiReb/qayReb'	正式拼寫特殊字:/
+[FORMAL] 13-02	晚上	'qaRabi/tuRabi'	正式拼寫特殊字:/
+[FORMAL] 13-11	傍晚	'Rabi/Rabian'	正式拼寫特殊字:/
+[FORMAL] 13-13	半夜	'tuRantuRabi/ tubantuRabi'	正式拼寫特殊字:/
+[FORMAL] 13-27	星期日	'lipayan/melipay'	正式拼寫特殊字:/
+[FORMAL] 14-02	在某處	'tanian semani/taizan'	正式拼寫特殊字:/
+[MEMO?] 14-15	(從某處)到某處	'maqezi .... matiw'	疑似備註字元:.
+[FORMAL] 20-05	船	'bawaʼ'	正式拼寫特殊字:ʼ
+[FORMAL] 21-01	飯	'ʼmay'	正式拼寫特殊字:ʼ
+[FORMAL] 21-07	鹽	'zemiyan/miyan'	正式拼寫特殊字:/
+[FORMAL] 21-20	豬肉	'ʼsi na babuy'	正式拼寫特殊字:ʼ
+[FORMAL] 24-06	是的	'en/an'	正式拼寫特殊字:/
+[MEMO?] 25-32	走(向某個方向)	'pasa….'	疑似備註字元:.…
+[FORMAL] 25-39	攜帶(如帶傘)	'si-'	正式拼寫特殊字:-
+[FORMAL] 25-40	穿(如穿衣服)	'si-'	正式拼寫特殊字:-
+[FORMAL] 25-41	戴(如戴帽子)	'si-'	正式拼寫特殊字:-
+[FORMAL] 26-64	採收	'qay-'	正式拼寫特殊字:-
+[FORMAL] 32-32	舊	'ʼzan'	正式拼寫特殊字:ʼ
+[MEMO?] 33-01	應該	'qa...an'	疑似備註字元:.
+[MEMO?] 36-11	剛剛	'Ru...'	疑似備註字元:.
+[FORMAL] 36-34	屬格標記(各族用語)	'na/ ni'	正式拼寫特殊字:/
+[MEMO?] 36-35	在(這裡)	'ta ...an'	疑似備註字元:.

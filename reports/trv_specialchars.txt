@@ -1,0 +1,47 @@
+# 特殊字元 / 清理報表 — 太魯閣語 (dialectId=33, lang_code=trv)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1092,
+  "skipped_placeholder": 2,
+  "levels": {
+    "1": 256,
+    "2": 237,
+    "3": 297,
+    "4": 302
+  },
+  "cleaned": 0,
+  "with_image": 600,
+  "with_audio": 1092,
+  "apostrophe_words": 0,
+  "slash_words": 8,
+  "caret_words": 0,
+  "special_chars": {
+    "/": 8,
+    ")": 6,
+    "(": 6,
+    "-": 2,
+    "!": 1,
+    "?": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 07-25	蟑螂	'supug / sabal'	正式拼寫特殊字:/
+[FORMAL] 07-26	蜻蜓	'kjiyu / ssaya'	正式拼寫特殊字:/
+[FORMAL] 09-56	梳子	'kalu/ciyux'	正式拼寫特殊字:/
+[FORMAL] 09-66	鐵釘	'smuk/teeci'	正式拼寫特殊字:/
+[MEMO?] 13-26	(幾)點鐘	'(piya)tuki'	疑似備註字元:()
+[MEMO?] 15-13	催熟(果實)	'pshada(pnegalang)'	疑似備註字元:()
+[MEMO?] 25-24	贈送(禮物)	'mgay(pnspadaw)'	疑似備註字元:()
+[MEMO?] 30-34	炒(如炒花生)	'rmuhug (rmuhug trabus)'	疑似備註字元:()
+[MEMO?] 30-43	剪(頭髮)	'qmarik(sneunux)'	疑似備註字元:()
+[MEMO?] 30-61	喝(水)	'mimah(qsiya)'	疑似備註字元:()
+[FORMAL] 31-04	遺失	'meydang/mridang'	正式拼寫特殊字:/
+[FORMAL] 31-10	跛腳	'mtki/empika'	正式拼寫特殊字:/
+[FORMAL] 33-04	可能/或許	'ida bi / aji uri o'	正式拼寫特殊字:/
+[MEMO?] 34-34	好的	'iq wa!'	疑似備註字元:!
+[FORMAL] 34-38	沒關係	'ini huya/ana ququ'	正式拼寫特殊字:/
+[MEMO?] 36-20	是嗎	'kiya hug?'	疑似備註字元:?
+[FORMAL] 36-33	斜格標記	'-an'	正式拼寫特殊字:-
+[FORMAL] 36-34	屬格標記	'n-'	正式拼寫特殊字:-

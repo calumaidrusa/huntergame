@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "static-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8080"],
+      "port": 8080
+    },
+    {
+      "name": "hunter-backend-local",
+      "runtimeExecutable": "C:\\Users\\asd81\\Documents\\Claude\\01-Game\\.localtools\\node-v20.18.1-win-x64\\node.exe",
+      "runtimeArgs": ["C:\\Users\\asd81\\Documents\\Claude\\01-Game\\backend\\start-local-test.js"],
+      "port": 3001
+    }
+  ]
+}

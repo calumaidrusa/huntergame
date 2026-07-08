@@ -1,0 +1,145 @@
+# LESSONS.md — 踩坑紀錄簿（append-only）
+
+> 寫入格式與規則見 [`F-knowledge-iteration.md`](F-knowledge-iteration.md) 第 2 節。
+> **只能 append 新條目；不可刪改他人既有紀錄。** 超過 40 條 / 600 行時提請 User 精簡（見 F 第 3 節）。
+> L-001~L-008 是 Fable 5 於 2026-07-03 從既有 agent 定義與診斷中萃取的種子坑；L-009 起是 promote 到主專案後、實際運作中踩出的新坑。
+
+## 索引
+- L-001 hint 欄位誤顯示內部代號
+- L-002 種子資料只在 vocabulary 表為空時寫入
+- L-003 better-sqlite3 必須用 .localtools 的 Node 20
+- L-004 本機測試要先刪 .localtest DB 才會重種
+- L-005 瀏覽器操作網頁生圖極慢且不穩
+- L-006 v1/v2 兩套美術風格並存，勿混用
+- L-007 部署絕不可動 scores 表
+- L-008 DB 實為 5 表 + 帳號/JWT 解鎖系統（勿用過期 3 表 schema）
+- L-009 Harness 沒 promote 到主專案 = 形同不存在，已實測驗證
+- L-010 `<select>` 套 transform 會讓 Chromium 原生下拉「要按著才能選」
+- L-011 過關解鎖不能只靠玩家手動送出，否則清關可能白清
+- L-012 外部平台（如 chatgpt.com）的臨時檔案連結對外部工具無存取權限
+- L-013 部署（scp）與 GitHub 同步（commit/push）是兩件事，只做前者會讓版控嚴重落後
+- L-014 `index.html` 從「桌機複製檔」變成「裝置路由檔」後，部署清單要跟著改
+- L-015 Hooks/settings.json 裝在主專案分支，worktree session 完全看不到——promote 問題在 hook 層重演
+- L-016 Journal 提醒 hook 對「背景/非同步」Agent 呼叫會太早觸發——PostToolUse 在「已launch」就算完成，不是「subagent 真的做完」
+- L-017 同一批派工的兩個 subagent，一個在主專案操作、一個在 worktree 操作——分岔出兩份不同內容的日誌檔
+
+---
+
+### L-001 · hint 欄位是給玩家看的，不可放內部代號 · 2026-07-01
+- 症狀：詞彙提示泡泡顯示成「(34-37)」，玩家看不懂
+- 根因：誤把 CSV 內部編號當 hint 塞進去
+- 正解：hint 語意上等於詞彙本身，只放詞彙，不放任何 debug/內部代號
+- 通則：任何要顯示給玩家的欄位都不准夾帶內部識別碼
+- 關聯：CLAUDE.md 🔒 DB schema 節
+
+### L-002 · 種子資料只在 vocabulary 表為空時自動寫入 · 2026-07-01
+- 症狀：改了 vocab_seed.js 後正式環境沒變化
+- 根因：seed 只在 `vocabCount.c === 0` 時執行
+- 正解：要讓新種子生效，先 `DELETE FROM vocabulary`（不是 DROP），其他表不動
+- 通則：改種子後務必記得「清空該表才生效」這個前置條件
+- 關聯：CLAUDE.md 🔒 DB schema / 部署安全節
+
+### L-003 · better-sqlite3 必須用 .localtools 的 Node 20 · 2026-07-01
+- 症狀：node 執行後端報原生模組版本不符 / 載入失敗
+- 根因：系統 node 版本與預編譯的 better-sqlite3 不相容，Windows 無 build tools
+- 正解：一律用 `.localtools/node-v20.18.1-win-x64/node.exe`
+- 通則：本專案所有 node/原生模組指令都用 .localtools 那支
+- 關聯：CLAUDE.md 🛠 工具鐵律表
+
+### L-004 · 本機乾淨測試要先刪 .localtest DB · 2026-07-01
+- 症狀：改了種子但本機測試看到舊資料
+- 根因：DB 已存在就不會重種（同 L-002）
+- 正解：測種子前先刪 `.localtest/db/hunter.db` 讓它重建
+- 通則：本機驗證新種子 = 先刪本機 DB 再起服務
+- 關聯：CLAUDE.md 🛠 工具鐵律表
+
+### L-005 · 不要用瀏覽器操作 ChatGPT 網頁生圖 · 2026-07-01
+- 症狀：單張測試卡近 9 分鐘、不穩定
+- 根因：網頁生圖流程慢且易斷
+- 正解：用 OpenAI Image API（gpt-image-1）+ gen_batch.py（含壓縮/命名/續跑）
+- 通則：批量生成類工作優先走 API 腳本，不走瀏覽器 UI
+- 關聯：小畫家 agent 職責 1 / CLAUDE.md 🛠 工具鐵律表
+
+### L-006 · v1 扁平向量 與 v2 繪本/RPG 兩套風格並存，勿混用 · 2026-07-02
+- 症狀：容易把詞彙插畫也跟著改成 v2 風格
+- 根因：v2 只適用「遊戲介面素材」（背景/角色/UI 框架），詞彙插畫維持 v1/klokah 外連
+- 正解：盤點/生成時嚴格區分兩類，詞彙插畫不套 v2
+- 通則：涉及美術風格先確認「這是哪一類素材、適用哪一版風格」
+- 關聯：小畫家 agent 職責 1、職責 3
+
+### L-007 · 部署絕不可清空/覆蓋 scores 表 · 2026-07-02
+- 症狀：（預防性）scores 有真實玩家紀錄（如 Kacaw），一旦洗掉無法復原
+- 根因：種子/重置邏輯若誤及 scores 表會毀掉真實資料
+- 正解：只 DELETE vocabulary；部署前必備份 hunter.db；部署後驗 scores 前後一致
+- 通則：任何資料操作都要先確認「有沒有碰到不可逆的真實資料」——碰到就熔斷問人
+- 關聯：CLAUDE.md 🔒 部署安全 / harness/D 表 3 熔斷
+
+### L-008 · DB 實為 5 表 + 帳號/JWT/關卡解鎖系統，勿信過期的「3 表」schema · 2026-07-03
+- 症狀：初版 CLAUDE.md 把 DB 寫成「3 張表」（scores/daily_stats/vocabulary），且漏了整個玩家帳號系統；對抗審查員實讀 backend/server.js 才抓出來
+- 根因：撰寫 CLAUDE.md 時未讀 server.js 建表段，憑舊 agent 定義推斷 schema
+- 正解：實際是 5 表——另有 players、admins；scores 經 migration 多了 player_id、cleared；vocabulary 多了 audio_path。有 bcrypt+JWT 帳號、getUnlockedLevel 以 scores.cleared 判解鎖
+- 通則：改後端/DB 前，schema 一律以 server.js 建表段為準，不要信任何二手轉述；「唯一真相源」文件也可能過期，發現不符即依 F 第1節同步並記一條 lesson
+- 關聯：CLAUDE.md 🔒 DB schema 節 / backend/server.js / [[L-007]]
+
+### L-009 · Harness 沒 promote 到主專案 = 形同不存在，已實測驗證 · 2026-07-05
+- 症狀：使用者問「Harness 也要運作進來喔」，實測主專案根目錄 `C:\Users\asd81\Documents\Claude\01-Game` 完全沒有 `CLAUDE.md`/`harness/`，只存在於某個 worktree 分支——建立這套制度後的兩天內，多個 session 完全沒讀過、沒用過它
+- 根因：制度建好後只留在 worktree，沒有「複製/合併到主專案根目錄」這個收尾動作；G 交接信其實已經明講這是「整個交付最容易被忽略、後果最嚴重的一步」，但仍然被忽略了兩天
+- 正解：本次已把 `CLAUDE.md` + `harness/*` 實際複製進主專案根目錄（本次 promote），並同步更新 CLAUDE.md 內容以反映當下現況（不是照抄 2026-07-03 的舊事實）
+- 通則：任何「制度/規範/工作流」類文件，寫完後必須立刻確認它放在**未來 session 實際會開啟的目錄**，否則等於沒寫。新 session 開場應主動確認關鍵制度檔案是否在當前工作目錄可見，不要假設它存在
+- 關聯：harness/G-handoff-letter.md 事① / CLAUDE.md
+
+### L-010 · `<select>` 套 CSS transform 會讓 Chromium 原生下拉「要按著滑鼠才能選」 · 2026-07-05
+- 症狀：使用者回報「語別沒辦法選，要一直用滑鼠按著」——原生 `<select>` 一放開滑鼠就收起下拉選單
+- 根因：`.lang-select:hover { transform:translateY(-1px) }` 搭配 `transition:transform`。對原生 `<select>` 元素套用 transform（即使只有 1px），會干擾 Chromium 原生下拉選單的滑鼠互動，是瀏覽器層級的已知雷，不是邏輯 bug
+- 正解：hover 回饋改用 `filter:brightness()` / `border-color` 等不影響版面與互動層的屬性，不對 `<select>`（或其祖先若會連動）使用 transform
+- 通則：**原生表單控制項（`<select>`、`<input type=file>` 等）的 hover/active 視覺回饋，避免用 `transform`**，改用 filter/box-shadow/border-color；這類 bug 難以在無頭瀏覽器/沙盒環境重現（原生下拉是 OS 層渲染），修完要請使用者實機確認，不能只靠自動化測試判定過關
+- 關聯：hunter-truku-v2.html `.lang-select`
+
+### L-011 · 過關解鎖不能只靠玩家手動點「登錄成績」，否則清關可能白清 · 2026-07-05
+- 症狀：使用者回報「Level4 破關了但是不能前進第五關」；實查正式站 `scores` 表，該玩家 L4 只有 1 筆 `cleared=0`、沒有任何 `cleared=1` 紀錄，最高過關卡停在 L3
+- 根因：原設計是「過關 → 顯示結算畫面 → 玩家要手動點『登錄成績』按鈕 → 才送出 cleared=1 並解鎖下一關」。如果玩家清關後沒點那顆按鈕就離開（沒注意到、以為自動存、中途回首頁），這次清關就不會被記錄，下一關也不會解鎖，但玩家自己不會知道原因
+- 正解：把「登錄成績」從「需要玩家手動觸發」改成「過關當下自動送出」（`stageClear()` 內自動呼叫 `submitAndNext()`），畫面上仍可以顯示成績/名次，但不要讓「解鎖」這種有後果的狀態依賴一個容易被忽略的手動按鈕
+- 通則：任何「有進度後果（解鎖/存檔/記錄）」的動作，如果現在的設計是「玩家必須手動點一個按鈕才會生效」，要評估「玩家沒點會怎樣」——如果沒點會導致狀態不一致或使用者摸不著頭緒，優先改成該完成的當下自動觸發，把手動按鈕降級成單純的「查看/確認」而非「必要動作」
+- 關聯：hunter-truku-v2.html `stageClear()` / `submitScore()` / backend `getUnlockedLevel()`
+
+### L-012 · 外部平台（如 chatgpt.com）的臨時檔案連結，對外部工具沒有存取權限 · 2026-07-05
+- 症狀：使用者貼了一個 `https://chatgpt.com/backend-api/estuary/content?id=...&sig=...` 的圖片連結，`curl` 下載回來只有 39 bytes，內容是 `{"detail":"File stream access denied."}`
+- 根因：這類網址是綁定使用者自己 ChatGPT 登入 session 的簽名臨時連結，簽名/session 校驗只認得使用者瀏覽器內的那次登入態，外部程式（curl / 沒有那個 session 的請求）一律被拒
+- 正解：不要嘗試用 curl/WebFetch 硬抓這類連結；直接請使用者把圖片貼進對話（跟其他圖一樣走聊天附件），或請使用者手動另存到本機路徑再把路徑給我
+- 通則：看到網址網域是聊天/AI 平台自家的「backend-api」「estuary」「私有 CDN + 簽名參數」型態，先假設它是登入態綁定的臨時連結、大概率外部抓不到，別浪費一輪去試，直接請使用者換一種方式提供內容
+- 關聯：（個案，工具限制）
+
+### L-013 · 部署（scp）與 GitHub 同步（commit/push）是兩件不同的事，只做前者會讓版控嚴重落後 · 2026-07-05
+- 症狀：使用者問「GitHub 上面也有同步更新嗎」，實查本機分支領先 origin、且工作區有 73 個檔案從未 commit，涵蓋這幾個月幾乎所有成果（五玩法/42 語別/手機版等），但正式站早就全部上線了
+- 根因：這個專案的部署流程一直是「scp 檔案直接複製到 `/var/www/hunter/...`」，跟 git 完全脫鉤；只要沒有人主動額外做 `git add/commit/push`，GitHub 就會持續落後正式站，而且不會有任何提示或錯誤——兩邊看起來都「正常運作」，只是互相不知道對方進度
+- 正解：部署完成後，若使用者要保持版控同步，主動問一次「要不要順手 commit + push」；已建立慣例：每次大批部署後緊接著做一次 git commit（先擴充 .gitignore 濾掉 `*.bak`/`__pycache__`/暫存產物）+ push
+- 通則：**「部署上線」與「進版控」永遠要分開檢查，不要假設其中一個做了另一個就自動跟上**；在會用 scp/rsync 之類繞過 git 的部署流程裡，這條特別容易被忽略
+- 關聯：CLAUDE.md 部署節
+
+### L-015 · Hooks/settings.json 裝在主專案分支，worktree session 完全看不到——promote 問題在 hook 層重演 · 2026-07-05
+- 症狀：裝好 `.claude/settings.json` + `.claude/hooks/*.sh`（Agent 工具的 journal 提醒 hook）後，第一次真實呼叫 subagent 測試，完全沒收到提醒；查 state 檔發現連 `PreToolUse` 都沒被執行過，代表 hook 根本沒被載入
+- 根因：這次對話所在的 git worktree 是另一條分支（`claude/nervous-kare-81ae61`），跟主專案當時所在的 `feat/v2-overhaul-accounts-ui-vocab` 是完全獨立的 checkout；`.claude/settings.json` 是直接寫進主專案目錄的，worktree 的 `.claude/` 完全不知道它存在。而且更深一層：**新建 worktree 預設 `worktree.baseRef="fresh"`，會從 `origin/main` 分支出去**，而 `origin/main` 連 PR #2（那條分支的全部內容）都還沒合併，所以任何新 worktree 一開始就會缺少這整批東西，不只是這次的 hook
+- 正解：把 `settings.json`/`hooks/`/相關 `harness/` 檔手動鏡射進當次 worktree 之後，重新測試才確認 hook 機制本身完全正確（真實呼叫 Agent 工具，提醒正確灌回 model context）。長久修法不是模型能自己決定的架構題，列了三個選項回報給 User：merge PR #2 進 main／改 `worktree.baseRef` 成 `"head"`／每次開新 worktree 手動重新 promote
+- 通則：**任何「裝在專案裡的持久機制」（CLAUDE.md、harness、hooks、settings.json）都要用「這次 session 實際的 project root 在哪」去驗證，不能只驗證「檔案存在於我以為的主專案路徑」**。在會用 worktree-per-session 的工作模式下，這條特別重要——寫完基礎設施類的東西，若要證明「未來 session 真的會生效」，至少要跑一次真實驗證（不是只做 pipe-test/語法檢查），而且要注意 worktree 的分支基準點是不是真的包含這些檔案
+- 關聯：[[L-009]]（同一種 promote 問題，這次發生在 hook 層而非文件層）/ harness/appendix-recommended-hooks.md 護欄 D
+
+### L-016 · Journal 提醒 hook 對「背景/非同步」Agent 呼叫會太早觸發 · 2026-07-06
+- 症狀：同時派了 2 個 subagent（小工程+小排版）回顧補寫日誌，兩個 Agent 呼叫都還在背景跑，`PostToolUse` 提醒就已經跳出來說「日誌似乎沒有更新」——但實際上 subagent 根本還沒完成、還沒機會寫日誌
+- 根因：這個環境的 Agent 工具是**非同步**的——呼叫立刻回傳「Async agent launched successfully」，真正的 subagent 工作在背景另外跑，完成時才觸發獨立的 `task-notification`。而我裝的 `PostToolUse` on `matcher:"Agent"` 是綁在「Agent 工具呼叫本身回傳」那一刻，也就是「已成功派出去」的當下，不是「subagent 真的做完」的當下——兩者對非同步呼叫是不同時間點
+- 正解：對非同步 Agent 呼叫，這個 hook 的提醒只能當「派工當下的參考雜訊」，真正該檢查日誌有沒有更新的時機是**收到 `task-notification`（status: completed）之後**，不要看到 `PostToolUse` 的提醒就以為 agent 真的漏寫了——那可能只是還沒做完
+- 通則：幫非同步/背景工具設計「完成後檢查」類的 hook，要先確認 `PostToolUse` 對這個工具的語意是「呼叫已發出」還是「呼叫已完成」，這在同步/非同步工具上意義完全不同；純同步呼叫（本次前面測試用的都是等待完成的呼叫）就沒有這個問題
+- 關聯：[[L-015]]、harness/appendix-recommended-hooks.md 護欄 D（日後若要修正，可考慮改成只在收到 task-notification 時另外觸發檢查，而非依賴 PostToolUse）
+
+### L-017 · 同一批平行派工的 2 個 subagent，各自落在不同的工作目錄——日誌分岔成兩份 · 2026-07-06
+- 症狀：同時派了小工程、小排版兩個 Agent 呼叫，要求都用相對路徑 `harness/journals/<檔名>.md` append 自己的日誌。小工程完成後回報「檔案從 39 行增加到 57 行」（跟主專案正本吻合，操作對了地方）；小排版完成後回報「新建，因為此檔案先前不存在」——查證發現小排版的 Read/Write 實際落在這個對話所在的 **worktree**（`.claude/worktrees/nervous-kare-81ae61`）裡，那裡從來沒有 `harness/journals/xiaopaiban.md`（只有我先前為了測 hook 手動鏡射過 `xiaohuajia.md`），於是小排版憑空新建了一份「只有今天 4 條、沒有 07-02~07-05 歷史」的檔案，跟主專案正本（32 行、5 條歷史）完全分岔成兩份不同內容
+- 根因：兩個 subagent 用一模一樣的相對路徑寫法，但各自實際執行時的 cwd／專案根目錄解析結果不同（推測跟各自子任務內部是否有下達過 `cd` 或讀到絕對路徑線索有關，非我方派工指令本身寫錯）。這是 [[L-009]]、[[L-015]] 同一種「這個 session 到底錨定在哪個目錄」問題的第三次重演，這次不是文件/hook 沒被載入，而是**两個並行 subagent 對『我在哪』的認知彼此不一致**
+- 正解：發現分岔後，把 worktree 那份的 4 條新內容手動合併回主專案正本（保留正本的歷史序列），再刪除 worktree 那份分岔副本，避免之後有人誤讀到不完整版本
+- 通則：**派工要求 subagent 寫入某個檔案時，若專案同時存在 worktree 與主專案兩種可能的『當下位置』，一律在派工指令裡給絕對路徑，不要只給相對路徑**——相對路徑在「這個 session 錨定在 worktree、但你要它動的東西其實在主專案」這種情境下無法保證兩個 subagent 解析到同一個地方。派工後也要實際核對「檔案真的變到哪去了」，不能只信 subagent 回報的「行數變化」數字（那個數字本身沒騙人，只是相對於一個錯的起點）
+- 關聯：[[L-009]]、[[L-015]]、harness/H-agent-journals.md
+
+### L-014 · `index.html` 從「桌機複製檔」變成「裝置路由檔」後，部署清單要跟著改 · 2026-07-05
+- 症狀：手機版上線後，`index.html` 的角色從「桌機 `hunter-truku-v2.html` 的複製品」改成「依裝置特徵判斷導向桌機或手機版的薄路由檔」。如果部署時沿用舊習慣把桌機 HTML 覆蓋到 `index.html`，會直接讓所有使用者（含手機）都看到桌機版，路由整個失效
+- 根因：檔案角色變了，但「部署要傳哪些檔」這個心智模型如果沒跟著更新，很容易憑舊習慣操作
+- 正解：桌機版更新只 scp `hunter-truku-v2.html`；手機版更新才動 `mobile.html`/`mobile.css`/`game-mobile.js`；`index.html`（路由邏輯）本身有變動才單獨傳，平常桌機/手機各自更新都不要碰它
+- 通則：當一個檔案的「用途」被重新定義過，部署前先確認自己對這個檔案的假設是不是舊的；每次部署前列出「這次要傳哪幾個檔、各自為什麼」，不要憑記憶套用上一次的部署動作
+- 關聯：CLAUDE.md 部署節 / 手機版路由

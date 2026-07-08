@@ -1,0 +1,60 @@
+# 特殊字元 / 清理報表 — 霧台魯凱語 (dialectId=28, lang_code=dru-wutai)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1093,
+  "skipped_placeholder": 1,
+  "levels": {
+    "1": 255,
+    "2": 237,
+    "3": 299,
+    "4": 302
+  },
+  "cleaned": 0,
+  "with_image": 602,
+  "with_audio": 1093,
+  "apostrophe_words": 0,
+  "slash_words": 17,
+  "caret_words": 0,
+  "special_chars": {
+    "/": 17,
+    "…": 7,
+    ".": 3,
+    "物": 1,
+    "動": 1,
+    "~": 1,
+    "?": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 01-01	一	'itha/vaeva'	正式拼寫特殊字:/
+[FORMAL] 03-11	多少(程度大小)	'tapia / thainu'	正式拼寫特殊字:/
+[FORMAL] 04-15	丈夫/妻子	'tawane/labaibay'	正式拼寫特殊字:/
+[FORMAL] 05-04	朋友	'talragi/laali'	正式拼寫特殊字:/
+[MEMO?] 14-13	某物之下	'taylebe ki…'	疑似備註字元:…
+[MEMO?] 14-16	從某處	'tualay…'	疑似備註字元:…
+[FORMAL] 21-21	麵	'udungu/suba'	正式拼寫特殊字:/
+[FORMAL] 22-01	白色	'lraulrapungu/pupuli'	正式拼寫特殊字:/
+[MEMO?] 25-32	走(向某個方向)	'papia tali…'	疑似備註字元:…
+[MEMO?] 26-64	採收	'kia...'	疑似備註字元:.
+[FORMAL] 26-74	割	'girigiri/ketabe/keete'	正式拼寫特殊字:/
+[FORMAL] 26-77	餵食	'pakane/pudeethe'	正式拼寫特殊字:/
+[FORMAL] 26-81	壓扁	'dengece/dapiri'	正式拼寫特殊字:/
+[FORMAL] 26-83	擦(如口紅；油漆)	'puakucibiri/paderaw'	正式拼寫特殊字:/
+[FORMAL] 26-97	擠	'drikisi/riithi/ramethe'	正式拼寫特殊字:/
+[FORMAL] 26-105	起立	'acegecega/idia'	正式拼寫特殊字:/
+[FORMAL] 27-07	吞下	'lreede/lreelre'	正式拼寫特殊字:/
+[MEMO?] 27-13	啃	'ngadrengedre/bgudrungudru動物'	疑似備註字元:動物
+[FORMAL] 27-13	啃	'ngadrengedre/bgudrungudru動物'	正式拼寫特殊字:/
+[FORMAL] 30-07	再見(如互道再見)	'aii~saabaw'	正式拼寫特殊字:~
+[FORMAL] 30-29	收拾(祈使，如收拾東西)	'deemele/sarurbu'	正式拼寫特殊字:/
+[FORMAL] 30-37	種植	'lredreke/duuku'	正式拼寫特殊字:/
+[MEMO?] 36-02	正在...	'wa...'	疑似備註字元:.
+[MEMO?] 36-14	從不	'kaiana…'	疑似備註字元:…
+[MEMO?] 36-15	不該	'naykai…'	疑似備註字元:…
+[MEMO?] 36-17	經常	'ta…'	疑似備註字元:…
+[MEMO?] 36-19	偶爾	'yakay lu...'	疑似備註字元:.
+[MEMO?] 36-20	是嗎(語助詞)	'uunu?'	疑似備註字元:?
+[MEMO?] 36-21	還(尚未)	'kaiana…'	疑似備註字元:…
+[FORMAL] 36-32	主格標記(各族用語)	'ka / ku'	正式拼寫特殊字:/
