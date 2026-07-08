@@ -382,6 +382,8 @@ body.choice-active #modeTaskHint { display: none; }
 .vico-arrow { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 5.6h6.4V3l5.6 5-5.6 5v-2.6H2z' fill='%23000'/%3E%3C/svg%3E"); }
 .vico-caret { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 5.5l5 5 5-5z' fill='%23000'/%3E%3C/svg%3E"); }
 .vico-star  { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1l2.05 4.28 4.7.6-3.45 3.24.9 4.68L8 11.6 3.8 13.8l.9-4.68L1.25 5.88l4.7-.6z' fill='%23000'/%3E%3C/svg%3E"); }
+/* 眼睛（答案提示開關）：睜眼＝顯示答案提示。禁 emoji，用向量 mask icon。 */
+.vico-eye   { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 3.2C4.4 3.2 1.6 6 .7 8c.9 2 3.7 4.8 7.3 4.8S14.4 10 15.3 8C14.4 6 11.6 3.2 8 3.2zm0 7.6A2.8 2.8 0 1 1 8 5.2a2.8 2.8 0 0 1 0 5.6z' fill='%23000'/%3E%3Ccircle cx='8' cy='8' r='1.4' fill='%23000'/%3E%3C/svg%3E"); }
 /* 過關星等：金色 */
 .clear-stars { color:#FFD54A; margin-left:4px; }
 .clear-stars .vico-star { margin:0 1px; }
@@ -523,12 +525,15 @@ body.blank-active #wordBubble::before {
   letter-spacing: 0;                 /* 字母磚各自成格，不再靠字距 */
 }
 /* 「字母提示」小標（整寬，字母磚在其下換行）：呼應 mockup 的分區標題。
-   純 CSS content，不新增 DOM。木框羊皮紙上用深綠字 + 細分隔。 */
+   純 CSS content，不新增 DOM。木框羊皮紙上用深綠字 + 細分隔。
+   §L2 UX（2026-07-08）：試玩者看不懂這排字母是什麼 → 說明文案擴充為「打散的字母，
+   請照正確順序拼出這個詞」，讓第一次玩的人一眼懂用途。 */
 #wordTarget.hint-letters::before {
-  content: '字母提示';
+  content: '這個詞的字母（順序已打散）\A 請照正確順序拼出來';
+  white-space: pre-line;
   flex: 0 0 100%;
   font-family: 'Noto Sans TC', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; line-height: 1.35;
   color: #2D6A12;
   text-align: center;
   padding-bottom: 3px;
@@ -595,6 +600,15 @@ body.blank-active #answerArea {
 .answer-cell.current {
   border-color: #FFD700;
   animation: answerCellPulse 1s ease-in-out infinite;
+}
+/* §答案提示（可自由開關，預設關）：提示開啟時，未打的格子預填該位置的正解字元，
+   用淡灰 ghost 呈現（＝示意圖「damay」裡「may」的淡灰效果），與 .filled 實色的
+   已打字對比。純顯示、不參與判定；提示關閉時未打格維持空白（原行為）。
+   .current 仍可疊在 .ghost 上（正在打的下一格＝下一個 ghost 字元，脈動引導）。 */
+.answer-cell.ghost {
+  color: rgba(255,243,208,0.32);
+  border-color: rgba(199,154,58,0.4);
+  background: linear-gradient(180deg, rgba(0,0,0,0.22), rgba(0,0,0,0.34));
 }
 @keyframes answerCellPulse {
   0%,100% { box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,215,0,0.3); }
@@ -874,7 +888,10 @@ body.has-track #hunterTrack { display:block; }
 /* 尚未打到的目標字元：updateInputDisplay()（小工程的 JS）是用 inline
    style="color:#888" 寫死的；深色內槽上 #888 太暗 → 用 !important 蓋掉
    inline 值改成幽靈金（不動 JS 邏輯）。 */
-#inputDisplay span:not(.typed-correct):not(.typed-wrong) { color: rgba(255,229,102,0.4) !important; }
+#inputDisplay span:not(.typed-correct):not(.typed-wrong):not(.ghost) { color: rgba(255,229,102,0.4) !important; }
+/* §答案提示 L5（盲打）用：提示開啟時 #inputDisplay 顯示完整答案詞，已打字元走
+   .typed-correct/.typed-wrong 實色，未打字元用 .ghost 淡灰（＝示意圖「may」效果）。 */
+#inputDisplay .ghost { color: rgba(255,243,208,0.34); }
 
 /* ── §特殊字元列（可點輸入喉塞音/擴充字母）──────────────────
    木質金字小鈕，延續按鈕視覺語言（金黃漸層 + 咖啡邊框 + 立體按壓感），
@@ -2544,6 +2561,64 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
 #hintBtn:hover:not(:disabled) { filter:brightness(1.08); transform:translateY(-1px); }
 #hintBtn:active:not(:disabled) { transform:translateY(2px); box-shadow:0 1px 0 #5A3000; }
 #hintBtn:disabled { opacity:0.5; cursor:default; filter:grayscale(0.3); }
+
+/* ── §答案提示開關（2026-07-08）── 可自由開/關的「看著打」輔助鈕。
+   延續 #hintBtn 的木質金藥丸語言，但改成「暗底描邊」的次級外觀（未開＝OFF 低調），
+   放在 stage 右側中下（#hintBtn 在左側 → 兩顆不打架），避開中央答案面板/詞卡。
+   只在打字關顯示（body.typing-active）；選項關(L1/L4)隱藏。開啟時金框亮起（.on）。 */
+#answerHintToggle {
+  display:none;   /* 預設不顯示；body.typing-active 時才出現（見下） */
+  position:absolute; right:14px; bottom:330px; z-index:45;
+  align-items:center; gap:6px;
+  padding:7px 13px; border-radius:999px; cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif; font-size:12px; font-weight:900; letter-spacing:1px;
+  color:#FFE9B0;
+  background:linear-gradient(180deg, rgba(30,54,18,0.92), rgba(16,38,10,0.94));
+  border:2px solid rgba(199,154,58,0.6);
+  box-shadow:0 3px 0 rgba(90,48,0,0.55), inset 0 1px 0 rgba(255,229,102,0.12);
+  transition:transform .1s, filter .1s, background .15s, border-color .15s, color .15s;
+}
+body.typing-active #answerHintToggle { display:inline-flex; }
+#answerHintToggle .aht-ic { width:15px; height:15px; opacity:0.85; }
+#answerHintToggle .aht-state {
+  font-family:'Fredoka One',sans-serif; font-size:11px; line-height:1;
+  padding:1px 7px; border-radius:999px;
+  color:#FFE9B0; background:rgba(0,0,0,0.35); border:1px solid rgba(199,154,58,0.4);
+}
+#answerHintToggle:hover { filter:brightness(1.08); transform:translateY(-1px); }
+#answerHintToggle:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(90,48,0,0.55); }
+/* 開啟狀態（.on）：金框亮起、圖示與狀態徽章轉為「開」的暖金強調。 */
+#answerHintToggle.on {
+  color:#3A2410;
+  background:linear-gradient(180deg,#FFD86A,#E8A22C);
+  border-color:#8B5500;
+  text-shadow:0 1px 0 rgba(255,240,200,0.5);
+}
+#answerHintToggle.on .aht-ic { opacity:1; }
+#answerHintToggle.on .aht-state {
+  color:#3A2410; background:rgba(255,245,200,0.55); border-color:#8B5500;
+}
+
+/* ── §跳過鈕（2026-07-08）── 遇到不會的詞換下一個新詞。次級外觀（暗底描邊，
+   不搶答題主動作的視覺重量），放在 stage 右側、答案提示鈕正下方（兩顆縱向排開
+   不重疊），遊戲中（body.has-track）才顯示。全關卡通用。 */
+#skipBtn {
+  display:none;   /* 預設隱藏；body.has-track（遊戲中）才出現 */
+  position:absolute; right:14px; bottom:285px; z-index:45;
+  align-items:center; gap:5px;
+  padding:6px 13px; border-radius:999px; cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif; font-size:12px; font-weight:900; letter-spacing:1px;
+  color:#FFE9B0;
+  background:linear-gradient(180deg, rgba(30,54,18,0.92), rgba(16,38,10,0.94));
+  border:2px solid rgba(199,154,58,0.6);
+  box-shadow:0 3px 0 rgba(90,48,0,0.55), inset 0 1px 0 rgba(255,229,102,0.12);
+  transition:transform .1s, filter .1s;
+}
+body.has-track #skipBtn { display:inline-flex; }
+#skipBtn .skip-ic { width:13px; height:13px; opacity:0.9; }
+#skipBtn:hover { filter:brightness(1.12); transform:translateY(-1px); }
+#skipBtn:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(90,48,0,0.55); }
+
 /* 選項關被提示刪掉的錯誤選項：淡出、不可點 */
 .choice-opt.hint-removed { opacity:0.18; pointer-events:none; filter:grayscale(0.8); transition:opacity .25s, filter .25s; }
 /* ── 語別選擇：觸發鈕（取代原生 select）＋ modal 清單 ── */
@@ -2919,6 +2994,32 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
       <!-- L3 聽打「單字提示」音節/長度示意點列（renderSyllableDots 填；僅 listen-active 顯示） -->
       <div id="syllableDots"></div>
     </div>
+
+    <!-- §答案提示比例鈕（2026-07-08）— 可調「顯示幾成字母」的「看著打」輔助。
+         點擊循環切換 0%(關) → 30% → 50% → 70% → 100% → 0%…，露出均勻分布的該比例
+         字母當淡灰 ghost：L2/L3 預填在答案格、L5 顯示在底部顯示層（未露位置以 · 佔位）。
+         已打字元一律實色，隨玩家輸入即時更新。純顯示，不影響對錯判定/送分/計時。
+         預設 0%（關閉），不改現有難度。只在打字關（body.typing-active）顯示，選項關
+         (L1/L4)隱藏。比例記在 localStorage(ht_answer_hint_pct)，下次進來維持。
+         禁 emoji：用文字「答案提示」+ 比例徽章 + vico 眼睛 mask icon 表意。 -->
+    <button id="answerHintToggle" type="button" onclick="toggleAnswerHint()"
+            aria-pressed="false" title="答案提示：點擊切換顯示幾成字母（看著打，不影響計分）">
+      <span class="aht-ic vico vico-eye" aria-hidden="true"></span>
+      <span class="aht-label">答案提示</span>
+      <span class="aht-state" id="answerHintState">關</span>
+    </button>
+
+    <!-- §跳過鈕（2026-07-08）— 遇到不會的詞直接換下一個新詞，不用卡著等超時。
+         行為（skipRound）：換下一個「沒出過的新詞」、不重複被跳過的詞；不算答對
+         （不加 hitAttempts，不會幫忙達成「答對半數過關」門檻→不會被濫用）；不扣血
+         （過關門檻本就是答對半數，跳過已無好處，再扣血形同雙重懲罰，反而不敢用）；
+         只重置 combo（連擊本就因未答對而中斷）。純流程控制，不碰判定/計分公式/計時
+         時長。全關卡通用（打字關 L2/L3/L5 + 選項關 L1/L4），遊戲中(body.has-track)
+         才顯示；過場橫幅/非作答時（!G.active）點了無效。禁 emoji：文字＋vico 箭頭。 -->
+    <button id="skipBtn" type="button" onclick="skipRound()" title="跳過這個詞（換下一個新詞，不算答對、不扣血）">
+      <span class="skip-label">跳過</span>
+      <span class="skip-ic vico vico-arrow" aria-hidden="true"></span>
+    </button>
 
     <img id="hunter" src="/images/ui/v2-hunter-truku-h2.png" alt="獵人">
     <!-- §L2 填空：底部獵人進度軌道（僅 body.blank-active 顯示）。獵人站在這條軌道上，
@@ -3985,6 +4086,92 @@ const LEVELS = new Proxy({}, {
 });
 
 // ═══════════════════════════════════════════════════
+//  §答案提示（可調「顯示幾成字母」的「看著打」輔助）— 2026-07-08
+// ═══════════════════════════════════════════════════
+// 需求：L2 填空 / L3 聽打 對不熟族語的人太難 → 給玩家一個可自由調整的提示。
+//   使用者回饋：「一次顯示全部很討厭，而且有人想練習」→ 不做 all/nothing，
+//   改成「可選顯示幾成字母」：0% / 30% / 50% / 70% / 100%（點鈕循環切換）。
+//   露出的字母以 ghost 淡灰顯示（＝示意圖 damay 裡「may」的淡灰效果）；玩家自己
+//   打對的字元一律實色顯示（不受比例影響）。想純練習的人選 0%（＝關閉）或低比例。
+// 安全底線：預設【0%＝關閉】，不主動改變任何玩家的難度；只有玩家自己調高才露字。
+//   比例記在 localStorage（下次進來維持）。純顯示——不碰 submitWord 判定、
+//   不碰 logRound/送分、不碰 startTimer 計時。0% 時所有渲染回到原本行為。
+const ANSWER_HINT_KEY = 'ht_answer_hint_pct';
+const ANSWER_HINT_LEVELS = [0, 30, 50, 70, 100]; // 可循環的比例檔位（%）
+const AnswerHint = {
+  // 讀 localStorage 初始化。舊值相容：曾存過的 '1'（舊 all/nothing 版）視為 100%；
+  //   合法檔位直接採用；其餘（含未設定/'0'）一律 0（＝關閉），維持「預設不改難度」。
+  pct: (function () {
+    try {
+      const raw = localStorage.getItem(ANSWER_HINT_KEY);
+      if (raw === '1') return 100;                 // 舊布林版遷移
+      const n = parseInt(raw, 10);
+      return ANSWER_HINT_LEVELS.includes(n) ? n : 0;
+    } catch (e) { return 0; }
+  })(),
+  get enabled() { return this.pct > 0; },
+  setPct(p) {
+    this.pct = ANSWER_HINT_LEVELS.includes(p) ? p : 0;
+    try { localStorage.setItem(ANSWER_HINT_KEY, String(this.pct)); } catch (e) {}
+  },
+  // 循環到下一個檔位（0→30→50→70→100→0…）
+  cycle() {
+    const i = ANSWER_HINT_LEVELS.indexOf(this.pct);
+    const next = ANSWER_HINT_LEVELS[(i + 1) % ANSWER_HINT_LEVELS.length];
+    this.setPct(next);
+  }
+};
+
+// 依「完整答案（去空白後的字母序列）」與目前比例，算出「要露出哪些字母位置」的 Set。
+// 位置索引＝答案格索引（與 renderAnswerCells 的 cellIdx、L5 逐字元的非空白序位一致）。
+//   0% → 空集合（不露）；100% → 全部；中間比例 → 均勻分布挑 round(n×pct/100) 個位置
+//   （不集中在頭尾，避免玩家只照抄前綴就卡住；沿用 renderSyllableDots 的均勻取法）。
+//   同一個詞、同一比例結果固定（依長度算、不隨機），玩家重看不亂跳。純供顯示。
+function answerRevealPositions(answerLetters, pct) {
+  const n = answerLetters.length;
+  const set = new Set();
+  if (!n || pct <= 0) return set;
+  if (pct >= 100) { for (let i = 0; i < n; i++) set.add(i); return set; }
+  const count = Math.min(n, Math.max(1, Math.round(n * pct / 100)));
+  for (let j = 0; j < count; j++) {
+    set.add(Math.min(n - 1, Math.floor((j + 1) * n / (count + 1))));
+  }
+  return set;
+}
+
+// 「答案提示」比例鈕 UI 狀態同步：更新鈕的 .on class（>0 才亮）、狀態徽章文字
+// （關 / 30% / 50% / 70% / 100%）、aria 標籤。純視覺狀態，不觸發渲染。
+function syncAnswerHintBtn() {
+  const btn = document.getElementById('answerHintToggle');
+  if (!btn) return;
+  const on = AnswerHint.enabled;
+  btn.classList.toggle('on', on);
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  const label = on ? (AnswerHint.pct + '%') : '關';
+  btn.setAttribute('aria-label', '答案提示，目前顯示 ' + label + '（點擊切換比例）');
+  const st = document.getElementById('answerHintState');
+  if (st) st.textContent = label;
+}
+
+// 玩家點「答案提示」鈕：循環到下一個比例 → 存 localStorage → 同步鈕外觀 → 立刻依當前
+// 已打字重繪一次（調了馬上看到新比例的 ghost），不必等下個按鍵。
+// 完全不影響判定/計分/計時；只是重新渲染顯示層。
+function toggleAnswerHint() {
+  AnswerHint.cycle();
+  if (window.Sfx) Sfx.sfxClick();
+  syncAnswerHintBtn();
+  refreshAnswerHintDisplay();
+}
+
+// 依當前輸入框內容重繪顯示層（答案格 / 底部顯示層），讓比例切換即時生效。
+// 走既有 updateInputDisplay 這條唯一顯示入口，確保與打字時同一套渲染邏輯。
+function refreshAnswerHintDisplay() {
+  if (!G.currentPrey) return;
+  const ri = document.getElementById('realInput');
+  updateInputDisplay(normalizeAnswer(ri ? ri.value : ''));
+}
+
+// ═══════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════
 let G = {
@@ -4062,29 +4249,49 @@ function makeHintScramble(rawWord) {
 function preyKey(p) { return p ? answerKey(displayWordOf(p)) : ''; }
 function samePrey(a, b) { return preyKey(a) === preyKey(b); }
 
-// ── §1.5-A 關卡內單詞重複（間隔複習）─────────────────────────
-// 先從本關的池（已依 mode 過濾）抽 K 個不重複詞當「本關單字組」（G.levelPool），
-// 再把它們展開成一條長度 = totalRounds 的出題佇列（G.preyQueue），使同一個詞
-// 在一關內自然出現多次。佇列採「循環洗牌」：每輪用完 K 個詞才換下一輪，
-// 避免同一詞連續兩題；不足 K 個詞時（離線 fallback 詞很少）就用實際數量。
-// 答錯/逾時的詞由 requeuePrey() 插回近端讓它較快再現（見 nextRound / 判定處）。
+// ── 出題佇列 ─────────────────────────────────────────────
+// 兩種出題模型，依關卡玩法分流：
+//
+// (A) 打字關（L2 填空 / L3 聽打 / L5 盲打）— §答對出新詞模型（2026-07-08 使用者改版）：
+//     使用者要「答對 → 出一個沒出過的新單詞；答錯 → 那個詞重複再練」。
+//     做法：G.preyQueue ＝「一串各不相同的詞」（洗牌後每詞各一次，長度湊到足以撐完
+//     一整關全對）。nextRound 順序取用 → 一直答對就一直看到新詞；答錯由 requeuePrey()
+//     把該詞插回近端佇列 → 只有答錯的詞會重複。詞庫夠大時每題都是新詞。
+//     詞不夠時（離線 fallback 或某語別詞很少）：湊不到 total 就用實際可湊到的長度，
+//     不足的部分靠答錯 requeue 自然補上；真的抽完了 nextRound 的「佇列耗盡」條件會
+//     讓關卡結束（見 nextRound：G.round >= preyQueue.length → stageClear）。
+//
+// (B) 選項點選關（L1 音選詞 / L4 看圖選詞）— 維持原 §1.5-A 間隔複習：抽 K 個詞、
+//     展開成重複佇列。這兩關是點選作答、且誘答演算法依賴聚焦少量詞（levelPool），
+//     行為維持不變（B 改版只針對打字關）。
+//
+// 共用：G.levelPool 存「本關出現過/可出的不重複詞組」，供誘答演算法（L1/L4）與
+// 防呆 fallback（L3 找有音檔的詞）使用。
 function buildLevelPoolAndQueue(ld) {
   const pool = ld.prey || [];
-  // 去重（同族語詞只留一個）
+  // 去重（同族語詞只留一個），先洗牌讓每關抽到的詞不同。
   const seen = new Set();
   const uniq = [];
   for (const p of shuffle(pool)) {
     const k = preyKey(p);
     if (!seen.has(k)) { seen.add(k); uniq.push(p); }
   }
+  const total = ld.totalRounds || uniq.length;
+
+  if (!ld.isChoice) {
+    // (A) 打字關：佇列＝各不相同的詞，長度湊到 total（詞夠就每題新詞、全不重複）。
+    //     levelPool 就是這串詞（供 L3 防呆挑有音檔的詞用）。
+    const need = Math.min(uniq.length, Math.max(1, total));
+    G.levelPool = uniq.slice(0, need);
+    G.preyQueue = uniq.slice(0, need); // 每詞各一次，順序取用即為「答對出新詞」
+    return;
+  }
+
+  // (B) 選項關：沿用 §1.5-A 聚焦少量詞 + 重複展開。
   const K = Math.min(ld.picK || 6, uniq.length) || uniq.length;
   G.levelPool = uniq.slice(0, Math.max(1, K));
-
-  const total = ld.totalRounds || G.levelPool.length;
   // §1.5-A 間隔複習：每個詞在一關內平均出現 total/K 次，且盡量「分散」不連續集中。
   // 做法：一「輪」= 把 levelPool 全部各出一次（洗牌後排入），一輪一輪疊到湊滿 total。
-  // 每輪都重新洗牌，讓多次出現落在不同位置；再於輪與輪交界做一次「就近交換」，
-  // 避免上一輪最後一題與下一輪第一題剛好同詞（間隔複習優於集中複習）。
   const queue = [];
   while (queue.length < total) {
     let round = shuffle(G.levelPool);
@@ -4344,6 +4551,10 @@ function applyLevelMode(lvl) {
   // 填空關（L2 新設計）：右卡片＝提示卡（打散字母磚），作答在中央下方 #answerArea
   // 的答案格（打字依序填格），底部輸入顯示層隱藏。class 由 CSS 控制顯示切換。
   document.body.classList.toggle('blank-active', G.mode === 'blank');
+  // §答案提示 toggle（2026-07-08）：打字關（L2 填空 / L3 聽打 / L5 盲打）才顯示
+  // 「答案提示」開關鈕。選項關（L1/L4）沒有打字、無此開關。用 body.typing-active
+  // 統一控制開關鈕的顯示，避免逐關寫三次 CSS。
+  document.body.classList.toggle('typing-active', !G.isChoice);
   // §進度條統一：所有關卡（L1-L5）獵人都當「底部關卡步道」進度條的跑者——換成「朝右跑姿」
   // sprite、站在木步道上往終點旗跑，水平位置＝本關進度（見 positionHunterAsProgress）。
   // 以前只有 L2(blank) 這樣，其餘關是蹲姿逼近獵物；使用者定案「進度條統一用 L2 那個」。
@@ -4487,7 +4698,7 @@ function modeHowto(mode) {
     };
     case 'blank': return {
       title: `填空模式怎麼玩`,
-      steps: [ `看右側提示卡的中文與字母提示`, `在下方答案格打字填入完整的${langZh}（特殊字元可點選輸入）`, `送出答案` ],
+      steps: [ `右側提示卡有這個詞的所有字母，但順序被打散了`, `看中文提示，把字母重新拼成正確順序，打進下方答案格（特殊字元可點選輸入）`, `送出答案` ],
     };
     case 'listen': return {
       title: `聽打模式怎麼玩`,
@@ -4538,10 +4749,11 @@ function modeGuideData(mode) {
       goal:`目標：聽懂發音，學習並記住正確的${langZh}單字。`, cue:'audio', answer:'choice' };
     case 'blank': return {
       sub:'填空模式怎麼玩',
-      cards:[ {t:'看提示卡：', b:'看右側中文提示與打散的字母提示。'},
-              {t:'填入答案：', b:`依提示在下方答案格打字，補出完整的${langZh}單字。`},
-              {t:'送出答案：', b:'完成後按「送出答案」確認。'}, scored ],
-      goal:`目標：學習並記住正確的${langZh}單字。`, cue:'blank', answer:'type' };
+      cards:[ {t:'看提示卡：', b:'右側提示卡列出這個詞的所有字母，順序是打散的。'},
+              {t:'拼出順序：', b:`參考中文提示，把打散的字母重新排成正確的${langZh}單字。`},
+              {t:'填入答案：', b:'在下方答案格打字填入完整單字（特殊字元可點選輸入）。'},
+              {t:'送出答案：', b:'完成後按「送出答案」確認。'} ],
+      goal:`目標：從打散的字母拼出正確順序，學習${langZh}單字拼寫。`, cue:'blank', answer:'type' };
     case 'listen': return {
       sub:'聽打模式怎麼玩',
       cards:[ {t:'聽發音：', b:'按喇叭聽題目音訊，可重播。'},
@@ -4779,6 +4991,9 @@ function renderTypingRound(ld) {
   if (G.mode === 'blank') renderAnswerExample();
   // 聽打關（L3）：進題時把「單字提示」音節/長度示意點列算一次（依本題答案長度）。
   if (G.listenMode) renderSyllableDots();
+  // §答案提示開關：每題進場同步鈕外觀為 localStorage 記憶的狀態（開/關），
+  //   updateInputDisplay('') 會依 AnswerHint.enabled 決定要不要畫 ghost。
+  syncAnswerHintBtn();
   updateInputDisplay('');
   // §特殊字元列：桌機打字關（L2/L3/L5）顯示當前語別的難打字元按鈕（可點插入）。
   renderSpecialCharBar();
@@ -5187,6 +5402,13 @@ function renderAnswerCells(typed) {
   const answer = displayWordOf(G.currentPrey) || '';
   // 逐字母走答案骨架：空白→視覺間隔；非空白→一個答案格。
   const skel = Array.from(answer);
+  // §答案提示（可調比例，預設 0%＝關）：依玩家設定的比例，露出「均勻分布的 N 成
+  //   字母」當淡灰 ghost 預填在未打的格子（＝示意圖 damay 裡「may」的淡灰效果），
+  //   與 filled 實色的已打字對比，讓卡住的人可以「看著打」；沒被露出的位置仍留空。
+  //   0% 時 revealPos 為空集合 → 未打格全部留空（原行為，難度不變）。
+  //   ghost 用「答案骨架去空白後的非空白字母序列」對位取字，與答案格一一對應。
+  const answerLetters = Array.from(answer).filter(c => !/\s/.test(c));
+  const revealPos = answerRevealPositions(answerLetters, AnswerHint.pct);
   // 玩家打的字（去空白後）逐一填入答案格。normalizeAnswer 後空白已壓成單一空白，
   // 這裡再把打的字元也拆成「非空白字母序列」對位填入，讓玩家打的空白不佔格。
   const typedLetters = Array.from(typed || '').filter(c => !/\s/.test(c));
@@ -5204,7 +5426,11 @@ function renderAnswerCells(typed) {
     } else {
       const cur = currentMarked ? '' : ' current';
       currentMarked = true;
-      html += `<span class="answer-cell${cur}"></span>`;
+      // 這格若在「露出比例」挑中的位置 → 填該位置正解字元（淡灰 ghost）；否則留空。
+      const reveal = revealPos.has(cellIdx) && answerLetters[cellIdx] !== undefined;
+      const gch = reveal ? _htmlEsc(answerLetters[cellIdx]) : '';
+      const ghostCls = gch ? ' ghost' : '';
+      html += `<span class="answer-cell${cur}${ghostCls}">${gch}</span>`;
     }
     cellIdx++;
   }
@@ -5267,9 +5493,38 @@ function updateInputDisplay(typed) {
       ? `<span style="color:#FFE566">${safeL}</span>` : '_';
     return;
   }
-  // 盲打（L5）：不顯示目標幽靈字也不給長度提示（無答案格），只把玩家實際打的字
-  //   原樣顯示（中性色），純憑記憶輸入。
+  // 盲打（L5）：設計本意＝無提示，純憑記憶輸入。
+  //   §答案提示【0%＝關】（預設）：維持原行為——不顯示目標幽靈字、不給長度提示，
+  //     只把玩家實際打的字原樣顯示（中性色）。盲打體驗完全不變。
+  //   §答案提示【>0%】（玩家 opt-in）：顯示答案詞骨架，已打字元實色（typed-correct/
+  //     typed-wrong）；未打字元中，被「露出比例」挑中的位置露淡灰 ghost 字母、其餘
+  //     位置只露一個 · 佔位點（不洩漏字母，僅示意長度）。隨輸入即時更新。
+  //     ——L5 本意雖是盲打，但這是玩家自己選擇打開的輔助，不強加、預設仍是盲打。
   if (G.mode === 'blind') {
+    if (AnswerHint.enabled) {
+      const answer = displayWordOf(G.currentPrey) || '';
+      const answerNorm = normalizeAnswer(answer);
+      // 露出位置以「非空白字母序列」的索引計（與 renderAnswerCells 一致）。
+      const answerLetters = Array.from(answer).filter(c => !/\s/.test(c));
+      const revealPos = answerRevealPositions(answerLetters, AnswerHint.pct);
+      let html = '';
+      let letterIdx = -1; // 目前走到第幾個「非空白字母」（對應 revealPos 索引）
+      for (let i = 0; i < answer.length; i++) {
+        if (/\s/.test(answer[i])) { html += ' '; continue; }
+        letterIdx++;
+        const ch = answer[i].replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
+        if (i < (typed || '').length) {
+          const tc = (answerNorm[i] !== undefined ? answerNorm[i] : answer[i].toLowerCase());
+          html += `<span class="${typed[i] === tc ? 'typed-correct' : 'typed-wrong'}">${ch}</span>`;
+        } else if (revealPos.has(letterIdx)) {
+          html += `<span class="ghost">${ch}</span>`;
+        } else {
+          html += '<span class="ghost">·</span>'; // 未露出：佔位點，不洩漏字母
+        }
+      }
+      document.getElementById('inputDisplay').innerHTML = html || '_';
+      return;
+    }
     const safe = (typed || '').replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
     document.getElementById('inputDisplay').innerHTML = safe
       ? `<span style="color:#FFE566">${safe}</span>` : '_';
@@ -5828,6 +6083,35 @@ function missedPrey(fromChoice) {
   setTimeout(() => nextRound(), 900);
 }
 
+// §跳過（2026-07-08）：玩家遇到不會的詞，直接換下一個新詞，不用卡著等超時。
+// 設計（回報用）：
+//   - 換新詞：不 requeuePrey（被跳過的詞不重新排入 → 不會再看到，他不會、再出很煩）。
+//   - 不算答對：不動 hitAttempts（→ 不會幫忙達成「答對半數過關」門檻），也不動
+//     totalAttempts（跳過不是一次「作答嘗試」，不該汙染準確率）。
+//   - 不扣血：過關門檻本就是「答對半數」，跳過已經沒有任何好處，再扣血等於雙重
+//     懲罰、反而讓玩家不敢用這個逃生口，違背功能初衷。只把 combo 歸零（本來就沒答對）。
+//   - 不記 roundLog：跳過是中性非事件，不列入「本關單詞回顧」（既非答對也非答錯）。
+//   - 不碰計時時長/計分公式/判定，只做「停這題 → 進下一題」的流程控制。
+//   全關卡通用（打字關 L2/L3/L5 + 選項關 L1/L4）。過場橫幅/非作答時（!G.active）不作用。
+function skipRound() {
+  if (!G.active || !G.currentPrey) return;
+  if (G.isChoice && G.choiceLock) return; // 選項關回饋動畫鎖定中，不重入
+  clearInterval(G.timer);
+  G.active = false;
+  G.choiceLock = true;      // 防在轉場空檔重複點跳過
+  G.combo = 0;              // 連擊中斷（未答對）
+  G.wordIdx = 0;
+  setHintVisible(false);
+  if (window.Sfx) Sfx.sfxClick();
+  // 視覺回饋：獵物「溜走」動畫 + 提示已跳過（不出現扣血/答錯字樣，避免誤解成懲罰）。
+  const preyEl = document.getElementById('prey');
+  if (preyEl) preyEl.classList.add('flee');
+  document.getElementById('comboNum').textContent = 'x0';
+  updateComboDots();
+  showHunterBubble('跳過', 'flee');
+  setTimeout(() => nextRound(), 600);
+}
+
 function updateComboDots() {
   for(let i=0;i<5;i++){
     document.getElementById('cd'+i).className = 'cdot' + (i < G.combo%6 ? ' on' : '');
@@ -6217,6 +6501,7 @@ function goTitle() {
   G.active = false;
   document.body.classList.remove('listen-active');
   document.body.classList.remove('has-track'); // 回標題收起底部進度步道
+  document.body.classList.remove('typing-active'); // 收起「答案提示」開關鈕
   document.getElementById('titleScreen').style.display = 'flex';
   applyLevelLocks();
   BgmManager.stopGame();          // 回標題：先淡出停止遊戲 BGM
