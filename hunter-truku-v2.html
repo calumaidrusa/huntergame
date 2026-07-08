@@ -685,6 +685,14 @@ body.tile-active:not(.blank-active):not(.listen-active) #syllableDots { display:
 #tileBackspace.tile-back .vico-arrow { transform: scaleX(-1); width: 16px; height: 16px; }
 #tileBackspace.tile-back:disabled { opacity: 0.35; cursor: default; }
 #tileBackspace.tile-back:disabled:hover { filter: none; transform: none; }
+/* §兩種輸入提示小字（磚列下方）：低調、不搶戲。空字串時自然不佔視覺（仍留行高，無妨）。 */
+#tileInputHint {
+  margin-top: 6px;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px; color: rgba(255,233,176,0.78);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5); text-align: center;
+}
+#tileInputHint:empty { display: none; }
 /* 多字詞斷字間隔（不佔格，只留空隙讓分組清楚） */
 .answer-gap { display: inline-block; width: 16px; }
 /* ── L3 聽打：沿用同一個 #answerArea 木框答案格面板，但位置改「靠中央」，
@@ -3093,6 +3101,10 @@ body.has-track #skipBtn { display:inline-flex; }
            末尾 #tileBackspace 退一格鈕。穩定 id/class 交小排版做木質磚樣式；平時 hidden，
            renderLetterTiles 在非點字關會 hidden=true 收起。 -->
       <div id="letterRack" hidden></div>
+      <!-- §兩種輸入提示（2026-07-08 使用者追加）：告訴玩家「可以點磚，也可以用鍵盤打字」。
+           所有點字關（L2/L3/L5）都顯示，文字由 renderTileInputHint() 填。禁 emoji。
+           穩定 id #tileInputHint 交小排版做小字樣式（放在磚列下方，低調不搶戲）。 -->
+      <div id="tileInputHint"></div>
     </div>
 
     <!-- §答案提示比例鈕（2026-07-08）— 可調「顯示幾成字母」的「看著打」輔助。
@@ -4312,11 +4324,11 @@ let G = {
   levelPool: [],      // §1.5-A：本關抽出的 K 個不重複詞（誘答演算法從這裡＋全池挑）
   roundLog: [],       // §1.5-B：逐題結果 {word, zh, mode, result:'correct'|'wrong'|'timeout'}
   bannerHideTimer: null, // showCorrectBanner() 用來確保連續 combo 時動畫能正確重播
-  hintScramble: [],   // §點字拼字（L2/L3/L5）：本題「打散字母磚」陣列，每格 {ch, used, decoy}。
-                      // 每題只在 nextRound() 洗一次、存起來，避免每次 render 亂跳。
-                      // ch=字母；used=已被點入答案；decoy=誘答假字母（只 L5 有，不屬正解）。
-  tileOrder: []       // §點字拼字：玩家「已點入的實體磚索引」堆疊（對應 hintScramble 的 index），
-                      // 供退一格（tileBackspace）把最後一顆磚吐回、及重試時全部歸位用。
+  hintScramble: []    // §點字拼字（L2/L3/L5）：本題「打散字母磚」陣列，每格 {ch, decoy}。
+                      // 每題只在 nextRound() 洗一次、存起來（磚陣列/位置固定），避免每次 render 亂跳。
+                      // ch=字母；decoy=誘答假字母（只 L5 有，不屬正解）。磚的「已用/未用」不記在
+                      // 這裡，而是每次 render 從 #realInput 內容推導（deriveTileUsage），讓鍵盤打字
+                      // 與點磚兩種輸入對磚的暗化狀態永遠一致（單一真相＝ #realInput.value）。
 };
 
 // ═══════════════════════════════════════════════════
@@ -4402,7 +4414,8 @@ function makeHintScramble(prey, mode) {
   const letters = Array.from(source).filter(c => !/\s/.test(c));
   if (!letters.length) return [];
 
-  const tiles = letters.map(ch => ({ ch, used: false, decoy: false }));
+  // 每磚 { ch, decoy }；「已用/未用」不記在磚上，render 時由 deriveTileUsage 依 realInput 推導。
+  const tiles = letters.map(ch => ({ ch, decoy: false }));
 
   // L5 盲打：混入誘答假字母（干擾），維持「最難」。約 40%、下限 2 顆、上限 5 顆，
   // 且不超過本身字母數（避免短詞被淹沒到荒謬）。假字母優先挑「答案沒用到的」以增加辨別度。
@@ -4412,7 +4425,7 @@ function makeHintScramble(prey, mode) {
     const decoyCount = Math.max(2, Math.min(5, Math.min(n, Math.round(n * 0.4))));
     const pool = shuffle(DECOY_LETTERS.filter(c => !answerSet.has(c)));
     for (let i = 0; i < decoyCount && pool.length; i++) {
-      tiles.push({ ch: pool[i % pool.length], used: false, decoy: true });
+      tiles.push({ ch: pool[i % pool.length], decoy: true });
     }
   }
 
@@ -4878,11 +4891,11 @@ function modeHowto(mode) {
     };
     case 'blank': return {
       title: `填空模式怎麼玩`,
-      steps: [ `下方有這個詞的所有字母磚，但順序被打散了`, `看中文提示，點字母磚照正確順序拼出這個詞`, `點錯可用「退一格」收回，拼滿自動送出` ],
+      steps: [ `下方有這個詞的所有字母磚，但順序被打散了`, `看中文提示拼出這個詞：可以點字母磚，也可以直接用鍵盤打字`, `點錯可用「退一格」收回；拼滿或按 Enter 送出` ],
     };
     case 'listen': return {
       title: `聽打模式怎麼玩`,
-      steps: [ `聽發音（可重播），沒有中文提示`, `點下方打散的字母磚，照正確順序拼出你聽到的${langZh}`, `點錯可用「退一格」收回，拼滿自動送出` ],
+      steps: [ `聽發音（可重播），沒有中文提示`, `拼出你聽到的${langZh}：可以點打散的字母磚，也可以直接用鍵盤打字`, `點錯可用「退一格」收回；拼滿或按 Enter 送出` ],
     };
     case 'choice': return {
       title: `看圖選詞模式怎麼玩`,
@@ -4890,7 +4903,7 @@ function modeHowto(mode) {
     };
     case 'blind': return {
       title: `盲打模式怎麼玩`,
-      steps: [ `沒有中文、不自動播音，線索最少`, `字母磚裡混了幾顆用不到的干擾字母，憑記憶挑出對的`, `點字母磚拼出完整的${langZh}，拼滿自動送出` ],
+      steps: [ `沒有中文、不自動播音，線索最少`, `字母磚裡混了幾顆用不到的干擾字母；想純挑戰可直接用鍵盤盲打`, `點字母磚或用鍵盤拼出${langZh}；拼滿或按 Enter 送出` ],
     };
     default: return { title: `怎麼玩`, steps: [] };
   }
@@ -4930,16 +4943,16 @@ function modeGuideData(mode) {
     case 'blank': return {
       sub:'填空模式怎麼玩',
       cards:[ {t:'看字母磚：', b:'下方列出這個詞的所有字母磚，順序是打散的。'},
-              {t:'看中文提示：', b:`參考中文，想出對應的${langZh}單字怎麼拼。`},
-              {t:'點磚拼字：', b:'照正確順序點字母磚拼出來，點錯可「退一格」。'},
-              {t:'拼滿送出：', b:'字母拼滿會自動送出，不用另外按鈕。'} ],
+              {t:'兩種輸入：', b:'可以點字母磚，也可以直接用鍵盤打字，兩種都行。'},
+              {t:'拼出順序：', b:`參考中文，把${langZh}單字拼出來，點錯可「退一格」。`},
+              {t:'拼滿送出：', b:'字母拼滿會自動送出，也可按 Enter 送出。'} ],
       goal:`目標：從打散的字母拼出正確順序，學習${langZh}單字拼寫。`, cue:'blank', answer:'tiles' };
     case 'listen': return {
       sub:'聽打模式怎麼玩',
       cards:[ {t:'聽發音：', b:'按喇叭聽題目音訊，可重播；這關沒有中文提示。'},
-              {t:'點磚拼字：', b:`點下方打散的字母磚，照順序拼出你聽到的${langZh}。`},
-              {t:'退一格：', b:'點錯順序可用「退一格」收回上一顆字母。'},
-              {t:'拼滿送出：', b:'字母拼滿會自動送出，不用另外按鈕。'} ],
+              {t:'兩種輸入：', b:`點下方字母磚，或直接用鍵盤打出你聽到的${langZh}。`},
+              {t:'退一格：', b:'點錯或打錯可用「退一格」收回上一個字母。'},
+              {t:'拼滿送出：', b:'字母拼滿會自動送出，也可按 Enter 送出。'} ],
       goal:`目標：聽懂發音，學習並記住正確的${langZh}單字。`, cue:'audio', answer:'tiles' };
     case 'choice': return {   // 看圖選詞
       sub:'看圖選詞模式怎麼玩',
@@ -4951,8 +4964,8 @@ function modeGuideData(mode) {
       sub:'盲打模式怎麼玩',
       cards:[ {t:'線索最少：', b:'沒有中文、不自動播音，最難的一關。'},
               {t:'有干擾磚：', b:'字母磚裡混了幾顆用不到的干擾字母。'},
-              {t:'憑記憶挑：', b:`回想${langZh}單字怎麼拼，從干擾裡挑對的磚。`},
-              {t:'點磚拼字：', b:'照順序點磚拼出來，拼滿自動送出（可退一格）。'} ],
+              {t:'兩種輸入：', b:`從磚裡挑對的來點，或直接用鍵盤盲打${langZh}。`},
+              {t:'拼滿送出：', b:'字母拼滿會自動送出，也可按 Enter 送出（可退一格）。'} ],
       goal:`目標：憑記憶從干擾中拼出正解，鞏固${langZh}單字記憶。`, cue:'blind', answer:'tiles' };
     default: return null;
   }
@@ -5117,11 +5130,10 @@ function nextRound() {
   preyEl.className = '';
 
   // §點字拼字（L2/L3/L5）：本題「打散字母磚」只在此洗一次（存 G.hintScramble），
-  // 之後 render 都讀同一份，確保同題多次 render 磚順序/used 狀態不亂跳。
-  // 選項關（L1/L4）不用磚，留空陣列。tileOrder＝已點入磚的堆疊，進題清空。
+  // 之後 render 都讀同一份，確保同題多次 render 磚順序/位置不亂跳（used 每次依 realInput 重算）。
+  // 選項關（L1/L4）不用磚，留空陣列。
   G.hintScramble = isTileMode(G.mode)
     ? makeHintScramble(G.currentPrey, G.mode) : [];
-  G.tileOrder = [];
 
   // 逼近動畫：以本關進度移動獵人（各 mode 共用，rect 讀 #prey 隱形錨點）
   moveHunterTowardPrey();
@@ -5170,11 +5182,13 @@ function renderTypingRound(ld) {
   const inp = document.getElementById('realInput');
   inp.value = '';
   const tile = isTileMode(G.mode);
-  // 中央答案格面板標題：點字關統一「點字母磚，照順序拼出這個詞」。
+  // 中央答案格面板標題：點字關統一提示「兩種輸入」。
   const alabel = document.getElementById('answerAreaLabel');
-  if (alabel) alabel.textContent = tile ? '點字母磚拼出答案' : '填入答案';
-  // 填空關（L2）：範例小字改成「點磚」說明（原「例如 a-m-a-s-a-m」是打字時代的提示）。
+  if (alabel) alabel.textContent = tile ? '點字母磚或用鍵盤打字' : '填入答案';
+  // 填空關（L2）：範例小字（沿用既有 #answerExample 位置與 CSS）。
   if (G.mode === 'blank') renderAnswerExample();
+  // 點字關（L2/L3/L5）：磚列下方一律顯示「兩種輸入都可以」的小字（renderTileInputHint）。
+  if (tile) renderTileInputHint();
   // 聽打關（L3）：進題時把「單字提示」音節/長度示意點列算一次（依本題答案長度）。
   if (G.listenMode) renderSyllableDots();
   // §答案提示鈕：點字關改語意為「提示下一顆該點的磚」（發光引導），每題進場同步外觀。
@@ -5458,15 +5472,15 @@ function hintRemoveWrongOption() {
 }
 // 打字關（有代價的提示鈕 useHint 呼叫）：揭露下一個正確字母。
 //   點字關（L2/L3/L5，2026-07-08 改點字母磚）：改為「自動幫玩家點下一顆正確磚」——
-//     這樣揭露的字母會照點字的機制真的落進答案格、tileOrder 與磚 used 狀態同步，
-//     不會與打字時代那套「直接改 realInput.value」衝突（那會讓字母數/磚狀態對不上）。
+//     走既有 clickLetterTile → 字母 append 進 realInput → input 事件統一更新答案格/磚/自動送出。
+//     兩種輸入都以 realInput 為準，磚 used 由 render 依 realInput 重算，永遠一致。
 //   非點字關：沿用原本「把輸入框設成正確前綴＋下一個正確字元」。
 // 以 displayWordOf 為目標，normalizeAnswer 逐字元比對（撇號/大小寫不算異）。
 function hintRevealNextLetter() {
   if (isTileMode(G.mode)) {
     const idx = nextCorrectTileIdx();
     if (idx < 0) return false;      // 已無可揭露（拼滿或找不到對應磚）
-    clickLetterTile(idx);           // 走既有點磚流程（含 append/答案格更新/可能觸發自動送出）
+    clickLetterTile(idx);           // 走既有點磚流程（append/答案格更新/可能觸發自動送出）
     return true;
   }
   const ri = document.getElementById('realInput');
@@ -5575,115 +5589,141 @@ const _htmlEsc = s => String(s).replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;
 
 // §點字拼字（L2/L3/L5）「可點字母磚列」：讀本題快取的打散字母 G.hintScramble，
 // 渲染成一排**可點**字母磚到 #letterRack。點磚＝把該字母填進答案格（見 clickLetterTile）。
-// 這才是點字關的「輸入本身」，不再打字。已點入的磚標 .used（暗掉、不可再點）。
-// 穩定 id/class 交小排版做字母磚樣式：容器 #letterRack、每磚 button.letter-tile
-// [.used][.decoy][.next-hint]、退一格鈕 #tileBackspace。每題只洗一次，render 不亂跳。
 //
-// 提示下一顆（答案提示鈕在點字關的新用途）：AnswerHint 開啟時，正確的下一顆磚標
-// .next-hint（發光引導），讓卡住的人知道該點哪顆。詳見 nextCorrectTileIdx()。
+// ⚠️ 兩種輸入並存（使用者定案 2026-07-08 追加）：L2/L3/L5 同時支援「點磚」與「鍵盤打字」，
+//   玩家自選。**單一真相來源＝ `#realInput.value`**：鍵盤打字直接填 realInput、點磚 append
+//   進 realInput，兩者都走同一條 input→updateInputDisplay→submitWord 判定。磚的 used 狀態
+//   不再獨立記帳，而是**每次 render 從目前 realInput 內容推導**（deriveTileUsage）——這樣
+//   鍵盤打的字也會把對應磚標暗，兩種輸入永遠一致，混用不打架；判定一律以 realInput 為準，
+//   磚狀態純視覺、就算對不上也不影響對錯。
+//
+// 穩定 id/class 交小排版做字母磚樣式：容器 #letterRack、每磚 button.letter-tile
+// [.used][.decoy][.next-hint]、退一格鈕 #tileBackspace。每題只洗一次（磚陣列/位置固定），
+// used 每次 render 依 realInput 重算，磚位置不亂跳。
+
+// 依目前 realInput 內容，貪婪比對出「哪些磚已被用掉」→ 回一個 boolean[]（對齊 hintScramble）。
+//   逐一走已輸入的字母（去空白、normalizeAnswer），每個字母吃掉一顆「還沒被吃、字面相同」的
+//   非 decoy 磚（優先），吃不到再吃 decoy 磚（理論上少見）。純推導、不改 realInput。
+//   讓「鍵盤打字」與「點磚」對磚的暗化效果一致（打了 t → t 磚變暗），且不需獨立 tileOrder。
+function deriveTileUsage(inputValue) {
+  const tiles = G.hintScramble || [];
+  const used = tiles.map(() => false);
+  const letters = Array.from(normalizeAnswer(inputValue || '')).filter(c => !/\s/.test(c));
+  for (const ch of letters) {
+    let hit = -1;
+    for (let i = 0; i < tiles.length; i++) {
+      if (!used[i] && !tiles[i].decoy && normalizeAnswer(tiles[i].ch) === ch) { hit = i; break; }
+    }
+    if (hit < 0) {
+      for (let i = 0; i < tiles.length; i++) {
+        if (!used[i] && normalizeAnswer(tiles[i].ch) === ch) { hit = i; break; }
+      }
+    }
+    if (hit >= 0) used[hit] = true;
+    // 吃不到對應磚（例如鍵盤打了答案沒有的字母）→ 不標任何磚，判定照樣以 realInput 為準。
+  }
+  return used;
+}
+
 function renderLetterTiles() {
   const rack = document.getElementById('letterRack');
   if (!rack) return;
   if (!isTileMode(G.mode)) { rack.hidden = true; rack.innerHTML = ''; return; }
   const tiles = G.hintScramble || [];
+  const inp = document.getElementById('realInput');
+  const used = deriveTileUsage(inp ? inp.value : '');
+  const anyTyped = (inp && (inp.value || '').length > 0);
   const hintIdx = AnswerHint.enabled ? nextCorrectTileIdx() : -1;
   const btns = tiles.map((t, i) => {
     const cls = ['letter-tile'];
-    if (t.used) cls.push('used');
+    if (used[i]) cls.push('used');
     if (t.decoy) cls.push('decoy');
-    if (i === hintIdx) cls.push('next-hint');
+    if (i === hintIdx && !used[i]) cls.push('next-hint');
     return `<button type="button" class="${cls.join(' ')}" data-idx="${i}"`
-      + (t.used ? ' disabled aria-disabled="true"' : '')
+      + (used[i] ? ' disabled aria-disabled="true"' : '')
       + ` tabindex="-1">${_htmlEsc(t.ch)}</button>`;
   }).join('');
-  // 退一格鈕：把最後點入的一顆磚吐回（改主意/點錯順序時用），拼滿前都可退。
+  // 退一格鈕：刪掉 realInput 最後一個字元（點磚或鍵盤打的都能退）。有輸入才可用。
   const back = `<button type="button" id="tileBackspace" class="letter-tile tile-back"`
-    + ` tabindex="-1" title="退一格（收回上一顆字母）" aria-label="退一格"`
-    + (G.tileOrder && G.tileOrder.length ? '' : ' disabled aria-disabled="true"')
+    + ` tabindex="-1" title="退一格（收回上一個字母）" aria-label="退一格"`
+    + (anyTyped ? '' : ' disabled aria-disabled="true"')
     + `><span class="vico vico-arrow" aria-hidden="true"></span></button>`;
   rack.innerHTML = btns + back;
   rack.hidden = false;
 }
 
-// 「提示下一顆該點哪顆」：依目前已拼出的字串（realInput.value 正規化）對比正解，
-// 找出「下一個該點的正確字母」對應的、尚未使用的磚 index。找不到回 -1。
-// 純顯示引導（發光），不自動點、不影響判定。答案提示鈕在點字關的新用途。
+// 「提示下一顆該點哪顆」：依目前已輸入的字串（realInput）長度對比正解，找出「下一個該點的
+// 正確字母」對應的、依 deriveTileUsage 尚未用掉的磚 index。找不到回 -1。純顯示引導（發光）。
 function nextCorrectTileIdx() {
   if (!G.currentPrey) return -1;
-  // 以主讀法（tileAnswerSource）逐字母對位，與磚來源一致。
   const answerLetters = Array.from(tileAnswerSource(G.currentPrey))
     .filter(c => !/\s/.test(c))
     .map(c => normalizeAnswer(c));
-  const pos = (G.tileOrder || []).length; // 下一個要拼的答案字母序位
-  if (pos >= answerLetters.length) return -1;
-  const want = answerLetters[pos];
+  const inp = document.getElementById('realInput');
+  const typedLen = Array.from(normalizeAnswer(inp ? inp.value : ''))
+    .filter(c => !/\s/.test(c)).length;
+  if (typedLen >= answerLetters.length) return -1;
+  const want = answerLetters[typedLen]; // 下一個該拼的答案字母
   const tiles = G.hintScramble || [];
+  const used = deriveTileUsage(inp ? inp.value : '');
   for (let i = 0; i < tiles.length; i++) {
-    if (!tiles[i].used && !tiles[i].decoy && normalizeAnswer(tiles[i].ch) === want) return i;
+    if (!used[i] && !tiles[i].decoy && normalizeAnswer(tiles[i].ch) === want) return i;
   }
-  // 退而求其次：連 decoy 都比對（理論上正解字母一定在非 decoy 磚裡，這行少用到）
   for (let i = 0; i < tiles.length; i++) {
-    if (!tiles[i].used && normalizeAnswer(tiles[i].ch) === want) return i;
+    if (!used[i] && normalizeAnswer(tiles[i].ch) === want) return i;
   }
   return -1;
 }
 
-// 點一顆字母磚：把該字母 append 進 #realInput.value → dispatch 'input'（走既有
-// updateInputDisplay/答案格渲染）→ 標記該磚 used、推入 tileOrder → 重繪磚列 →
-// 若拼滿（字母數＝答案字母數）自動 submitWord()。不改判定：判定仍在 submitWord。
+// 點一顆字母磚：把該字母 append 進 #realInput.value → dispatch 'input'。後續的答案格
+// 更新、磚重繪（used 依 realInput 重算）、拼滿自動送出全部由 input 事件監聽器統一處理
+// （見下方 realInput 'input' listener）。判定仍在 submitWord，以 realInput 為準。
 function clickLetterTile(idx) {
   if (!G.active || !isTileMode(G.mode)) return;
   const tiles = G.hintScramble || [];
   const t = tiles[idx];
-  if (!t || t.used) return;
+  if (!t) return;
   const inp = document.getElementById('realInput');
   if (!inp) return;
+  // 若這顆磚依目前輸入已算「用掉」，忽略（避免重複點同一顆超額 append）。
+  if (deriveTileUsage(inp.value)[idx]) return;
   inp.value = (inp.value || '') + t.ch;
-  t.used = true;
-  G.tileOrder.push(idx);
-  inp.dispatchEvent(new Event('input', { bubbles: true })); // 觸發答案格更新
-  renderLetterTiles();
+  inp.dispatchEvent(new Event('input', { bubbles: true }));
   if (window.Sfx) Sfx.sfxClick();
-  maybeAutoSubmitTiles();
 }
 
-// 退一格：吐回最後點入的那顆磚（used→false、從 realInput 尾端去掉一個字元）。
+// 退一格：刪掉 realInput 最後一個字元（點磚或鍵盤打的字都能退）→ dispatch 'input'，
+// 磚 used / 答案格由 input 監聽器重算。
 function tileBackspace() {
   if (!G.active || !isTileMode(G.mode)) return;
-  const order = G.tileOrder || [];
-  if (!order.length) return;
-  const idx = order.pop();
-  const tiles = G.hintScramble || [];
-  if (tiles[idx]) tiles[idx].used = false;
   const inp = document.getElementById('realInput');
-  if (inp) {
-    const chars = Array.from(inp.value || '');
-    chars.pop();
-    inp.value = chars.join('');
-    inp.dispatchEvent(new Event('input', { bubbles: true }));
-  }
-  renderLetterTiles();
+  if (!inp || !(inp.value || '').length) return;
+  const chars = Array.from(inp.value);
+  chars.pop();
+  inp.value = chars.join('');
+  inp.dispatchEvent(new Event('input', { bubbles: true }));
   if (window.Sfx) Sfx.sfxClick();
 }
 
-// 把所有磚歸位（used→false、清 tileOrder、清空輸入），答錯重試/新題時用。
+// 清空輸入（答錯重試/新題）。清空後直接重繪答案格 + 磚列（用 guard 擋掉 input 事件裡
+// 的 maybeAutoSubmit 遞迴——雖然空字串本就不會觸發送出，仍明確標示這是「系統清空」）。
 function resetLetterTiles() {
-  (G.hintScramble || []).forEach(t => { t.used = false; });
-  G.tileOrder = [];
   const inp = document.getElementById('realInput');
-  if (inp) { inp.value = ''; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+  if (inp) inp.value = '';
+  updateInputDisplay('');
   renderLetterTiles();
 }
 
-// 拼滿（已點入的字母數＝答案非空白字母數）就自動送出。這是點字關的「送出時機」，
-// 玩家不必再按送出鈕（送出鈕仍保留、Enter 仍可用，見全域監聽）。答錯的重試（清磚）
-// 由 submitWord 的 miss 分支呼叫 resetLetterTiles。
-function maybeAutoSubmitTiles() {
+// 拼滿就自動送出——**依 realInput 實際內容的字母數**（不分點磚或鍵盤打字，兩種都算），
+// ≥ 主讀法（tileAnswerSource）的非空白字母數即送。送出鈕/Enter 仍可提前手動送。
+// 答錯的重試（清空）由 submitWord 的 miss 分支呼叫 resetLetterTiles。
+function maybeAutoSubmit() {
   if (!G.active || !isTileMode(G.mode)) return;
-  // 拼滿＝已點入的字母數 ≥ 主讀法（tileAnswerSource）的非空白字母數（與磚來源一致）。
   const answerLen = Array.from(tileAnswerSource(G.currentPrey))
     .filter(c => !/\s/.test(c)).length;
-  const typedLen = (G.tileOrder || []).length;
+  const inp = document.getElementById('realInput');
+  const typedLen = Array.from(normalizeAnswer(inp ? inp.value : ''))
+    .filter(c => !/\s/.test(c)).length;
   if (answerLen > 0 && typedLen >= answerLen) submitWord();
 }
 
@@ -5759,14 +5799,21 @@ function renderAnswerCells(typed) {
   host.innerHTML = html;
 }
 
-// §填空（L2）答案格下方說明小字。點字拼字改版（2026-07-08）：作答＝點下方字母磚，
-// 依正確順序把字母填進答案格；點錯可用「退一格」收回。故說明改成「點字母磚」引導，
-// 不再用打字時代的「例如 a-m-a-s-a-m」dash 示例（避免玩家以為要打字）。
-const ANSWER_EXAMPLE_TEXT = '點下方字母磚，照正確順序拼出這個詞（可退一格）';
+// §填空（L2）答案格下方範例小字（沿用既有 #answerExample）。點字拼字改版後這裡放
+// 「字母磚打散、照順序拼」的提醒；「兩種輸入」提示另由 renderTileInputHint 統一放在磚列下方。
+const ANSWER_EXAMPLE_TEXT = '字母磚順序已打散，照正確順序拼出這個詞';
 function renderAnswerExample() {
   const el = document.getElementById('answerExample');
   if (!el) return;
   el.textContent = ANSWER_EXAMPLE_TEXT;
+}
+
+// §兩種輸入提示（2026-07-08 使用者追加）：所有點字關（L2/L3/L5）磚列下方一句小字，
+// 明確告訴玩家「可以點字母磚，也可以直接用鍵盤打字」。純提示文字，不影響判定。
+function renderTileInputHint() {
+  const el = document.getElementById('tileInputHint');
+  if (!el) return;
+  el.textContent = isTileMode(G.mode) ? '可以點字母磚，也可以直接用鍵盤打字' : '';
 }
 
 // §聽打（L3）「單字提示」長度示意點列：依完整答案字母數排一列金點，多字詞用短線分組。
@@ -5965,8 +6012,9 @@ function renderSpecialCharBar() {
   const btns = document.getElementById('specialCharBtns');
   if (!bar || !btns) return;
   // 選項關（L1/L4）不用打字 → 一律隱藏。
-  // 點字關（L2/L3/L5，2026-07-08 改點字母磚）→ 難打字元都在磚上，直接點，隱藏此列。
-  if (G.isChoice || isTileMode(G.mode)) { bar.hidden = true; btns.innerHTML = ''; return; }
+  // 點字關（L2/L3/L5）：字母磚已含喉塞音/擴充字母，但**鍵盤打字的玩家**（兩種輸入並存）
+  //   仍需要這排來輸入難打字元 → 保留顯示（插入 realInput，與點磚同一條判定管線）。
+  if (G.isChoice) { bar.hidden = true; btns.innerHTML = ''; return; }
   const chars = getLangSpecialChars();
   if (!chars.length) { bar.hidden = true; btns.innerHTML = ''; return; }
   btns.innerHTML = chars.map(ch =>
@@ -6013,11 +6061,20 @@ function insertSpecialChar(ch) {
 })();
 
 // ─── Input ───────────────────────────────────────────
+// 鍵盤打字與點磚共用這條：任何 realInput 內容變動都走這裡（鍵盤原生 input 事件、
+// 點磚/退格/清空我們手動 dispatch 的 input 事件）。
+//   1) 更新中央答案格顯示（updateInputDisplay → renderAnswerCells）。
+//   2) 點字關同步重繪磚列（used 依 realInput 重算，讓鍵盤打的字也把對應磚標暗）。
+//   3) 純鍵盤打字時也能拼滿自動送出（maybeAutoSubmit 依 realInput 字母數判斷）。
 document.getElementById('realInput').addEventListener('input', function(e) {
   if (!G.active) return;
   // 用跟 submitWord() 同一套正規化（normalizeAnswer：trim/壓空格/小寫/統一撇號），
   // 顯示與判定一致，鍵盤 ' 才會即時對到資料裡的 ʼ/’。
   updateInputDisplay(normalizeAnswer(e.target.value));
+  if (isTileMode(G.mode)) {
+    renderLetterTiles();               // 磚 used 隨 realInput 重算（鍵盤/點磚一致）
+    maybeAutoSubmit();                 // 鍵盤打滿也自動送出（與點磚同一時機）
+  }
 });
 
 // §Enter 送出改「全域」（修「要按兩次 Enter」）：以前只綁在 #realInput 上，一旦焦點掉到
