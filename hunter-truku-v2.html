@@ -2503,6 +2503,7 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
 #lbBody::-webkit-scrollbar { width:4px; }
 #lbBody::-webkit-scrollbar-thumb { background:#F5A623; border-radius:2px; }
 .lb-loading { text-align:center; color:#888; font-family:'Fredoka One',sans-serif; font-size:10px; padding:20px; }
+.lb-note { color:#fff; font-size:12px; line-height:1.5; text-align:center; padding:6px 12px 10px; text-shadow:0 1px 2px rgba(0,0,0,.6); }
 .lb-empty { text-align:center; color:#555; font-family:'Fredoka One',sans-serif; font-size:10px; padding:20px; }
 .lb-table { width:100%; border-collapse:collapse; }
 .lb-table th {
@@ -2602,7 +2603,8 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
 #matchScreen {
   display:none; position:absolute; inset:0; z-index:410;
   flex-direction:column; align-items:center;
-  background:linear-gradient(180deg,#12301a,#0b2010 70%);
+  /* 沿用全站叢林背景 v2-background-game.jpg + 暗綠 scrim（比照其他面板），不再擋成純綠 */
+  background:linear-gradient(rgba(5,20,3,0.5), rgba(5,20,3,0.78)), url('/images/ui/v2-background-game.jpg') center/cover no-repeat;
   color:#F5EFDD; font-family:'Noto Sans TC',sans-serif;
   padding:14px 16px; box-sizing:border-box; overflow:hidden;
 }
@@ -2624,15 +2626,16 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
   width:100%; max-width:660px; flex:1 1 auto; align-content:center; align-items:center;
 }
 .match-tile {
-  min-height:54px; border-radius:12px; cursor:pointer; border:2px solid;
+  min-height:56px; border-radius:14px; cursor:pointer; border:3px solid #A9741F; position:relative;
   font-family:'Noto Sans TC',sans-serif; font-weight:700; font-size:16px; line-height:1.15;
   display:flex; align-items:center; justify-content:center; text-align:center; padding:6px 8px;
   word-break:break-word; overflow-wrap:anywhere;
-  transition:transform .12s, box-shadow .12s, opacity .3s;
-  box-shadow:0 3px 0 rgba(0,0,0,0.35);
+  transition:transform .12s, box-shadow .12s, filter .12s, opacity .3s;
+  /* 木塊立體：實心棕底邊 + 內金線 + 落影，比照 .lc-btn */
+  box-shadow:0 5px 0 #5A3000, 0 0 0 2px rgba(255,215,0,0.18) inset, 0 7px 15px rgba(0,0,0,0.42);
 }
-.match-tile.mt-word { background:linear-gradient(180deg,#FFD86A,#E0A02A); border-color:#8B5500; color:#3A2410; }
-.match-tile.mt-zh   { background:linear-gradient(180deg,#7CC24E,#3E7E28); border-color:#255018; color:#F3FBE9; }
+.match-tile.mt-word { background:linear-gradient(160deg,#FFDE7A,#D99A2B); border-color:#A9741F; color:#3A2410; text-shadow:0 1px 0 rgba(255,240,180,0.55); }
+.match-tile.mt-zh   { background:linear-gradient(160deg,#6FB84A,#2E6E22); border-color:#255018; color:#F3FBE9; text-shadow:0 1px 1px rgba(0,0,0,0.45); }
 .match-tile:hover:not(.matched) { transform:translateY(-2px); filter:brightness(1.06); }
 .match-tile.sel { box-shadow:0 0 0 3px #FFF2B0, 0 0 14px rgba(255,220,80,0.7); transform:translateY(-2px); }
 .match-tile.bad { box-shadow:0 0 0 3px #FF5555; animation:mgShake .3s; }
@@ -2658,7 +2661,7 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
   content:''; position:absolute; inset:0; border-radius:16px;
   background:rgba(8,20,6,0.42); pointer-events:none; z-index:1;
 }
-.lc-btn.lc-wip .lc-grid-icon,
+.lc-btn.lc-wip .lc-icon,
 .lc-btn.lc-wip .lc-lvtag,
 .lc-btn.lc-wip .lc-name,
 .lc-btn.lc-wip .lc-desc,
@@ -2754,6 +2757,10 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
       <div class="title-sub" id="titleSub">太魯閣語學習 · TRUKU VOCABULARY</div>
       <div class="title-sub" id="welcomeMsg" style="font-size:9px;color:#FFE566;letter-spacing:1px;margin-top:3px;"></div>
     </div>
+    <!-- §我的闖關進度（2026-07-07）：顯示登入玩家「本語別」各關暫存分數（尚未進榜的 5 關進度）。
+         內容由 renderRunProgress() 依 localStorage 暫存動態填入；未登入/訪客或無暫存時整塊隱藏。
+         DOM 結構基本（id: myProgress / class: my-progress），美化與版位交小排版。 -->
+    <div id="myProgress" class="my-progress" style="display:none;"></div>
     <!-- §任務B：標題畫面「選擇學習語別」入口（小木牌標籤 + 深木色下拉）。 -->
     <div class="lang-picker lang-picker-title" id="titleLangPicker">
       <span class="lang-picker-label">選擇學習語別</span>
@@ -2806,10 +2813,9 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
         <span class="lc-unlock-note">完成 Level 4 後解鎖</span>
       </div>
       <!-- 小遊戲：詞義配對消除（不走關卡解鎖，隨時可玩）
-           開發期：加 .lc-wip 建置中角標；門檻放行 asd8107，見 startMatchGame()。 -->
-      <div class="lc-btn lc-bonus lc-wip" onclick="startMatchGame()">
-        <span class="lc-wip-badge">建置中</span>
-        <span class="lc-grid-icon"><i></i><i></i><i></i><i></i></span>
+           2026-07-08：已對所有玩家開放（移除 lc-wip 建置中角標與門檻）。 -->
+      <div class="lc-btn lc-bonus" onclick="startMatchGame()">
+        <img class="lc-icon" src="/images/ui/v2-match-plus-badge.png" alt="詞義配對消除">
         <span class="lc-lvtag">小遊戲</span>
         <span class="lc-name">詞義配對消除</span>
         <span class="lc-desc">點族語詞＋對應中文，限時消一消</span>
@@ -2819,6 +2825,7 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
     <!-- 底部石質功能列：排行榜 / 設定(暫沿用登出位) / 音效 / 登出。
          沿用既有 onclick（openLeaderboard / logout / onVolBtnClick），排成石bar。 -->
     <div class="title-footer">
+      <button class="title-small-btn" onclick="showAuthScreen()">回首頁</button>
       <button class="title-small-btn" onclick="openLeaderboard()"><img class="ui-ico" src="/images/ui/v2-ui-icon-trophy.png" alt=""> 排行榜</button>
       <button class="title-small-btn" onclick="logout()"><img class="ui-ico" src="/images/ui/v2-ui-icon-logout.png" alt=""> 登出</button>
       <button class="title-icon-btn" id="volBtn" onclick="onVolBtnClick()" title="音量開關" aria-label="音量開關">
@@ -2832,9 +2839,12 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
   <div id="lbModal">
     <div id="lbBox">
       <div id="lbHeader">
-        <span id="lbTitle"><img class="ui-ico" src="/images/ui/v2-ui-icon-trophy.png" alt=""> 獵人排行榜 · 累計總分</span>
+        <span id="lbTitle"><img class="ui-ico" src="/images/ui/v2-ui-icon-trophy.png" alt=""> 獵人排行榜 · 五關總分</span>
         <button id="lbClose" onclick="closeLeaderboard()"><span class="vico vico-cross"></span> 關閉</button>
       </div>
+      <!-- §排行榜規則說明（2026-07-07）：只有闖完 5 關才進榜，用 5 關總分排名。
+           樣式基本（class: lb-note），美化交小排版。 -->
+      <div id="lbNote" class="lb-note">闖完全部 5 關（LEVEL 1～5），5 關總分才會登上排行榜排名；還沒闖完 5 關的成績會先暫存在你的帳號裡，不會進榜。</div>
       <div id="lbBody"><div class="lb-loading">載入中...</div></div>
     </div>
   </div>
@@ -3260,8 +3270,8 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
 #bgmVolRange::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FBE7A6,#D99A2B 70%);border:1.5px solid #7a5214;box-shadow:0 1px 3px rgba(0,0,0,.5);cursor:pointer}
 #bgmVolRange::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FBE7A6,#D99A2B 70%);border:1.5px solid #7a5214;box-shadow:0 1px 3px rgba(0,0,0,.5);cursor:pointer}
 #bgmVolRange::-moz-range-track{height:6px;border-radius:999px;background:linear-gradient(90deg,#D99A2B,#F0C15A)}
-#siteCredit{position:fixed;left:50%;transform:translateX(-50%);bottom:8px;z-index:9998;max-width:min(90vw,560px);padding:3px 12px;background:rgba(20,32,16,.5);border:1px solid rgba(169,116,31,.45);border-radius:8px;color:#E6CE8C;font-size:11px;line-height:1.4;letter-spacing:.3px;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none;user-select:none;white-space:nowrap}
-@media (max-width:600px){#bgmVolBar{right:8px;top:8px}#bgmVolBar:hover,#bgmVolBar.open{width:180px}#bgmVolBar .bvb-label{display:none}#siteCredit{font-size:9px;padding:2px 8px;max-width:94vw;white-space:normal}}
+#siteCredit{position:fixed;left:50%;transform:translateX(-50%);bottom:5px;z-index:9998;max-width:94vw;padding:0;background:none;border:none;color:rgba(230,206,140,.42);font-size:10px;line-height:1.3;letter-spacing:.2px;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.8);pointer-events:none;user-select:none;white-space:nowrap}
+@media (max-width:600px){#bgmVolBar{right:8px;top:8px}#bgmVolBar:hover,#bgmVolBar.open{width:180px}#bgmVolBar .bvb-label{display:none}#siteCredit{font-size:9px;max-width:94vw;white-space:normal}}
 </style>
 <div id="bgmVolBar" role="group" aria-label="音樂音量">
   <img id="bgmVolBarIcon" src="/images/ui/ui-volume-on.png" alt="">
@@ -3661,6 +3671,11 @@ async function refreshAuthMe() {
     AUTH.totalScore = data.totalScore;
     // 開發期軟性門檻：記下已認證的 username（server 回傳），供「建置中」小遊戲放行判定。
     if (data.username) localStorage.setItem(AUTH_USERNAME_KEY, data.username);
+    // §闖關暫存續闖：新規則下過關先暫存、不即時送後端，所以後端 unlockedLevel 可能落後於
+    // 本地已闖到的關卡（例如過了 L1 本地解鎖 L2 後重新整理）。用本地暫存的「已完成關卡數」
+    // 把解鎖進度往上補（取較大值），讓玩家重整/回首頁後仍能續闖尚未送出的進度。
+    // 需在 AUTH.username 已設定後呼叫（runProgressKey 依 username）。
+    applyLocalUnlockFromProgress();
     return true;
   } catch (e) {
     return false;
@@ -3684,6 +3699,7 @@ function showTitleScreen() {
     ? '訪客模式・成績不會記錄'
     : `歡迎回來，${AUTH.displayName}！`;
   applyLevelLocks();
+  renderRunProgress(); // §我的闖關進度：顯示本語別各關暫存分數（5 關進度）
   // 第一次進標題必然在使用者互動（登入/有效 token 載入）之後，autoplay 合規。
   if (window.Sfx) Sfx.unlock();   // 提前喚醒音效 AudioContext，讓第一聲零延遲
   playTitleBgm();                 // 迎賓森林環境音（靜音時內部自動跳過）
@@ -4894,16 +4910,7 @@ const MATCH_PAIRS = 6, MATCH_TIME = 60, MATCH_HIT = 100, MATCH_MISS_PENALTY = 3;
 let MG = { active:false, score:0, cleared:0, timeLeft:0, timer:null, sel:null, pool:[], lock:false };
 
 async function startMatchGame() {
-  // ── 開發期軟性門檻：「詞義配對消除」建置中，僅測試帳號 asd8107 可進入 ──
-  // username 來源：優先用已認證的 AUTH.username（server /api/auth/me 回傳），
-  // fallback localStorage（重整後 AUTH 尚未刷新時的保底）。訪客/未登入皆為 null → 被擋。
-  // 非安全邊界（前端可竄改），僅為讓一般玩家看到「建置中」、asd8107 能測。
-  const currentUser = (AUTH && AUTH.username) || localStorage.getItem(AUTH_USERNAME_KEY);
-  if (currentUser !== WIP_MATCH_ALLOWED_USER) {
-    if (window.Sfx) Sfx.sfxClick();
-    showLangToast('此關卡建置中，敬請期待');
-    return;
-  }
+  // 詞義配對消除：已對所有玩家開放（2026-07-08 移除建置中門檻）。
   if (window.Sfx) Sfx.sfxClick();
   document.getElementById('titleScreen').style.display = 'none';
   document.getElementById('matchResult').classList.remove('show');
@@ -4911,8 +4918,10 @@ async function startMatchGame() {
   let pool = [];
   try { pool = await loadPool(null, false); } catch (e) {}      // 全池（filter=null→all）
   if (!pool || pool.length < MATCH_PAIRS) pool = FALLBACK_PREY_POOL;
-  MG.pool = pool.filter(p => displayWordOf(p) && p.zh);
-  if (MG.pool.length < MATCH_PAIRS) MG.pool = FALLBACK_PREY_POOL.filter(p => displayWordOf(p) && p.zh);
+  // 排除「族語或中文含 +」的詞（如賽夏語「tam+人名」文法占位詞，不適合配對、會出現怪「+」磚）
+  const _mgOK = p => { const w = displayWordOf(p), z = p.zh; return w && z && !String(w).includes('+') && !String(z).includes('+'); };
+  MG.pool = pool.filter(_mgOK);
+  if (MG.pool.length < MATCH_PAIRS) MG.pool = FALLBACK_PREY_POOL.filter(_mgOK);
   MG.score = 0; MG.cleared = 0; MG.sel = null; MG.lock = false; MG.active = true;
   MG.timeLeft = MATCH_TIME;
   updateMatchHud();
@@ -5866,41 +5875,196 @@ function showHitSparkle(left, top) {
 // ─── API ─────────────────────────────────────────
 const API = `${API_BASE}/api`;
 
+// ═══════════════════════════════════════════════════
+//  §闖關暫存分數（2026-07-07 使用者定案：闖完 5 關才進榜）
+//  ---------------------------------------------------------------
+//  規則：
+//   1. 排行榜以「闖完全部 5 關（L1~L5）的總分」排名。
+//   2. 只有完成 5 關的玩家才進榜；未完成不列入。
+//   3. 每一關過關的分數先「暫存」（localStorage，綁 帳號×語別），玩家自己的
+//      帳號頁看得到各關進度分數。
+//   4. 沒完成 5 關，分數一律不送後端（不 submit /api/scores、不進排行榜）；
+//      各關分數先累積，等 5 關全過，才把 5 關成績一次送出。
+//  暫存 key：帳號 username + 語別 code（不同語別各自一份進度，跟排行榜逐語別一致）。
+//  暫存內容：{ [level]: {score,kills,accuracy,combo} }，每關存「該關最佳一次」。
+//  訪客不暫存、不送分（本來就不進榜）。
+// ═══════════════════════════════════════════════════
+const RUN_PROGRESS_KEY_PREFIX = 'hunter_run_progress_';
+
+// 暫存 key：綁 username×lang_code。未登入（理論上不會走到）用 '_'。
+function runProgressKey() {
+  const user = (AUTH && AUTH.username) || '_';
+  const lang = (G.lang && G.lang.code) || 'trv';
+  return RUN_PROGRESS_KEY_PREFIX + user + '_' + lang;
+}
+
+// 讀當前 帳號×語別 的各關暫存分數，回 { [level]: {...} }（無則空物件）。
+function loadRunProgress() {
+  try {
+    const raw = localStorage.getItem(runProgressKey());
+    const obj = raw ? JSON.parse(raw) : null;
+    return (obj && typeof obj === 'object') ? obj : {};
+  } catch (e) { return {}; }
+}
+
+// 寫入某一關的暫存分數（只保留該關「較高分」的一次，避免退步覆蓋）。
+function saveRunLevelScore(level, entry) {
+  try {
+    const all = loadRunProgress();
+    const prev = all[level];
+    if (!prev || (entry.score || 0) >= (prev.score || 0)) {
+      all[level] = entry;
+    }
+    localStorage.setItem(runProgressKey(), JSON.stringify(all));
+  } catch (e) { /* localStorage 不可用時靜默：不影響遊玩，只是無暫存 */ }
+}
+
+// 清掉當前 帳號×語別 的暫存（5 關總分成功送出後呼叫，讓下一輪重新累積）。
+function clearRunProgress() {
+  try { localStorage.removeItem(runProgressKey()); } catch (e) {}
+}
+
+// 目前 帳號×語別 已累積「過關（有暫存分數）」的關卡數（1~MAX_LEVEL）。
+function clearedLevelCount() {
+  const all = loadRunProgress();
+  let n = 0;
+  for (let lv = 1; lv <= MAX_LEVEL; lv++) if (all[lv]) n++;
+  return n;
+}
+
+// 依本地暫存的「已完成關卡」把 AUTH.unlockedLevel 往上補（取較大值）。
+// 暫存是逐關連續累積的（過 L1→存 L1、過 L2→存 L2…），所以「已完成最高關 + 1」就是
+// 本地應解鎖到的關卡（上限 MAX_LEVEL）。與後端回傳的 unlockedLevel 取 max，兩邊都不倒退。
+// 訪客不套用（訪客本來就全開、也不暫存）。
+function applyLocalUnlockFromProgress() {
+  if (!AUTH || AUTH.isGuest) return;
+  const all = loadRunProgress();
+  let maxCleared = 0;
+  for (let lv = 1; lv <= MAX_LEVEL; lv++) if (all[lv]) maxCleared = lv;
+  if (maxCleared > 0) {
+    const localUnlock = Math.min(MAX_LEVEL, maxCleared + 1);
+    if (localUnlock > AUTH.unlockedLevel) AUTH.unlockedLevel = localUnlock;
+  }
+}
+
+// 5 關暫存分數的總和（帳號頁顯示「目前累計」用）。
+function runProgressTotal() {
+  const all = loadRunProgress();
+  let sum = 0;
+  for (let lv = 1; lv <= MAX_LEVEL; lv++) if (all[lv]) sum += (all[lv].score || 0);
+  return sum;
+}
+
+// §我的闖關進度：把當前 帳號×語別 的各關暫存分數渲染到標題畫面 #myProgress。
+// 訪客 / 未登入 / 無任何暫存 → 整塊隱藏。5 關全過但尚未成功送出（極少數：送出失敗）
+// 時暫存仍在，也會顯示成 5/5。DOM/文案基本，美化與版位交小排版。
+function renderRunProgress() {
+  const box = document.getElementById('myProgress');
+  if (!box) return;
+  if (!AUTH || AUTH.isGuest || !AUTH.username) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  const all = loadRunProgress();
+  const done = clearedLevelCount();
+  if (done === 0) { box.style.display = 'none'; box.innerHTML = ''; return; }
+
+  const langZh = (G.lang && G.lang.nameZh) || '太魯閣語';
+  let rows = '';
+  for (let lv = 1; lv <= MAX_LEVEL; lv++) {
+    const e = all[lv];
+    const name = (LEVELS[lv] && LEVELS[lv].label) ? LEVELS[lv].label : ('LEVEL ' + lv);
+    const cell = e
+      ? `<span class="mp-score">${(e.score || 0).toLocaleString()}</span>`
+      : `<span class="mp-pending">未完成</span>`;
+    rows += `<div class="mp-row${e ? ' mp-done' : ''}"><span class="mp-lv">${escapeHtml(name)}</span>${cell}</div>`;
+  }
+  const total = runProgressTotal();
+  const tail = done >= MAX_LEVEL
+    ? `<div class="mp-total">5 關已完成 · 總分 ${total.toLocaleString()}（已進榜）</div>`
+    : `<div class="mp-total">目前累計 ${total.toLocaleString()} 分（${done}/${MAX_LEVEL} 關）· 闖完 5 關才會進榜</div>`;
+  box.innerHTML = `<div class="mp-head">我的闖關進度 · ${escapeHtml(langZh)}</div>${rows}${tail}`;
+  box.style.display = '';
+}
+
+// 5 關全過時呼叫：把暫存的 5 關成績一次送到後端（每關一筆 cleared=1），
+// 讓後端聚合成「5 關總分」上榜。任一筆失敗即視為送出失敗（保留暫存，可重試）。
+// 回傳 { ok, submitted }。訪客不會走到這（isGuest 早就 return）。
+async function submitFullRun() {
+  const all = loadRunProgress();
+  const lang = (G.lang && G.lang.code) || 'trv';
+  let submitted = 0;
+  for (let lv = 1; lv <= MAX_LEVEL; lv++) {
+    const e = all[lv];
+    if (!e) return { ok: false, submitted }; // 缺關就不該送（防呆）
+    try {
+      const res = await fetch(`${API}/scores`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({
+          level:    lv,
+          score:    e.score || 0,
+          kills:    e.kills || 0,
+          accuracy: e.accuracy || 0,
+          combo:    e.combo || 0,
+          cleared:  true,
+          lang_code: lang
+        })
+      });
+      if (!res.ok) return { ok: false, submitted };
+      submitted++;
+    } catch (err) {
+      return { ok: false, submitted }; // 網路失敗：保留暫存，之後可重送
+    }
+  }
+  // 5 筆都送成功：後端解鎖進度已同步（cleared=1），刷新 AUTH，清暫存。
+  await refreshAuthMe();
+  clearRunProgress();
+  return { ok: true, submitted };
+}
+
 // cleared: true = 過關成功呼叫（submitAndNext），false = 死亡結束呼叫（submitAndRetry）。
 // 玩家身分一律來自登入的 JWT（後端從 req.player.display_name 取得），不再從這裡傳 player 字串。
+//
+// ⚠️【2026-07-07 送分時機改版】不再每關即時 POST 到 /api/scores。改為：
+//   - 過關（cleared=true）：把該關分數「暫存」到 localStorage（帳號頁可看各關進度），
+//     並在本次 session 內本地序列解鎖下一關（比照訪客，讓玩家可續闖）。此時不打後端。
+//   - 若這關是 L5（最後一關）且 5 關都已暫存 → 呼叫 submitFullRun() 一次送出 5 關總分上榜。
+//   - 死亡（cleared=false）：不記錄、不暫存（沒過關就不算數）。
+// 回傳物件供結算畫面顯示文案：
+//   { guest:true } | { staged:true, cleared:n } | { fullRun:true, ok, rank? } | { error }
 async function submitScore(cleared) {
-  // 訪客模式：成績一律不記錄——不打 /api/scores、不進排行榜。若過關則在本次 session
-  // 記憶體內自行解鎖下一關（比照後端序列解鎖），讓訪客也能順序闖到下一關；回傳
-  // { guest:true } 讓結算畫面（submitAndRetry / submitAndNext）走「不記錄」文案分支。
+  // 訪客模式：成績一律不記錄——不打 /api/scores、不進排行榜、不暫存。若過關則在本次
+  // session 記憶體內自行解鎖下一關（比照後端序列解鎖），讓訪客也能順序闖到下一關。
   if (AUTH.isGuest) {
     if (cleared && G.level >= AUTH.unlockedLevel && G.level < MAX_LEVEL) {
       AUTH.unlockedLevel = G.level + 1;
     }
     return { guest: true, unlockedLevel: AUTH.unlockedLevel };
   }
+
+  // 死亡（未過關）：不記錄任何東西。
+  if (!cleared) return { staged: false, notCleared: true };
+
   const acc = G.totalAttempts > 0 ? Math.round(G.hitAttempts/G.totalAttempts*100) : 0;
-  try {
-    const res = await fetch(`${API}/scores`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders() },
-      body: JSON.stringify({
-        level:    G.level,
-        score:    G.score,
-        kills:    G.kills,
-        accuracy: acc,
-        combo:    G.combo,
-        cleared:  !!cleared,
-        lang_code: (G.lang && G.lang.code) || 'trv'  // §任務B-4：記錄本局語別
-      })
-    });
-    const data = await res.json();
-    if (res.ok && typeof data.unlockedLevel === 'number') {
-      AUTH.unlockedLevel = data.unlockedLevel;
-    }
-    return data; // { success, rank, unlockedLevel } 或 { error }（401/403 等）
-  } catch(e) {
-    return null; // 網路失敗時靜默處理
+
+  // 過關 → 暫存本關分數（帳號頁可見各關進度）。
+  saveRunLevelScore(G.level, {
+    score: G.score, kills: G.kills, accuracy: acc, combo: G.combo
+  });
+
+  // 本次 session 本地序列解鎖下一關（分數還沒送後端，先讓玩家可以續闖）。
+  if (G.level >= AUTH.unlockedLevel && G.level < MAX_LEVEL) {
+    AUTH.unlockedLevel = G.level + 1;
   }
+
+  const done = clearedLevelCount();
+
+  // 尚未湊齊 5 關：只暫存、不送後端。
+  if (done < MAX_LEVEL) {
+    return { staged: true, cleared: done };
+  }
+
+  // 5 關全過 → 一次送出 5 關總分上榜。
+  const result = await submitFullRun();
+  return { fullRun: true, ok: result.ok, submitted: result.submitted };
 }
 
 // ─── End States ─────────────────────────────────────
@@ -5962,16 +6126,11 @@ async function submitAndRetry() {
   btn.disabled = true;
   btn.textContent = '送出中...';
   const result = await submitScore(false);
+  // 死亡（未過關）：新規則下一律不記錄、不暫存、不進榜——只提示玩家再挑戰。
   if (result && result.guest) {
     setRankMsg('goRankResult', 'none', '訪客模式・成績不記錄', 'v2-ui-icon-player.png');
-  } else if (result && result.rank) {
-    setRankMsg('goRankResult', 'ok', `第 ${result.rank} 名！成績已記錄`);
-  } else if (result && result.error) {
-    setRankMsg('goRankResult', 'bad', result.error);
-  } else if (result) {
-    setRankMsg('goRankResult', 'ok', '成績已記錄');
   } else {
-    setRankMsg('goRankResult', 'none', '（離線模式，未記錄）');
+    setRankMsg('goRankResult', 'none', '未過關・成績不計入，再挑戰一次！');
   }
   setTimeout(() => {
     document.getElementById('gameOverScreen').classList.remove('show');
@@ -5985,26 +6144,37 @@ async function submitAndNext() {
   btn.textContent = '送出中...';
   const prevUnlocked = AUTH.unlockedLevel;
   const result = await submitScore(true);
+
+  // 依 submitScore 回傳的四種狀態顯示對應文案（見該函式說明）。
   if (result && result.guest) {
+    // 訪客：本來就不進榜。
     let msg = '訪客模式・成績不記錄';
     if (AUTH.unlockedLevel > prevUnlocked) {
       msg += ` 解鎖 LEVEL ${AUTH.unlockedLevel}！`;
       if (window.Sfx) Sfx.sfxUnlock(); // 訪客本地序列解鎖也給解鎖音效
     }
     setRankMsg('clRankResult', 'none', msg, 'v2-ui-icon-player.png');
-  } else if (result && result.rank) {
-    let msg = `本關第 ${result.rank} 名！`;
+  } else if (result && result.fullRun) {
+    // 5 關全過：已一次送出 5 關總分。
+    if (result.ok) {
+      setRankMsg('clRankResult', 'ok', '恭喜闖完 5 關！總分已送出排行榜');
+      if (window.Sfx) Sfx.sfxUnlock();
+    } else {
+      // 送出失敗（網路/登入過期）：暫存仍在，玩家可稍後重試（回首頁重進最後一關再過即重送）。
+      setRankMsg('clRankResult', 'bad', '總分送出失敗，成績已暫存，請確認網路後重試');
+    }
+  } else if (result && result.staged) {
+    // 過關但還沒湊滿 5 關：分數已暫存、尚未進榜。
+    let msg = `本關成績已暫存（${result.cleared}/${MAX_LEVEL} 關）·闖完 5 關才會進榜`;
     if (AUTH.unlockedLevel > prevUnlocked) {
-      msg += ` 解鎖 LEVEL ${AUTH.unlockedLevel}！`;
+      msg += `｜解鎖 LEVEL ${AUTH.unlockedLevel}！`;
       if (window.Sfx) Sfx.sfxUnlock(); // #10 解鎖新關卡：「叮鈴」上行閃亮音
     }
     setRankMsg('clRankResult', 'none', msg);
   } else if (result && result.error) {
     setRankMsg('clRankResult', 'bad', result.error);
-  } else if (result) {
-    setRankMsg('clRankResult', 'ok', '成績已記錄');
   } else {
-    setRankMsg('clRankResult', 'none', '（離線模式，未記錄）');
+    setRankMsg('clRankResult', 'none', '本關成績已暫存');
   }
   // 顯示下一關按鈕（需同時滿足：還有下一關 且 已解鎖）
   const hasNext = G.level < MAX_LEVEL && AUTH.unlockedLevel > G.level;
@@ -6349,6 +6519,7 @@ function onLangChange(code) {
   _lbCache = null;        // 排行榜語別標籤會變，清快取下次重載
   populateLangSelects();  // 兩個下拉同步顯示新選擇
   refreshLangUi();
+  renderRunProgress();    // §我的闖關進度是逐語別的：切語別後重繪本語別進度
 }
 
 // 更新所有依語別的 UI 文案（標題副標、HUD 副標）。答對彩帶分類在

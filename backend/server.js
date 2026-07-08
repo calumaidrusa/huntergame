@@ -521,11 +521,18 @@ app.post('/api/scores', requirePlayerAuth, (req, res) => {
   });
 });
 
-// GET /api/leaderboard?limit=10&platform=mobile — 排行榜：每「玩家×語別×平台」一列的累計分數。
+// GET /api/leaderboard?limit=10&platform=mobile — 排行榜：每「玩家×語別×平台」一列的「闖完 5 關總分」。
 // = 每個玩家「在某一語別、某一平台」各關最佳成績加總（不是把每次遊玩全加總，避免狂刷洗分）。
+// ⚠️【新規則 2026-07-07 使用者定案】只有「完整闖完全部 5 關（L1~L5 每關都有 cleared=1）」的
+//    玩家才進榜；沒完成 5 關者不列入排名（前端也已改成 5 關全過才 submit 總分，這裡是後端把關
+//    的第二道防線，兼顧「歷史上以單關方式送過分、但沒完成 5 關」的舊資料自然被濾掉）。
+//    完成度判定：GROUP 內 COUNT(DISTINCT level WHERE cleared=1) >= MAX_LEVEL。
 // ⚠️ 分數**逐語別、逐平台獨立計算、不跨語別/跨平台加總**（使用者要求）：
 //    手機 endless 模式跟桌機固定回合制分數量級不同，絕不能混榜；同一玩家的
 //    desktop 500、mobile 400 → 是兩筆各自上榜，不會被合成 900。
+// ⚠️ 既有 11 筆舊資料：一筆不動、不刪不改（部署鐵律）。它們多半是「單關即時送分」年代的紀錄，
+//    在新規則下若某玩家×語別×平台湊不齊 5 關 cleared=1，自然不會出現在榜上——是「保留但不顯示」，
+//    不是刪除。若哪位舊玩家湊得齊 5 關，仍會正常上榜，向下相容。
 // 只計入有 player_id（登入身分）的分數，舊匿名分數不出現。
 // platform query 選填：不帶維持現況（回全部語別×平台的列，桌機/手機列會混排——
 // 這是預期行為，因為分組已經正確，不會有分數混算；只是列表順序上桌機手機交錯）。
@@ -541,16 +548,19 @@ app.get('/api/leaderboard', (req, res) => {
            best.lang_code AS lang_code,
            best.platform AS platform
     FROM (
-      SELECT player_id, lang_code, platform, level, MAX(score) AS score
+      SELECT player_id, lang_code, platform, level,
+             MAX(score) AS score,
+             MAX(cleared) AS cleared
       FROM scores WHERE player_id IS NOT NULL
       GROUP BY player_id, lang_code, platform, level
     ) best
     JOIN players p ON p.id = best.player_id
     WHERE (@platform IS NULL OR best.platform = @platform)
     GROUP BY best.player_id, best.lang_code, best.platform
+    HAVING COUNT(DISTINCT CASE WHEN best.cleared = 1 THEN best.level END) >= @maxLevel
     ORDER BY score DESC
     LIMIT @limit
-  `).all({ platform: platformFilter, limit });
+  `).all({ platform: platformFilter, limit, maxLevel: MAX_LEVEL });
   res.json({ data: rows });
 });
 
