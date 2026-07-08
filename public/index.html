@@ -2811,9 +2811,8 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
         <span class="lc-unlock-note">完成 Level 4 後解鎖</span>
       </div>
       <!-- 小遊戲：詞義配對消除（不走關卡解鎖，隨時可玩）
-           開發期：加 .lc-wip 建置中角標；門檻放行 asd8107，見 startMatchGame()。 -->
-      <div class="lc-btn lc-bonus lc-wip" onclick="startMatchGame()">
-        <span class="lc-wip-badge">建置中</span>
+           2026-07-08：已對所有玩家開放（移除 lc-wip 建置中角標與門檻）。 -->
+      <div class="lc-btn lc-bonus" onclick="startMatchGame()">
         <img class="lc-icon" src="/images/ui/v2-match-plus-badge.png" alt="詞義配對消除">
         <span class="lc-lvtag">小遊戲</span>
         <span class="lc-name">詞義配對消除</span>
@@ -4909,16 +4908,7 @@ const MATCH_PAIRS = 6, MATCH_TIME = 60, MATCH_HIT = 100, MATCH_MISS_PENALTY = 3;
 let MG = { active:false, score:0, cleared:0, timeLeft:0, timer:null, sel:null, pool:[], lock:false };
 
 async function startMatchGame() {
-  // ── 開發期軟性門檻：「詞義配對消除」建置中，僅測試帳號 asd8107 可進入 ──
-  // username 來源：優先用已認證的 AUTH.username（server /api/auth/me 回傳），
-  // fallback localStorage（重整後 AUTH 尚未刷新時的保底）。訪客/未登入皆為 null → 被擋。
-  // 非安全邊界（前端可竄改），僅為讓一般玩家看到「建置中」、asd8107 能測。
-  const currentUser = (AUTH && AUTH.username) || localStorage.getItem(AUTH_USERNAME_KEY);
-  if (currentUser !== WIP_MATCH_ALLOWED_USER) {
-    if (window.Sfx) Sfx.sfxClick();
-    showLangToast('此關卡建置中，敬請期待');
-    return;
-  }
+  // 詞義配對消除：已對所有玩家開放（2026-07-08 移除建置中門檻）。
   if (window.Sfx) Sfx.sfxClick();
   document.getElementById('titleScreen').style.display = 'none';
   document.getElementById('matchResult').classList.remove('show');
