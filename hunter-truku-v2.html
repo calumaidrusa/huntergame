@@ -513,11 +513,11 @@ body.blank-active #wordBubble::before {
   line-height: 1.1;
   font-weight: 400;
 }
-/* ── 填空 L2 新設計：提示字母磚 + 底部答案格 ──────────────────
-   右卡片 #wordTarget 加 .hint-letters 時，內容＝打散的「提示字母磚」
-   （renderHintLetters 產出 <span class="hint-letter">），每磚一個字母；
-   純提示（有哪些字母），不含順序、不含完整答案。
-   ⚠️ 以下為「功能正確、樣式基本」版，木質/羊皮紙精緻樣式交小排版。 */
+/* ── 填空 L2 舊設計：提示字母磚顯示在右卡片 #wordTarget.hint-letters ──────
+   ⚠️ 已停用（2026-07-08 點字拼字改版）：字母磚改成「可點的作答輸入」，搬到中央
+   答案面板下方的 #letterRack（見 .letter-tile）。#wordTarget 在點字關已 display:none，
+   不再加 .hint-letters class。以下 #wordTarget.hint-letters / .hint-letter 規則保留但
+   目前不生效（避免大幅刪 CSS 動到別處），小排版做磚樣式請改在 .letter-tile 上。 */
 #wordTarget.hint-letters {
   display: flex; flex-wrap: wrap; gap: 6px;
   align-items: center; justify-content: center;
@@ -570,6 +570,23 @@ body.blank-active #answerArea {
   border: none; border-radius: 0;
   filter: drop-shadow(0 5px 12px rgba(0,0,0,0.45));
 }
+/* §點字拼字（2026-07-08）L5 盲打：它沒有 blank-active/listen-active，但同樣改點字母磚，
+   需顯示中央答案面板（答案格 + 字母磚列）。此規則只涵蓋 L5（排除 blank/listen 兩關，
+   它們各有自己的定位覆寫）。位置置中偏下，避開左側獵人步道與右側詞卡。功能定位版，
+   精緻樣式/版位微調交小排版。 */
+body.tile-active:not(.blank-active):not(.listen-active) #answerArea {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  position: absolute; left: 50%; top: calc(50% - 4px); transform: translate(-50%,-50%);
+  bottom: auto; z-index: 40;
+  min-width: 320px; max-width: 560px;
+  padding: 24px 46px 26px;
+  background: url('/images/ui/v2-choice-panel-frame.png') center/100% 100% no-repeat;
+  border: none; border-radius: 0;
+  filter: drop-shadow(0 5px 12px rgba(0,0,0,0.45));
+}
+/* L5 盲打：範例小字/音節點都不顯示（線索最少，靠磚 + 記憶）。 */
+body.tile-active:not(.blank-active):not(.listen-active) #answerExample,
+body.tile-active:not(.blank-active):not(.listen-active) #syllableDots { display: none; }
 #answerAreaLabel {
   font-family: 'Noto Sans TC', sans-serif; font-size: 12px; font-weight: 700;
   letter-spacing: 3px; color: #FFE9B0;
@@ -614,6 +631,60 @@ body.blank-active #answerArea {
   0%,100% { box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,215,0,0.3); }
   50%     { box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px 3px rgba(255,215,0,0.6); }
 }
+/* ── §點字拼字（L2/L3/L5）可點字母磚列 #letterRack ─────────────────
+   點字關的作答輸入本身：一排打散的可點字母磚，點磚→字母落進上方答案格。
+   ⚠️ 以下為「功能正確、樣式基本」版，木質羊皮精緻樣式/版位微調交小排版。
+   穩定 class：.letter-tile[.used|.decoy|.next-hint]、#tileBackspace.tile-back。 */
+#letterRack[hidden] { display: none; }
+#letterRack {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  align-items: center; justify-content: center;
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1px dashed rgba(199,154,58,0.45);
+  max-width: 560px;
+}
+/* 單顆可點字母磚（木質羊皮小磚，看得出可點）。字型 fallback 鏈確保族語附加符號不出豆腐框。 */
+.letter-tile {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 40px; height: 48px; padding: 0 8px;
+  font-family: 'Fredoka One', 'Noto Sans TC', 'Segoe UI', 'Charis SIL',
+               'Doulos SIL', 'Gentium Plus', 'Noto Sans', system-ui, sans-serif;
+  font-size: 24px; line-height: 1; cursor: pointer;
+  color: #5A3000; border: 2px solid #B4761A; border-radius: 7px;
+  background: linear-gradient(180deg, #FFF3D0, #F3D89A);
+  box-shadow: inset 0 -3px 4px rgba(139,85,0,0.25), 0 2px 3px rgba(90,48,0,0.25);
+  transition: transform 0.08s, filter 0.1s;
+  user-select: none;
+}
+.letter-tile:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.letter-tile:active { transform: translateY(1px); box-shadow: inset 0 2px 3px rgba(90,48,0,0.4); }
+/* 已點入的磚：暗掉、不可再點（disabled 屬性也擋 click，這裡只做視覺） */
+.letter-tile.used {
+  color: rgba(90,48,0,0.35);
+  background: linear-gradient(180deg, rgba(180,140,80,0.35), rgba(140,100,50,0.35));
+  border-color: rgba(180,118,26,0.4);
+  box-shadow: inset 0 2px 3px rgba(90,48,0,0.3);
+  cursor: default; opacity: 0.5;
+}
+.letter-tile.used:hover { filter: none; transform: none; }
+/* 答案提示鈕開啟時：正確的下一顆磚發光引導（提示下一顆該點哪個） */
+.letter-tile.next-hint:not(.used) {
+  border-color: #FFD700;
+  animation: tileHintPulse 1s ease-in-out infinite;
+}
+@keyframes tileHintPulse {
+  0%,100% { box-shadow: inset 0 -3px 4px rgba(139,85,0,0.25), 0 0 0 2px rgba(255,215,0,0.35); }
+  50%     { box-shadow: inset 0 -3px 4px rgba(139,85,0,0.25), 0 0 10px 3px rgba(255,215,0,0.7); }
+}
+/* 退一格鈕（收回上一顆字母）：稍暗的木鈕，帶回退箭頭 */
+#tileBackspace.tile-back {
+  min-width: 44px;
+  color: #FFE9B0; border-color: #8B5500;
+  background: linear-gradient(180deg, rgba(139,85,0,0.7), rgba(90,48,0,0.85));
+}
+#tileBackspace.tile-back .vico-arrow { transform: scaleX(-1); width: 16px; height: 16px; }
+#tileBackspace.tile-back:disabled { opacity: 0.35; cursor: default; }
+#tileBackspace.tile-back:disabled:hover { filter: none; transform: none; }
 /* 多字詞斷字間隔（不佔格，只留空隙讓分組清楚） */
 .answer-gap { display: inline-block; width: 16px; }
 /* ── L3 聽打：沿用同一個 #answerArea 木框答案格面板，但位置改「靠中央」，
@@ -711,6 +782,20 @@ body.listen-active #realInput {
   opacity:0; caret-color:transparent;
 }
 body.listen-active .input-wrapper { background:none; filter:none; }
+/* §點字拼字（2026-07-08）L5 盲打：改點字母磚後也不再用底部深色輸入框（作答在中央
+   答案面板 + 字母磚列）。比照 L2/L3 收掉底部輸入框：#inputBubble 隱藏、#realInput 縮成
+   隱形接鍵盤層（仍可 focus 承接 Enter 送出）、拿掉木框底圖。此規則涵蓋所有點字關
+   （blank/listen 已各自有同款規則，這裡重疊無害，主要為讓 L5 也套上）。 */
+body.tile-active #inputBubble { display:none !important; }
+body.tile-active #realInput {
+  height:1px; min-height:0; padding:0; border:none; background:transparent;
+  opacity:0; caret-color:transparent; width:0; flex:0 0 auto;
+}
+body.tile-active .input-wrapper {
+  background:none; filter:none;
+  flex: 0 0 auto; width: auto; max-width: none; min-width: 0;
+  height: auto; padding: 0; gap: 8px;
+}
 /* §使用者回報「L2/L3 底部很空」（小排版評估：壓縮填實）：作答已移到中央答案格後，
    .input-wrapper 只剩接鍵盤的隱形 #realInput，卻還撐著 flex:1/max-width:520px/height:64px 的空盒，
    中段就一大片透明空洞、只有一條浮在上緣的細計時條。這裡把 wrapper 塌成內容寬、
@@ -1568,6 +1653,14 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   font-size: 11px; font-weight: 900; color: #0a2a08;
   background: linear-gradient(#7dd35a, #4f9e2a); border: 2px solid #2f6a12;
   border-radius: 6px; padding: 3px 10px;
+}
+/* §點字拼字說明看板預覽：一排可點字母磚示意（羊皮小磚，配合 .mg-prev-cells 空格） */
+.mg-prev-tiles { display: inline-flex; gap: 4px; vertical-align: middle; }
+.mg-prev-tiles b {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 18px; font-size: 11px; font-weight: 700; color: #5A3000;
+  background: linear-gradient(180deg, #FFF3D0, #F3D89A);
+  border: 1.4px solid #B4761A; border-radius: 3px;
 }
 /* 四張編號說明卡（羊皮紙 + 綠色編號章） */
 .mg-card {
@@ -2993,6 +3086,13 @@ body.has-track #skipBtn { display:inline-flex; }
       <div id="answerExample"></div>
       <!-- L3 聽打「單字提示」音節/長度示意點列（renderSyllableDots 填；僅 listen-active 顯示） -->
       <div id="syllableDots"></div>
+      <!-- §點字拼字（L2/L3/L5，2026-07-08）— 一排「可點的打散字母磚」。這是點字關的
+           作答輸入本身（不再打字）：點磚→字母依序落進上方 #answerCells，拼滿自動送出。
+           由 renderLetterTiles() 依 G.hintScramble 動態產出：每磚 button.letter-tile
+           [.used 已點暗掉][.decoy L5 誘答假字母][.next-hint 答案提示鈕開時發光引導]，
+           末尾 #tileBackspace 退一格鈕。穩定 id/class 交小排版做木質磚樣式；平時 hidden，
+           renderLetterTiles 在非點字關會 hidden=true 收起。 -->
+      <div id="letterRack" hidden></div>
     </div>
 
     <!-- §答案提示比例鈕（2026-07-08）— 可調「顯示幾成字母」的「看著打」輔助。
@@ -4139,34 +4239,52 @@ function answerRevealPositions(answerLetters, pct) {
   return set;
 }
 
-// 「答案提示」比例鈕 UI 狀態同步：更新鈕的 .on class（>0 才亮）、狀態徽章文字
-// （關 / 30% / 50% / 70% / 100%）、aria 標籤。純視覺狀態，不觸發渲染。
+// 「答案提示」鈕 UI 狀態同步。點字拼字改版（2026-07-08）後，桌機三個打字關全是
+//   點字關，此鈕語意改為「提示下一顆該點的磚」（開/關）——字母都在磚上了，原本
+//   「露幾成答案字母」的比例對點字關已多餘（會直接洩漏正確順序）。故點字關徽章
+//   只顯示 開/關（AnswerHint.enabled）；label 文字改「提示下一顆」。
+//   （非點字關的比例顯示保留在 else 分支，理論上目前無此情況。）
 function syncAnswerHintBtn() {
   const btn = document.getElementById('answerHintToggle');
   if (!btn) return;
   const on = AnswerHint.enabled;
+  const tile = isTileMode(G.mode);
   btn.classList.toggle('on', on);
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  const label = on ? (AnswerHint.pct + '%') : '關';
-  btn.setAttribute('aria-label', '答案提示，目前顯示 ' + label + '（點擊切換比例）');
   const st = document.getElementById('answerHintState');
-  if (st) st.textContent = label;
+  const lblEl = btn.querySelector('.aht-label');
+  if (tile) {
+    if (lblEl) lblEl.textContent = '提示下一顆';
+    btn.setAttribute('aria-label', '提示下一顆該點的字母磚：' + (on ? '開' : '關') + '（點擊切換，不影響計分）');
+    btn.title = '提示下一顆該點哪個字母磚（發光引導，不影響計分）';
+    if (st) st.textContent = on ? '開' : '關';
+  } else {
+    if (lblEl) lblEl.textContent = '答案提示';
+    const label = on ? (AnswerHint.pct + '%') : '關';
+    btn.setAttribute('aria-label', '答案提示，目前顯示 ' + label + '（點擊切換比例）');
+    if (st) st.textContent = label;
+  }
 }
 
-// 玩家點「答案提示」鈕：循環到下一個比例 → 存 localStorage → 同步鈕外觀 → 立刻依當前
-// 已打字重繪一次（調了馬上看到新比例的 ghost），不必等下個按鍵。
-// 完全不影響判定/計分/計時；只是重新渲染顯示層。
+// 玩家點「答案提示」鈕。點字關：只在 開/關 之間切（0↔100），開＝發光提示下一顆磚。
+//   非點字關：沿用原比例循環（0→30→50→70→100→0）。存 localStorage → 同步鈕外觀 →
+//   立刻重繪（磚列的 next-hint 發光 / 打字關的 ghost）即時生效。不影響判定/計分/計時。
 function toggleAnswerHint() {
-  AnswerHint.cycle();
+  if (isTileMode(G.mode)) {
+    AnswerHint.setPct(AnswerHint.enabled ? 0 : 100);
+  } else {
+    AnswerHint.cycle();
+  }
   if (window.Sfx) Sfx.sfxClick();
   syncAnswerHintBtn();
   refreshAnswerHintDisplay();
 }
 
-// 依當前輸入框內容重繪顯示層（答案格 / 底部顯示層），讓比例切換即時生效。
-// 走既有 updateInputDisplay 這條唯一顯示入口，確保與打字時同一套渲染邏輯。
+// 依當前狀態重繪顯示層，讓提示切換即時生效。
+//   點字關：重繪磚列（next-hint 發光）；非點字關：走 updateInputDisplay 重畫 ghost。
 function refreshAnswerHintDisplay() {
   if (!G.currentPrey) return;
+  if (isTileMode(G.mode)) { renderLetterTiles(); return; }
   const ri = document.getElementById('realInput');
   updateInputDisplay(normalizeAnswer(ri ? ri.value : ''));
 }
@@ -4194,9 +4312,35 @@ let G = {
   levelPool: [],      // §1.5-A：本關抽出的 K 個不重複詞（誘答演算法從這裡＋全池挑）
   roundLog: [],       // §1.5-B：逐題結果 {word, zh, mode, result:'correct'|'wrong'|'timeout'}
   bannerHideTimer: null, // showCorrectBanner() 用來確保連續 combo 時動畫能正確重播
-  hintScramble: []    // §填空（L2）：本題「提示字母磚」打散後的字母陣列（每題只洗一次，
-                      // 存起來避免每次 render 亂跳）。純提示，不含順序資訊、不參與判定。
+  hintScramble: [],   // §點字拼字（L2/L3/L5）：本題「打散字母磚」陣列，每格 {ch, used, decoy}。
+                      // 每題只在 nextRound() 洗一次、存起來，避免每次 render 亂跳。
+                      // ch=字母；used=已被點入答案；decoy=誘答假字母（只 L5 有，不屬正解）。
+  tileOrder: []       // §點字拼字：玩家「已點入的實體磚索引」堆疊（對應 hintScramble 的 index），
+                      // 供退一格（tileBackspace）把最後一顆磚吐回、及重試時全部歸位用。
 };
+
+// ═══════════════════════════════════════════════════
+//  §點字拼字（L2 填空 / L3 聽打 / L5 盲打）— 桌機改點字母磚拼字
+// ═══════════════════════════════════════════════════
+// 使用者定案（2026-07-08）：桌機三個打字關全部從「打字輸入」改成「點打散的字母磚
+// 照正確順序拼出族語詞」，移除打字框。手機版早有點字拼字，但桌機獨立重寫、不共用。
+//
+// 判定完全沿用打字關那套：點磚＝把該字母 append 進 #realInput.value 再 dispatch 'input'，
+// 走既有 updateInputDisplay/normalizeAnswer/答案格渲染管線；拼滿（字母數＝答案字母數）
+// 自動觸發 submitWord()（比對 vs variants，跟以前一字不差）。答對→caughtPrey；答錯→
+// 清空重來（磚全部歸位）。跳過/半數過關/答對出新詞/計時/HP/combo 全部不動。
+//
+// 三關靠「線索多寡」分難度（字母都露在磚上了）：
+//   L2 blank ：中文提示卡 + 字母磚（最易；不播音，播音會唸出完整答案）。
+//   L3 listen：聽發音（自動播）+ 字母磚，不給中文（比 L2 難）。
+//   L5 blind ：線索最少——不給中文、不自動播音，且字母磚**混入誘答假字母**
+//              （多灑幾顆不屬於答案的字母）＋打散最徹底，維持它「最難」定位。
+const TILE_MODES = new Set(['blank', 'listen', 'blind']);
+function isTileMode(mode) { return TILE_MODES.has(mode || G.mode); }
+
+// L5 盲打誘答假字母池（族語羅馬拼音常見字母，混進磚陣列當干擾）。刻意避開會造成
+// 「湊出另一個合法拼法」的機率——只是視覺干擾，判定仍以完整字串比對，點錯磚拼不出答案。
+const DECOY_LETTERS = ['a','e','i','u','n','g','r','s','t','l','k','m','p','b','d','w','y','q','h','c'];
 
 // ═══════════════════════════════════════════════════
 //  GAME LOGIC
@@ -4226,22 +4370,53 @@ function displayWordOf(p) {
   return p.displayWord || (p.words ? p.words.join(' ') : '');
 }
 
-// ── §填空（L2 blank）提示字母（拼字鷹架）─────────────────────
-// 新設計：右卡片＝純提示卡，不再挖空、不顯示完整答案。改為把該詞的字母
-// **打散洗牌**成一格格「提示字母磚」，讓玩家知道「有哪些字母、要怎麼排」，
-// 但看不出正確順序（打散故意破壞順序）。玩家仍靠打字補完整詞（判定不變）。
+// ── §點字拼字（L2/L3/L5）打散字母磚（拼字鷹架＋輸入本身）─────────────
+// 把該詞的字母**打散洗牌**成一排字母磚。玩家點磚照正確順序拼出族語詞。
+// 打散故意破壞順序（不洩漏正確排列）。多字詞的字母全部混在一起打散、去空白。
 //
-// 回傳：打散後的字母陣列（去掉空白；多字詞的字母也全部混在一起打散）。
-// ⚠️ 穩定性：每題只在 nextRound() 呼叫一次、把結果存進 G.hintScramble，
-//   之後 renderWordCard 都讀同一份，同題多次 render 磚順序不亂跳。
-function makeHintScramble(rawWord) {
-  const display = (rawWord || '').trim();
-  if (!display) return [];
-  // 去掉所有空白，只留可見字母（Array.from 正確處理多位元組字元）。
-  const letters = Array.from(display).filter(c => !/\s/.test(c));
+// ⚠️ 磚的字母來源＝**主讀法（第一個 variant）**，不是 displayWord。displayWord 可能含
+//   斜線多讀音（"supug / sabal"）或連字號，直接拆會冒出 '/' '-' 這種非字母磚、也拼不出
+//   正解。改用 variants[0]（normalizeAnswer 過的單一讀法，撇號已統一成 '），確保每顆磚
+//   都是字母、且照序點得出一個合法答案（submitWord 對 variants 判定，主讀法必中）。
+//
+// 回傳：磚物件陣列 [{ch, used:false, decoy:false}, ...]。
+// 難度分流（mode）：
+//   blank/listen：磚＝答案的字母，剛好一套（照序拼出即中）。
+//   blind（L5）：在答案字母之上**混入誘答假字母**（多灑約 40%、至少 2 顆），
+//                並整體再洗一次 → 玩家得從干擾裡挑對的、拼不出來就是拼錯，維持最難。
+// ⚠️ 穩定性：每題只在 nextRound() 呼叫一次、存進 G.hintScramble，之後每次 render
+//   讀同一份、used 狀態也記在同一份，磚順序/位置不亂跳。
+// 點字關「要拼的那一個讀法」＝主讀法（第一個 variant，已 normalizeAnswer：小寫、單一
+// 空白、撇號統一成 '）；沒有 variants 時退回 displayWordOf 正規化（離線 fallback）。
+// 磚字母、答案格骨架、拼滿長度全部以此為準，三者對齊（避免 displayWord 多讀音斜線
+// 造成磚/格/長度不一致）。玩家點磚拼出的正是這個讀法，submitWord 對 variants 判定必中。
+function tileAnswerSource(prey) {
+  if (!prey) return '';
+  return (prey.variants && prey.variants[0]) || normalizeAnswer(displayWordOf(prey));
+}
+function makeHintScramble(prey, mode) {
+  if (!prey) return [];
+  const source = tileAnswerSource(prey);
+  if (!source) return [];
+  // 去空白（磚是字母，字間空白不成磚；多字詞由答案格骨架分組顯示）。撇號已在 source 統一。
+  const letters = Array.from(source).filter(c => !/\s/.test(c));
   if (!letters.length) return [];
-  // 打散順序（破壞正確排列 → 只當「有哪些字母」的提示，不洩漏順序）。
-  return shuffle(letters);
+
+  const tiles = letters.map(ch => ({ ch, used: false, decoy: false }));
+
+  // L5 盲打：混入誘答假字母（干擾），維持「最難」。約 40%、下限 2 顆、上限 5 顆，
+  // 且不超過本身字母數（避免短詞被淹沒到荒謬）。假字母優先挑「答案沒用到的」以增加辨別度。
+  if (mode === 'blind') {
+    const answerSet = new Set(letters.map(c => c.toLowerCase()));
+    const n = letters.length;
+    const decoyCount = Math.max(2, Math.min(5, Math.min(n, Math.round(n * 0.4))));
+    const pool = shuffle(DECOY_LETTERS.filter(c => !answerSet.has(c)));
+    for (let i = 0; i < decoyCount && pool.length; i++) {
+      tiles.push({ ch: pool[i % pool.length], used: false, decoy: true });
+    }
+  }
+
+  return shuffle(tiles);
 }
 
 // 兩個 prey 是否為同一個詞（用族語詞字串當身分，跨 pool 物件也能比對）。
@@ -4551,6 +4726,10 @@ function applyLevelMode(lvl) {
   // 填空關（L2 新設計）：右卡片＝提示卡（打散字母磚），作答在中央下方 #answerArea
   // 的答案格（打字依序填格），底部輸入顯示層隱藏。class 由 CSS 控制顯示切換。
   document.body.classList.toggle('blank-active', G.mode === 'blank');
+  // §點字拼字（2026-07-08）：L2/L3/L5 全改「點字母磚拼字」，都要顯示中央 #answerArea
+  // （答案格 + 字母磚列）。tile-active 統一控制答案面板/字母磚的顯示，讓 L5 盲打（原本
+  // 沒有 blank-active/listen-active）也能顯示磚列。純視覺開關，CSS 控制。
+  document.body.classList.toggle('tile-active', isTileMode(cfg.mode));
   // §答案提示 toggle（2026-07-08）：打字關（L2 填空 / L3 聽打 / L5 盲打）才顯示
   // 「答案提示」開關鈕。選項關（L1/L4）沒有打字、無此開關。用 body.typing-active
   // 統一控制開關鈕的顯示，避免逐關寫三次 CSS。
@@ -4669,19 +4848,20 @@ function zhNumToArabic(zh) {
 
 // ── 各模式任務文字 ─────────────────────────────────────
 // 依 G.mode 給一行任務說明，{語別} 依當前 G.lang.nameZh 動態帶入。
+// 點字拼字改版（2026-07-08）：L2/L3/L5 改「點字母磚拼字」，文案改「點字母磚拼出…」。
 //   audio-choice → 聽發音，選出正確的{語別}
-//   blank        → 根據提示，補上完整的{語別}單字
-//   listen       → 聽發音，輸入正確的{語別}單字
+//   blank        → 看中文提示，點字母磚拼出{語別}
+//   listen       → 聽發音，點字母磚拼出{語別}
 //   choice(看圖) → 看圖片，選出正確的{語別}
-//   blind        → 看中文，輸入正確的{語別}
+//   blind        → 憑記憶，點字母磚拼出{語別}
 function modeTaskText(mode) {
   const langZh = (G.lang && G.lang.nameZh) || '太魯閣語';
   switch (mode) {
     case 'audio-choice': return `聽發音，選出正確的${langZh}`;
-    case 'blank':        return `根據提示，補上完整的${langZh}單字`;
-    case 'listen':       return `聽發音，輸入正確的${langZh}單字`;
+    case 'blank':        return `看中文提示，點字母磚拼出${langZh}`;
+    case 'listen':       return `聽發音，點字母磚拼出${langZh}`;
     case 'choice':       return `看圖片，選出正確的${langZh}`;
-    case 'blind':        return `看中文，輸入正確的${langZh}`;
+    case 'blind':        return `憑記憶，點字母磚拼出${langZh}（有干擾磚）`;
     default:             return '';
   }
 }
@@ -4698,11 +4878,11 @@ function modeHowto(mode) {
     };
     case 'blank': return {
       title: `填空模式怎麼玩`,
-      steps: [ `右側提示卡有這個詞的所有字母，但順序被打散了`, `看中文提示，把字母重新拼成正確順序，打進下方答案格（特殊字元可點選輸入）`, `送出答案` ],
+      steps: [ `下方有這個詞的所有字母磚，但順序被打散了`, `看中文提示，點字母磚照正確順序拼出這個詞`, `點錯可用「退一格」收回，拼滿自動送出` ],
     };
     case 'listen': return {
       title: `聽打模式怎麼玩`,
-      steps: [ `聽發音（可重播）`, `輸入完整的${langZh}單字`, `送出答案` ],
+      steps: [ `聽發音（可重播），沒有中文提示`, `點下方打散的字母磚，照正確順序拼出你聽到的${langZh}`, `點錯可用「退一格」收回，拼滿自動送出` ],
     };
     case 'choice': return {
       title: `看圖選詞模式怎麼玩`,
@@ -4710,7 +4890,7 @@ function modeHowto(mode) {
     };
     case 'blind': return {
       title: `盲打模式怎麼玩`,
-      steps: [ `看中文`, `憑記憶打出完整的${langZh}`, `送出答案` ],
+      steps: [ `沒有中文、不自動播音，線索最少`, `字母磚裡混了幾顆用不到的干擾字母，憑記憶挑出對的`, `點字母磚拼出完整的${langZh}，拼滿自動送出` ],
     };
     default: return { title: `怎麼玩`, steps: [] };
   }
@@ -4749,17 +4929,18 @@ function modeGuideData(mode) {
       goal:`目標：聽懂發音，學習並記住正確的${langZh}單字。`, cue:'audio', answer:'choice' };
     case 'blank': return {
       sub:'填空模式怎麼玩',
-      cards:[ {t:'看提示卡：', b:'右側提示卡列出這個詞的所有字母，順序是打散的。'},
-              {t:'拼出順序：', b:`參考中文提示，把打散的字母重新排成正確的${langZh}單字。`},
-              {t:'填入答案：', b:'在下方答案格打字填入完整單字（特殊字元可點選輸入）。'},
-              {t:'送出答案：', b:'完成後按「送出答案」確認。'} ],
-      goal:`目標：從打散的字母拼出正確順序，學習${langZh}單字拼寫。`, cue:'blank', answer:'type' };
+      cards:[ {t:'看字母磚：', b:'下方列出這個詞的所有字母磚，順序是打散的。'},
+              {t:'看中文提示：', b:`參考中文，想出對應的${langZh}單字怎麼拼。`},
+              {t:'點磚拼字：', b:'照正確順序點字母磚拼出來，點錯可「退一格」。'},
+              {t:'拼滿送出：', b:'字母拼滿會自動送出，不用另外按鈕。'} ],
+      goal:`目標：從打散的字母拼出正確順序，學習${langZh}單字拼寫。`, cue:'blank', answer:'tiles' };
     case 'listen': return {
       sub:'聽打模式怎麼玩',
-      cards:[ {t:'聽發音：', b:'按喇叭聽題目音訊，可重播。'},
-              {t:'輸入單字：', b:`把聽到的${langZh}單字打進輸入框。`},
-              {t:'送出答案：', b:'完成後按送出確認。'}, scored ],
-      goal:`目標：聽懂發音，學習並記住正確的${langZh}單字。`, cue:'audio', answer:'type' };
+      cards:[ {t:'聽發音：', b:'按喇叭聽題目音訊，可重播；這關沒有中文提示。'},
+              {t:'點磚拼字：', b:`點下方打散的字母磚，照順序拼出你聽到的${langZh}。`},
+              {t:'退一格：', b:'點錯順序可用「退一格」收回上一顆字母。'},
+              {t:'拼滿送出：', b:'字母拼滿會自動送出，不用另外按鈕。'} ],
+      goal:`目標：聽懂發音，學習並記住正確的${langZh}單字。`, cue:'audio', answer:'tiles' };
     case 'choice': return {   // 看圖選詞
       sub:'看圖選詞模式怎麼玩',
       cards:[ {t:'看圖片：', b:'先看中央圖片，判斷代表的詞義。'},
@@ -4768,10 +4949,11 @@ function modeGuideData(mode) {
       goal:`目標：看圖辨義，學習並記住正確的${langZh}單字。`, cue:'picture', answer:'choice' };
     case 'blind': return {
       sub:'盲打模式怎麼玩',
-      cards:[ {t:'看中文：', b:'畫面只給中文，沒有其他提示。'},
-              {t:'憑記憶：', b:`回想對應的${langZh}單字怎麼拼。`},
-              {t:'打出單字：', b:'把完整單字打進輸入框後送出。'}, scored ],
-      goal:`目標：憑記憶輸入，鞏固${langZh}單字記憶。`, cue:'blind', answer:'type' };
+      cards:[ {t:'線索最少：', b:'沒有中文、不自動播音，最難的一關。'},
+              {t:'有干擾磚：', b:'字母磚裡混了幾顆用不到的干擾字母。'},
+              {t:'憑記憶挑：', b:`回想${langZh}單字怎麼拼，從干擾裡挑對的磚。`},
+              {t:'點磚拼字：', b:'照順序點磚拼出來，拼滿自動送出（可退一格）。'} ],
+      goal:`目標：憑記憶從干擾中拼出正解，鞏固${langZh}單字記憶。`, cue:'blind', answer:'tiles' };
     default: return null;
   }
 }
@@ -4781,16 +4963,21 @@ function mgPreviewCueHtml(cue) {
   switch (cue) {
     case 'audio':   return '<div class="mg-prev-audio"><img class="ui-ico" src="/images/ui/v2-ui-icon-sound.png" alt=""> 聽發音</div>';
     case 'picture': return '<div class="mg-prev-pic"><img src="/images/ui/v2-prey-placeholder.png" alt="" style="width:48px;height:48px;object-fit:contain"></div>';
-    case 'blank':   return '<div class="mg-prev-hintcard"><span class="mg-prev-hc-zh">中文提示</span><span class="mg-prev-hc-scramble">a · s · m · a</span></div>';
-    case 'blind':   return '<div class="mg-prev-zh">中文詞</div>';
+    case 'blank':   return '<div class="mg-prev-hintcard"><span class="mg-prev-hc-zh">中文提示</span></div>';
+    case 'blind':   return '<div class="mg-prev-zh">憑記憶</div>';
     default:        return '';
   }
 }
-// 中央預覽的 answer（作答示意）HTML：選項關=4選項、打字關=答案格+送出。
+// 中央預覽的 answer（作答示意）HTML：選項關=4選項、點字關=答案格+可點字母磚。
 function mgPreviewAnswerHtml(answer) {
   if (answer === 'choice')
     return '<div class="mg-prev-options"><span>選項 A</span><span>選項 B</span><span>選項 C</span><span>選項 D</span></div>';
-  return '<div class="mg-prev-type"><span class="mg-prev-cells"><i></i><i></i><i></i><i></i><i></i></span><span class="mg-prev-submit">送出</span></div>';
+  // tiles（點字拼字，2026-07-08）：示意「空答案格 + 一排可點字母磚」。沿用 .mg-prev-cells
+  //   當空格示意，另加 .mg-prev-tiles 幾顆字母磚示意（純示意，無互動）。
+  return '<div class="mg-prev-type">'
+       + '<span class="mg-prev-cells"><i></i><i></i><i></i><i></i></span>'
+       + '<span class="mg-prev-tiles"><b>s</b><b>a</b><b>m</b><b>a</b></span>'
+       + '</div>';
 }
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
@@ -4862,31 +5049,31 @@ function renderWordCard(prey) {
     heroImg.style.display = 'block';
   }
 
-  // 族語詞 / 發音列：依 mode 決定露不露出完整族語詞（答案）。
-  //   blind（L5）：完全不露族語詞 → 隱藏 #wordTarget、分隔線、發音列，靠記憶打。
-  //   blank（L2）：#wordTarget＝純提示卡，顯示「提示字母」＝把該詞字母打散成一格格
-  //               字母磚（拼字鷹架）；不顯示完整族語詞、不挖空。發音列隱藏——
-  //               播音/顯示 [完整詞] 都會洩漏答案。玩家在底部答案格打字補完整詞。
-  //   其餘打字關：照常顯示完整族語詞 + 發音列輔助。
+  // 族語詞 / 發音列 / 中文：依 mode 決定露不露出答案線索。點字拼字改版（2026-07-08）：
+  //   字母都在下方 #letterRack 的可點磚上了，#wordTarget 不再放字母/完整詞。
+  //   blank（L2 最易）：詞卡＝中文提示卡。隱藏 #wordTarget（族語詞/字母都在磚上），
+  //                     露中文；發音列隱藏（播音/顯示 [完整詞] 會洩漏）。
+  //   listen（L3 較難）：靠聽發音（自動播）。隱藏 #wordTarget，且**不給中文**（比 L2 難），
+  //                     發音列隱藏（顯示 [完整詞] 會洩漏；音訊由 listen 播放鈕給）。
+  //   blind（L5 最難）：線索最少。隱藏 #wordTarget、分隔線、發音列、**不給中文**，
+  //                     且磚混入誘答假字母。憑記憶從干擾裡挑對的磚。
   const divider = document.querySelector('#wordBubble .word-divider');
   const pronounceRow = document.getElementById('wordPronounce');
-  const blind = (G.mode === 'blind');
-  const blank = (G.mode === 'blank');
-  targetEl.style.display = blind ? 'none' : '';
-  if (divider) divider.style.display = blind ? 'none' : '';
-  // 發音列在 blind 與 blank 都隱藏（兩者露出完整族語詞/發音都會洩漏答案）。
-  if (pronounceRow) pronounceRow.style.display = (blind || blank) ? 'none' : '';
-  // blank（L2 新設計）：右卡片＝提示卡。#wordTarget 改渲染打散的「提示字母磚」，
-  // 不含正確順序、不含完整答案。玩家看字母磚拼字，打字補在底部答案格。
-  if (blank) {
-    targetEl.classList.add('hint-letters');
-    renderHintLetters();       // 讀 G.hintScramble（每題只洗一次），渲染字母磚
-  } else {
-    targetEl.textContent = displayWordOf(prey);
-    targetEl.classList.remove('hint-letters');
-  }
+  const blind  = (G.mode === 'blind');
+  const blank  = (G.mode === 'blank');
+  const listen = (G.mode === 'listen');
+  const tile   = isTileMode(G.mode); // L2/L3/L5：族語詞一律不露（字母在磚上）
+  targetEl.style.display = tile ? 'none' : '';
+  targetEl.classList.remove('hint-letters');
+  if (divider) divider.style.display = (blind || listen) ? 'none' : '';
+  // 發音列在點字三關都隱藏（露完整族語詞/發音會洩漏；L3 的音訊走 listen 播放鈕）。
+  if (pronounceRow) pronounceRow.style.display = tile ? 'none' : '';
+  if (!tile) targetEl.textContent = displayWordOf(prey);
+  // 渲染本題的可點字母磚（三關共用；非點字關內部會自行隱藏 rack）。
+  renderLetterTiles();
   // 中文（大字，去掉括號格式）。資料裡 hint 常等於族語詞本身，中文應取 zh。
-  hintEl.textContent = prey.zh || prey.hint || '';
+  //   L3 聽打 / L5 盲打：不給中文（比 L2 難）→ 清空中文欄。L2 給中文（最易）。
+  hintEl.textContent = (listen || blind) ? '' : (prey.zh || prey.hint || '');
   // 分類標籤（無分類則隱藏）
   if (prey.category) {
     catEl.textContent = prey.category;
@@ -4929,9 +5116,12 @@ function nextRound() {
   preyEl.textContent = G.currentPrey.emoji;
   preyEl.className = '';
 
-  // §填空（L2）：本題「提示字母磚」只在此打散一次（存 G.hintScramble），之後
-  // render 都讀同一份，確保同題多次 render 磚順序不亂跳。非 blank 關留空陣列。
-  G.hintScramble = (G.mode === 'blank') ? makeHintScramble(displayWordOf(G.currentPrey)) : [];
+  // §點字拼字（L2/L3/L5）：本題「打散字母磚」只在此洗一次（存 G.hintScramble），
+  // 之後 render 都讀同一份，確保同題多次 render 磚順序/used 狀態不亂跳。
+  // 選項關（L1/L4）不用磚，留空陣列。tileOrder＝已點入磚的堆疊，進題清空。
+  G.hintScramble = isTileMode(G.mode)
+    ? makeHintScramble(G.currentPrey, G.mode) : [];
+  G.tileOrder = [];
 
   // 逼近動畫：以本關進度移動獵人（各 mode 共用，rect 讀 #prey 隱形錨點）
   moveHunterTowardPrey();
@@ -4979,24 +5169,22 @@ function renderTypingRound(ld) {
   // 每題進場一律清空輸入框 + 顯示層（避免殘留上題或洩漏本題答案）。
   const inp = document.getElementById('realInput');
   inp.value = '';
-  // 依模式給對應 placeholder（聽打特別提示「打你聽到的」）。
-  //   ⚠️ 現況 #realInput::placeholder 為透明（玩家看到的是上層 #inputDisplay），
-  //   故此屬性目前偏無障礙/語意用途；空狀態的可見提示視覺留給小排版。
-  inp.placeholder = G.listenMode ? '請輸入你聽到的單字'
-                  : (G.mode === 'blank' ? '補上完整單字' : '輸入族語...');
-  // 中央答案格面板標題動態：L2 填空「填入答案」、L3 聽打「請輸入你聽到的單字」。
+  const tile = isTileMode(G.mode);
+  // 中央答案格面板標題：點字關統一「點字母磚，照順序拼出這個詞」。
   const alabel = document.getElementById('answerAreaLabel');
-  if (alabel) alabel.textContent = G.listenMode ? '請輸入你聽到的單字' : '填入答案';
-  // 填空關（L2）：進題時把「例如 a-m-a-s-a-m」範例算一次（不隨打字變）。
+  if (alabel) alabel.textContent = tile ? '點字母磚拼出答案' : '填入答案';
+  // 填空關（L2）：範例小字改成「點磚」說明（原「例如 a-m-a-s-a-m」是打字時代的提示）。
   if (G.mode === 'blank') renderAnswerExample();
   // 聽打關（L3）：進題時把「單字提示」音節/長度示意點列算一次（依本題答案長度）。
   if (G.listenMode) renderSyllableDots();
-  // §答案提示開關：每題進場同步鈕外觀為 localStorage 記憶的狀態（開/關），
-  //   updateInputDisplay('') 會依 AnswerHint.enabled 決定要不要畫 ghost。
+  // §答案提示鈕：點字關改語意為「提示下一顆該點的磚」（發光引導），每題進場同步外觀。
   syncAnswerHintBtn();
   updateInputDisplay('');
-  // §特殊字元列：桌機打字關（L2/L3/L5）顯示當前語別的難打字元按鈕（可點插入）。
+  // §特殊字元列：點字關不需要（喉塞音/擴充字母都在字母磚上，直接點），隱藏。
+  //   非點字關（理論上目前無此情況，全打字關已改點字）仍呼叫以維持相容。
   renderSpecialCharBar();
+  // 桌機：仍讓隱形 #realInput 取得焦點以承接 Enter 送出（點字關作答靠點磚，
+  //   焦點只為鍵盤 Enter 的送出捷徑；不會彈手機鍵盤——桌機無虞）。
   inp.focus();
 }
 
@@ -5268,9 +5456,19 @@ function hintRemoveWrongOption() {
   pick.onclick = null;
   return true;
 }
-// 打字關：把輸入框設成「正確前綴＋下一個正確字元」＝揭露下一個字母（含跨空白）。
-// 以 displayWordOf 為目標，normalizeAnswer 逐字元比對玩家已打對的前綴（撇號/大小寫不算異）。
+// 打字關（有代價的提示鈕 useHint 呼叫）：揭露下一個正確字母。
+//   點字關（L2/L3/L5，2026-07-08 改點字母磚）：改為「自動幫玩家點下一顆正確磚」——
+//     這樣揭露的字母會照點字的機制真的落進答案格、tileOrder 與磚 used 狀態同步，
+//     不會與打字時代那套「直接改 realInput.value」衝突（那會讓字母數/磚狀態對不上）。
+//   非點字關：沿用原本「把輸入框設成正確前綴＋下一個正確字元」。
+// 以 displayWordOf 為目標，normalizeAnswer 逐字元比對（撇號/大小寫不算異）。
 function hintRevealNextLetter() {
+  if (isTileMode(G.mode)) {
+    const idx = nextCorrectTileIdx();
+    if (idx < 0) return false;      // 已無可揭露（拼滿或找不到對應磚）
+    clickLetterTile(idx);           // 走既有點磚流程（含 append/答案格更新/可能觸發自動送出）
+    return true;
+  }
   const ri = document.getElementById('realInput');
   if (!ri) return false;
   const answer = displayWordOf(G.currentPrey) || '';
@@ -5375,18 +5573,134 @@ function updateTimerBar(t, total) {
 
 const _htmlEsc = s => String(s).replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
 
-// §填空（L2）右卡片「提示字母磚」：讀本題快取的打散字母 G.hintScramble，
-// 渲染成一格格提示磚到 #wordTarget。純提示（有哪些字母），不含順序、不含挖空、
-// 不參與判定。穩定 id/class 交小排版做字母磚樣式：容器沿用 #wordTarget.hint-letters，
-// 每磚 .hint-letter。每題只洗一次（見 nextRound → G.hintScramble），render 不亂跳。
-function renderHintLetters() {
-  const targetEl = document.getElementById('wordTarget');
-  if (!targetEl || G.mode !== 'blank') return;
+// §點字拼字（L2/L3/L5）「可點字母磚列」：讀本題快取的打散字母 G.hintScramble，
+// 渲染成一排**可點**字母磚到 #letterRack。點磚＝把該字母填進答案格（見 clickLetterTile）。
+// 這才是點字關的「輸入本身」，不再打字。已點入的磚標 .used（暗掉、不可再點）。
+// 穩定 id/class 交小排版做字母磚樣式：容器 #letterRack、每磚 button.letter-tile
+// [.used][.decoy][.next-hint]、退一格鈕 #tileBackspace。每題只洗一次，render 不亂跳。
+//
+// 提示下一顆（答案提示鈕在點字關的新用途）：AnswerHint 開啟時，正確的下一顆磚標
+// .next-hint（發光引導），讓卡住的人知道該點哪顆。詳見 nextCorrectTileIdx()。
+function renderLetterTiles() {
+  const rack = document.getElementById('letterRack');
+  if (!rack) return;
+  if (!isTileMode(G.mode)) { rack.hidden = true; rack.innerHTML = ''; return; }
   const tiles = G.hintScramble || [];
-  targetEl.innerHTML = tiles
-    .map(ch => `<span class="hint-letter">${_htmlEsc(ch)}</span>`)
-    .join('');
+  const hintIdx = AnswerHint.enabled ? nextCorrectTileIdx() : -1;
+  const btns = tiles.map((t, i) => {
+    const cls = ['letter-tile'];
+    if (t.used) cls.push('used');
+    if (t.decoy) cls.push('decoy');
+    if (i === hintIdx) cls.push('next-hint');
+    return `<button type="button" class="${cls.join(' ')}" data-idx="${i}"`
+      + (t.used ? ' disabled aria-disabled="true"' : '')
+      + ` tabindex="-1">${_htmlEsc(t.ch)}</button>`;
+  }).join('');
+  // 退一格鈕：把最後點入的一顆磚吐回（改主意/點錯順序時用），拼滿前都可退。
+  const back = `<button type="button" id="tileBackspace" class="letter-tile tile-back"`
+    + ` tabindex="-1" title="退一格（收回上一顆字母）" aria-label="退一格"`
+    + (G.tileOrder && G.tileOrder.length ? '' : ' disabled aria-disabled="true"')
+    + `><span class="vico vico-arrow" aria-hidden="true"></span></button>`;
+  rack.innerHTML = btns + back;
+  rack.hidden = false;
 }
+
+// 「提示下一顆該點哪顆」：依目前已拼出的字串（realInput.value 正規化）對比正解，
+// 找出「下一個該點的正確字母」對應的、尚未使用的磚 index。找不到回 -1。
+// 純顯示引導（發光），不自動點、不影響判定。答案提示鈕在點字關的新用途。
+function nextCorrectTileIdx() {
+  if (!G.currentPrey) return -1;
+  // 以主讀法（tileAnswerSource）逐字母對位，與磚來源一致。
+  const answerLetters = Array.from(tileAnswerSource(G.currentPrey))
+    .filter(c => !/\s/.test(c))
+    .map(c => normalizeAnswer(c));
+  const pos = (G.tileOrder || []).length; // 下一個要拼的答案字母序位
+  if (pos >= answerLetters.length) return -1;
+  const want = answerLetters[pos];
+  const tiles = G.hintScramble || [];
+  for (let i = 0; i < tiles.length; i++) {
+    if (!tiles[i].used && !tiles[i].decoy && normalizeAnswer(tiles[i].ch) === want) return i;
+  }
+  // 退而求其次：連 decoy 都比對（理論上正解字母一定在非 decoy 磚裡，這行少用到）
+  for (let i = 0; i < tiles.length; i++) {
+    if (!tiles[i].used && normalizeAnswer(tiles[i].ch) === want) return i;
+  }
+  return -1;
+}
+
+// 點一顆字母磚：把該字母 append 進 #realInput.value → dispatch 'input'（走既有
+// updateInputDisplay/答案格渲染）→ 標記該磚 used、推入 tileOrder → 重繪磚列 →
+// 若拼滿（字母數＝答案字母數）自動 submitWord()。不改判定：判定仍在 submitWord。
+function clickLetterTile(idx) {
+  if (!G.active || !isTileMode(G.mode)) return;
+  const tiles = G.hintScramble || [];
+  const t = tiles[idx];
+  if (!t || t.used) return;
+  const inp = document.getElementById('realInput');
+  if (!inp) return;
+  inp.value = (inp.value || '') + t.ch;
+  t.used = true;
+  G.tileOrder.push(idx);
+  inp.dispatchEvent(new Event('input', { bubbles: true })); // 觸發答案格更新
+  renderLetterTiles();
+  if (window.Sfx) Sfx.sfxClick();
+  maybeAutoSubmitTiles();
+}
+
+// 退一格：吐回最後點入的那顆磚（used→false、從 realInput 尾端去掉一個字元）。
+function tileBackspace() {
+  if (!G.active || !isTileMode(G.mode)) return;
+  const order = G.tileOrder || [];
+  if (!order.length) return;
+  const idx = order.pop();
+  const tiles = G.hintScramble || [];
+  if (tiles[idx]) tiles[idx].used = false;
+  const inp = document.getElementById('realInput');
+  if (inp) {
+    const chars = Array.from(inp.value || '');
+    chars.pop();
+    inp.value = chars.join('');
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  renderLetterTiles();
+  if (window.Sfx) Sfx.sfxClick();
+}
+
+// 把所有磚歸位（used→false、清 tileOrder、清空輸入），答錯重試/新題時用。
+function resetLetterTiles() {
+  (G.hintScramble || []).forEach(t => { t.used = false; });
+  G.tileOrder = [];
+  const inp = document.getElementById('realInput');
+  if (inp) { inp.value = ''; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+  renderLetterTiles();
+}
+
+// 拼滿（已點入的字母數＝答案非空白字母數）就自動送出。這是點字關的「送出時機」，
+// 玩家不必再按送出鈕（送出鈕仍保留、Enter 仍可用，見全域監聽）。答錯的重試（清磚）
+// 由 submitWord 的 miss 分支呼叫 resetLetterTiles。
+function maybeAutoSubmitTiles() {
+  if (!G.active || !isTileMode(G.mode)) return;
+  // 拼滿＝已點入的字母數 ≥ 主讀法（tileAnswerSource）的非空白字母數（與磚來源一致）。
+  const answerLen = Array.from(tileAnswerSource(G.currentPrey))
+    .filter(c => !/\s/.test(c)).length;
+  const typedLen = (G.tileOrder || []).length;
+  if (answerLen > 0 && typedLen >= answerLen) submitWord();
+}
+
+// 事件委派：整個磚列一個 listener。tabindex=-1 + mousedown preventDefault 避免搶焦點。
+(function bindLetterRack() {
+  const rack = document.getElementById('letterRack');
+  if (!rack) return;
+  rack.addEventListener('mousedown', function(e) {
+    if (e.target.closest('.letter-tile')) e.preventDefault();
+  });
+  rack.addEventListener('click', function(e) {
+    if (e.target.closest('#tileBackspace')) { tileBackspace(); return; }
+    const btn = e.target.closest('.letter-tile');
+    if (!btn || btn.classList.contains('used')) return;
+    clickLetterTile(parseInt(btn.getAttribute('data-idx'), 10));
+  });
+})();
 
 // §填空（L2）底部「答案格」：把玩家打的字逐字母渲染成一格格答案格。
 // 依「完整答案（displayWordOf）」的字母數決定總格數與多字詞分組間隔；
@@ -5399,7 +5713,11 @@ function renderAnswerCells(typed) {
   const host = document.getElementById('answerCells');
   if (!host) return;
   // 用完整答案排出「有幾格、哪裡斷字」的骨架（不露字母，只用其空白位置分組）。
-  const answer = displayWordOf(G.currentPrey) || '';
+  // 點字關：骨架用「主讀法」（tileAnswerSource），與磚字母/拼滿長度對齊，避免 displayWord
+  //   多讀音斜線（"supug / sabal"）多排出斜線格與兩讀法的格。非點字關沿用 displayWord。
+  const answer = (isTileMode(G.mode)
+    ? tileAnswerSource(G.currentPrey)
+    : displayWordOf(G.currentPrey)) || '';
   // 逐字母走答案骨架：空白→視覺間隔；非空白→一個答案格。
   const skel = Array.from(answer);
   // §答案提示（可調比例，預設 0%＝關）：依玩家設定的比例，露出「均勻分布的 N 成
@@ -5408,7 +5726,11 @@ function renderAnswerCells(typed) {
   //   0% 時 revealPos 為空集合 → 未打格全部留空（原行為，難度不變）。
   //   ghost 用「答案骨架去空白後的非空白字母序列」對位取字，與答案格一一對應。
   const answerLetters = Array.from(answer).filter(c => !/\s/.test(c));
-  const revealPos = answerRevealPositions(answerLetters, AnswerHint.pct);
+  // §答案提示在「點字關」改語意為「提示下一顆該點的磚」（發光在磚上，見 renderLetterTiles）。
+  //   若這裡仍把正解字母 ghost 預填進答案格，等於直接洩漏正確拼字順序 → 破壞點字挑戰。
+  //   故點字關一律不在答案格畫 ghost（revealPos 清空）；只有打字關（理論上已無）才 ghost。
+  const revealPos = isTileMode(G.mode) ? new Set()
+                  : answerRevealPositions(answerLetters, AnswerHint.pct);
   // 玩家打的字（去空白後）逐一填入答案格。normalizeAnswer 後空白已壓成單一空白，
   // 這裡再把打的字元也拆成「非空白字母序列」對位填入，讓玩家打的空白不佔格。
   const typedLetters = Array.from(typed || '').filter(c => !/\s/.test(c));
@@ -5437,60 +5759,40 @@ function renderAnswerCells(typed) {
   host.innerHTML = html;
 }
 
-// §填空（L2）答案範例小字：示意「一字母一格」的 dash 排法。
-// ⚠️ 刻意用「固定示例」而非本題實際答案——若用實際答案會直接顯示正確拼字順序，
-// 玩家照抄即過，破壞 L2 拼字挑戰。故放固定示意字串（不洩漏當題答案）。
-const ANSWER_EXAMPLE_TEXT = '例如：a-m-a-s-a-m';
+// §填空（L2）答案格下方說明小字。點字拼字改版（2026-07-08）：作答＝點下方字母磚，
+// 依正確順序把字母填進答案格；點錯可用「退一格」收回。故說明改成「點字母磚」引導，
+// 不再用打字時代的「例如 a-m-a-s-a-m」dash 示例（避免玩家以為要打字）。
+const ANSWER_EXAMPLE_TEXT = '點下方字母磚，照正確順序拼出這個詞（可退一格）';
 function renderAnswerExample() {
   const el = document.getElementById('answerExample');
   if (!el) return;
   el.textContent = ANSWER_EXAMPLE_TEXT;
 }
 
-// §聽打（L3）「單字提示」音節/長度示意點列：依完整答案字母數排一列金點，
-// 多字詞用短線「—」分組。⚠ 誠實定位＝「長度提示」（每字母一點），非精確音節切分
-// （太魯閣語真音節切分需語言學資料，屬另案）。長度/分組結構為主，另依字長露出約 20% 字母當提示（長字露越多，見下）。
+// §聽打（L3）「單字提示」長度示意點列：依完整答案字母數排一列金點，多字詞用短線分組。
+// 誠實定位＝「長度提示」（每字母一點）。點字拼字改版（2026-07-08）後**不再露出字母**——
+//   原本會依字長露約 40% 字母「當提示」，但那是在原字序位置露出，等於洩漏正確拼字順序，
+//   在點字關（照序點磚拼字）會直接破壞挑戰；且答案格本身已呈現「幾格＝長度」，此列的
+//   長度資訊已足夠。故只保留純點（長度/分組），不再放 syl-letter。
 function renderSyllableDots() {
   const host = document.getElementById('syllableDots');
   if (!host) return;
   const answer = displayWordOf(G.currentPrey) || '';
   const parts = answer.split(/\s+/).filter(Boolean); // 多字詞分組
-  const esc = s => s.replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
-  const groups = parts.map(w => {
-    const chars = Array.from(w);
-    const n = chars.length;
-    // §提示加強（使用者要求「還是太少」→ 從 20% 拉到約 40%）：字越長露越多字母，其餘仍是點。
-    //   露出位置平均分散在字中（不集中在頭尾），每次同題結果固定（依長度算，不隨機）。
-    const revealCount = Math.round(n * 0.4);
-    const revealPos = new Set();
-    for (let j = 0; j < revealCount; j++) {
-      revealPos.add(Math.min(n - 1, Math.floor((j + 1) * n / (revealCount + 1))));
-    }
-    return chars.map((ch, i) =>
-      revealPos.has(i)
-        ? `<span class="syl-letter">${esc(ch)}</span>`
-        : '<span class="syl-dot"></span>'
-    ).join('');
-  });
-  host.innerHTML = '<span class="syl-label">單字提示：</span>'
+  const groups = parts.map(w =>
+    Array.from(w).map(() => '<span class="syl-dot"></span>').join('')
+  );
+  host.innerHTML = '<span class="syl-label">單字長度：</span>'
     + groups.join('<span class="syl-dash">—</span>');
 }
 
 function updateInputDisplay(typed) {
-  // 填空（L2 新設計）：右卡片只顯示提示字母磚（renderHintLetters，進題時渲染一次）；
-  //   玩家打的字逐字母填進「底部答案格」（renderAnswerCells），這才是作答區。
-  //   底部 #inputDisplay 的原「幽靈字比對」不適用（會露完整詞），改渲染答案格。
-  if (G.mode === 'blank') {
+  // §點字拼字（L2/L3/L5，2026-07-08）：作答＝點字母磚，字母逐一落進中央「答案格」
+  //   （renderAnswerCells）。這才是點字關的可見作答區。三關統一走答案格，不再用底部
+  //   #inputDisplay 的「幽靈字比對」（會露完整詞/正確順序）。字母磚列由 renderLetterTiles
+  //   另外渲染（進題/點磚/退格時）。
+  if (isTileMode(G.mode)) {
     renderAnswerCells(typed);
-    return;
-  }
-  // 聽打（L3）新版：中央答案格面板 + 底部輸入框都反映玩家打的字。答案格會露出
-  //   單字長度（幾格）＝提示——使用者拍板可露（露長度當友善提示）。
-  if (G.listenMode) {
-    renderAnswerCells(typed);
-    const safeL = (typed || '').replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
-    document.getElementById('inputDisplay').innerHTML = safeL
-      ? `<span style="color:#FFE566">${safeL}</span>` : '_';
     return;
   }
   // 盲打（L5）：設計本意＝無提示，純憑記憶輸入。
@@ -5662,8 +5964,9 @@ function renderSpecialCharBar() {
   const bar = document.getElementById('specialCharBar');
   const btns = document.getElementById('specialCharBtns');
   if (!bar || !btns) return;
-  // 選項關（L1/L4）不用打字 → 一律隱藏
-  if (G.isChoice) { bar.hidden = true; btns.innerHTML = ''; return; }
+  // 選項關（L1/L4）不用打字 → 一律隱藏。
+  // 點字關（L2/L3/L5，2026-07-08 改點字母磚）→ 難打字元都在磚上，直接點，隱藏此列。
+  if (G.isChoice || isTileMode(G.mode)) { bar.hidden = true; btns.innerHTML = ''; return; }
   const chars = getLangSpecialChars();
   if (!chars.length) { bar.hidden = true; btns.innerHTML = ''; return; }
   btns.innerHTML = chars.map(ch =>
@@ -5777,11 +6080,22 @@ function submitWord() {
   // §2.5 多讀音：只要玩家整句輸入等於「任一 variant」即命中（斜線詞如
   // "supug / sabal" 打 supug 或 sabal 都算對）。逐字前進沿用主讀法(words)。
   const variants = G.currentPrey.variants || [remaining];
-  const variantHit = variants.includes(val);
+  let variantHit = variants.includes(val);
+
+  // §點字拼字（L2/L3/L5）多字詞相容：字母磚是「去空白的字母」，玩家點磚拼出的
+  //   val 不含字間空白（如 "laqisnaw"），但答案/variant 保有空白（"laqi snaw"）→
+  //   直接比會判錯。故點字關另外用「兩邊都去空白」再比一次（純空白差異，不放寬拼字）。
+  //   非點字關（理論上已無打字關）不走此路，行為完全不變。
+  const stripSpace = s => (s || '').replace(/\s+/g, '');
+  if (!variantHit && isTileMode(G.mode)) {
+    const valNS = stripSpace(val);
+    variantHit = variants.some(v => stripSpace(v) === valNS);
+  }
 
   G.totalAttempts++;
 
-  const fullPhrase = (val === remaining) || variantHit;
+  const fullPhrase = (val === remaining) || variantHit
+                   || (isTileMode(G.mode) && stripSpace(val) === stripSpace(remaining));
   if (fullPhrase || val === target) {
     G.hitAttempts++;
     inp.value = '';
@@ -5812,7 +6126,10 @@ function submitWord() {
     inp.classList.add('err');
     setTimeout(() => inp.classList.remove('err'), 350);
     inp.value = '';
-    updateInputDisplay('');
+    // 點字關（L2/L3/L5）：拼錯 → 所有磚歸位、清空答案格，讓玩家重新拼（不扣血、不換題，
+    //   跟打字關「留在原題重試」一致）。resetLetterTiles 內含 updateInputDisplay('')。
+    if (isTileMode(G.mode)) resetLetterTiles();
+    else updateInputDisplay('');
     showHit('MISS!', '#FF5555', false);
     if (window.Sfx) Sfx.sfxMiss(); // #5 打錯字「噗」——溫和、無懲罰感
   }
