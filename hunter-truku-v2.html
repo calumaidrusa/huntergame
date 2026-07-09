@@ -818,13 +818,16 @@ body.listen-active .input-wrapper {
 body.blank-active #realInput,
 body.listen-active #realInput { width: 0; flex: 0 0 auto; }
 body.blank-active #timerBarLabel,
-body.listen-active #timerBarLabel {
+body.listen-active #timerBarLabel,
+body.tile-active #timerBarLabel {
   position: static; top: auto; left: auto; margin: 0;
 }
 body.blank-active #timerBarLabel::after,
-body.listen-active #timerBarLabel::after { display: none; }
+body.listen-active #timerBarLabel::after,
+body.tile-active #timerBarLabel::after { display: none; }
 body.blank-active #timerBarWrap,
-body.listen-active #timerBarWrap {
+body.listen-active #timerBarWrap,
+body.tile-active #timerBarWrap {
   position: static; top: auto; left: auto; right: auto;
   width: 300px; height: 14px;
 }
@@ -4053,7 +4056,7 @@ const LEVEL_CONFIG = {
   2: { mode:'blank',        cue:'type',     isChoice:false, label:'LEVEL 2: 填空',   labelShort:'填空',   scene:'補齊缺字', timePerRound:12, totalRounds:18, hp:120, hpLoss:18, picK:6, filter:null       },
   3: { mode:'listen',       cue:'audio',    isChoice:false, label:'LEVEL 3: 聽打',   labelShort:'聽打',   scene:'聽音打字', timePerRound:14, totalRounds:18, hp:130, hpLoss:22, picK:6, filter:'hasAudio' },
   4: { mode:'choice',       cue:'picture',  isChoice:true,  label:'LEVEL 4: 看圖選詞', labelShort:'看圖選詞', scene:'看圖辨詞', timePerRound:12, totalRounds:18, hp:130, hpLoss:22, picK:6, filter:'hasImage' },
-  5: { mode:'blind',        cue:'type',     isChoice:false, label:'LEVEL 5: 盲打',   labelShort:'盲打',   scene:'憑記憶打', timePerRound:9,  totalRounds:15, hp:120, hpLoss:30, picK:5, filter:null       }
+  5: { mode:'blind',        cue:'type',     isChoice:false, label:'LEVEL 5: 盲打',   labelShort:'盲打',   scene:'憑記憶打', timePerRound:15, totalRounds:15, hp:120, hpLoss:30, picK:5, filter:null       }
 };
 // §1.5-A：用單一真相來源（LEVEL_PICK × TARGET_REPEAT）重算每關 picK/totalRounds，
 // 讓「每關聚焦幾個詞」「每詞出現幾次」集中可調，config 手寫值只是文件/上限參考。
@@ -5583,6 +5586,9 @@ function updateTimerBar(t, total) {
   // #choiceTimerSec 由小排版備好、疊在沙漏圖上；打字關該元素隱藏，更新無害。
   const secEl = document.getElementById('choiceTimerSec');
   if (secEl) secEl.textContent = Math.max(0, Math.ceil(t));
+  // 打字/點字關（L2/L3/L5）：把「剩餘時間」標籤即時填成秒數，讓玩家看得到倒數。
+  const tlbl = document.getElementById('timerBarLabel');
+  if (tlbl) tlbl.textContent = '剩餘 ' + Math.max(0, Math.ceil(t)) + ' 秒';
 }
 
 const _htmlEsc = s => String(s).replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
