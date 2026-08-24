@@ -332,7 +332,10 @@ app.get('/api/auth/me', requirePlayerAuth, (req, res) => {
   const unlockedLevel = getUnlockedLevel(req.player.id);
   const totalRow = db.prepare(`
     SELECT COALESCE(SUM(best.score), 0) AS totalScore FROM (
-      SELECT level, MAX(score) AS score FROM scores WHERE player_id = ? GROUP BY level
+      SELECT level, MAX(score) AS score
+      FROM scores
+      WHERE player_id = ? AND level BETWEEN 1 AND 4
+      GROUP BY level
     ) best
   `).get(req.player.id);
   res.json({
@@ -523,6 +526,7 @@ app.post('/api/scores', requirePlayerAuth, (req, res) => {
 
 // GET /api/leaderboard?limit=10&platform=mobile — 排行榜：每「玩家×語別×平台」一列的累計分數。
 // = 每個玩家「在某一語別、某一平台」各關最佳成績加總（不是把每次遊玩全加總，避免狂刷洗分）。
+// 桌機排行榜總分只計 L1-L4 的最佳分，L5 是畢業練習/挑戰關，不列入累計總分。
 // ⚠️ 分數**逐語別、逐平台獨立計算、不跨語別/跨平台加總**（使用者要求）：
 //    手機 endless 模式跟桌機固定回合制分數量級不同，絕不能混榜；同一玩家的
 //    desktop 500、mobile 400 → 是兩筆各自上榜，不會被合成 900。
@@ -542,7 +546,8 @@ app.get('/api/leaderboard', (req, res) => {
            best.platform AS platform
     FROM (
       SELECT player_id, lang_code, platform, level, MAX(score) AS score
-      FROM scores WHERE player_id IS NOT NULL
+      FROM scores
+      WHERE player_id IS NOT NULL AND (platform = 'mobile' OR level BETWEEN 1 AND 4)
       GROUP BY player_id, lang_code, platform, level
     ) best
     JOIN players p ON p.id = best.player_id

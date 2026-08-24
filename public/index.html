@@ -456,6 +456,8 @@ body.blind-active #hunter.blind-shooting {
 .vico-lock { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.6 7.2V5a3.4 3.4 0 0 1 6.8 0v2.2' fill='none' stroke='%23000' stroke-width='1.6'/%3E%3Crect x='3.3' y='7' width='9.4' height='6.3' rx='1.2' fill='%23000'/%3E%3C/svg%3E"); }
 /* 燈泡（提示鈕：金膠囊上用深色向量燈泡，比白盤木牌 icon 更清楚合身） */
 .vico-bulb { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.4a4.4 4.4 0 0 0-2.7 7.9c.6.5 1 1.1 1.1 1.9h3.2c.1-.8.5-1.4 1.1-1.9A4.4 4.4 0 0 0 8 1.4z' fill='%23000'/%3E%3Crect x='6.1' y='11.7' width='3.8' height='1.1' rx='.5' fill='%23000'/%3E%3Crect x='6.6' y='13.5' width='2.8' height='1.1' rx='.5' fill='%23000'/%3E%3C/svg%3E"); }
+/* 眼睛（答案提示比例）：睜眼＝顯示淡字母輔助。 */
+.vico-eye { --vico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1.4 8s2.4-4.2 6.6-4.2S14.6 8 14.6 8 12.2 12.2 8 12.2 1.4 8 1.4 8z' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'/%3E%3Ccircle cx='8' cy='8' r='2.1' fill='%23000'/%3E%3C/svg%3E"); }
 
 /* Hunter running animation
    兩支動畫並存：hunterRun 只動 `bottom`（腳步彈跳，維持原狀），
@@ -636,6 +638,11 @@ body.blank-active #answerArea {
 .answer-cell.current {
   border-color: #FFD700;
   animation: answerCellPulse 1s ease-in-out infinite;
+}
+.answer-cell.ghost {
+  color: rgba(255,243,208,0.32);
+  border-color: rgba(199,154,58,0.4);
+  background: linear-gradient(180deg, rgba(0,0,0,0.22), rgba(0,0,0,0.34));
 }
 @keyframes answerCellPulse {
   0%,100% { box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,215,0,0.3); }
@@ -915,7 +922,8 @@ body.has-track #hunterTrack { display:block; }
 /* 尚未打到的目標字元：updateInputDisplay()（小工程的 JS）是用 inline
    style="color:#888" 寫死的；深色內槽上 #888 太暗 → 用 !important 蓋掉
    inline 值改成幽靈金（不動 JS 邏輯）。 */
-#inputDisplay span:not(.typed-correct):not(.typed-wrong) { color: rgba(255,229,102,0.4) !important; }
+#inputDisplay span:not(.typed-correct):not(.typed-wrong):not(.ghost) { color: rgba(255,229,102,0.4) !important; }
+#inputDisplay .ghost { color: rgba(255,243,208,0.34); }
 
 /* ── §特殊字元列（可點輸入喉塞音/擴充字母）──────────────────
    木質金字小鈕，延續按鈕視覺語言（金黃漸層 + 咖啡邊框 + 立體按壓感），
@@ -2632,6 +2640,37 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
 #hintBtn:hover:not(:disabled) { filter:brightness(1.08); transform:translateY(-1px); }
 #hintBtn:active:not(:disabled) { transform:translateY(2px); box-shadow:0 1px 0 #5A3000; }
 #hintBtn:disabled { opacity:0.5; cursor:default; filter:grayscale(0.3); }
+#answerHintToggle {
+  display:none;
+  position:absolute; right:14px; bottom:330px; z-index:45;
+  align-items:center; gap:6px;
+  padding:7px 13px; border-radius:999px; cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif; font-size:12px; font-weight:900; letter-spacing:1px;
+  color:#FFE9B0;
+  background:linear-gradient(180deg, rgba(30,54,18,0.92), rgba(16,38,10,0.94));
+  border:2px solid rgba(199,154,58,0.6);
+  box-shadow:0 3px 0 rgba(90,48,0,0.55), inset 0 1px 0 rgba(255,229,102,0.12);
+  transition:transform .1s, filter .1s, background .15s, border-color .15s, color .15s;
+}
+body.typing-active #answerHintToggle { display:inline-flex; }
+#answerHintToggle .aht-ic { width:15px; height:15px; opacity:0.85; }
+#answerHintToggle .aht-state {
+  font-family:'Fredoka One',sans-serif; font-size:11px; line-height:1;
+  padding:1px 7px; border-radius:999px;
+  color:#FFE9B0; background:rgba(0,0,0,0.35); border:1px solid rgba(199,154,58,0.4);
+}
+#answerHintToggle:hover { filter:brightness(1.08); transform:translateY(-1px); }
+#answerHintToggle:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(90,48,0,0.55); }
+#answerHintToggle.on {
+  color:#3A2410;
+  background:linear-gradient(180deg,#FFD86A,#E8A22C);
+  border-color:#8B5500;
+  text-shadow:0 1px 0 rgba(255,240,200,0.5);
+}
+#answerHintToggle.on .aht-ic { opacity:1; }
+#answerHintToggle.on .aht-state {
+  color:#3A2410; background:rgba(255,245,200,0.55); border-color:#8B5500;
+}
 /* 選項關被提示刪掉的錯誤選項：淡出、不可點 */
 .choice-opt.hint-removed { opacity:0.18; pointer-events:none; filter:grayscale(0.8); transition:opacity .25s, filter .25s; }
 /* ── 語別選擇：觸發鈕（取代原生 select）＋ modal 清單 ── */
@@ -2991,6 +3030,12 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
     <button id="hintBtn" onclick="useHint()" title="提示（會扣分）" style="display:none">
       <span class="hint-ic vico vico-bulb"></span><span id="hintBtnLabel">提示</span>
     </button>
+    <button id="answerHintToggle" type="button" onclick="toggleAnswerHint()"
+            aria-pressed="false" title="答案提示：點擊切換顯示幾成字母（看著打，不影響計分）">
+      <span class="aht-ic vico vico-eye" aria-hidden="true"></span>
+      <span class="aht-label">答案提示</span>
+      <span class="aht-state" id="answerHintState">關</span>
+    </button>
 
     <!-- 填入答案區（L2 填空關專用）— 中央下方一排空答案格：玩家打字時字母依序
          填進 #answerCells（一字母一格，多字詞間隔分組），旁邊沿用底部 .shoot-btn
@@ -3227,7 +3272,7 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824e" alt="">
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824f" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -4062,6 +4107,68 @@ const LEVELS = new Proxy({}, {
 });
 
 // ═══════════════════════════════════════════════════
+//  答案提示比例：0% / 30% / 50% / 70% / 100%
+// ═══════════════════════════════════════════════════
+const ANSWER_HINT_KEY = 'ht_answer_hint_pct';
+const ANSWER_HINT_LEVELS = [0, 30, 50, 70, 100];
+const AnswerHint = {
+  pct: (function () {
+    try {
+      const raw = localStorage.getItem(ANSWER_HINT_KEY);
+      if (raw === '1') return 100;
+      const n = parseInt(raw, 10);
+      return ANSWER_HINT_LEVELS.includes(n) ? n : 0;
+    } catch (e) { return 0; }
+  })(),
+  get enabled() { return this.pct > 0; },
+  setPct(p) {
+    this.pct = ANSWER_HINT_LEVELS.includes(p) ? p : 0;
+    try { localStorage.setItem(ANSWER_HINT_KEY, String(this.pct)); } catch (e) {}
+  },
+  cycle() {
+    const i = ANSWER_HINT_LEVELS.indexOf(this.pct);
+    this.setPct(ANSWER_HINT_LEVELS[(i + 1) % ANSWER_HINT_LEVELS.length]);
+  }
+};
+
+function answerRevealPositions(answerLetters, pct) {
+  const n = answerLetters.length;
+  const set = new Set();
+  if (!n || pct <= 0) return set;
+  if (pct >= 100) { for (let i = 0; i < n; i++) set.add(i); return set; }
+  const count = Math.min(n, Math.max(1, Math.round(n * pct / 100)));
+  for (let j = 0; j < count; j++) {
+    set.add(Math.min(n - 1, Math.floor((j + 1) * n / (count + 1))));
+  }
+  return set;
+}
+
+function syncAnswerHintBtn() {
+  const btn = document.getElementById('answerHintToggle');
+  if (!btn) return;
+  const on = AnswerHint.enabled;
+  btn.classList.toggle('on', on);
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  const st = document.getElementById('answerHintState');
+  const label = on ? (AnswerHint.pct + '%') : '關';
+  if (st) st.textContent = label;
+  btn.setAttribute('aria-label', '答案提示，目前顯示 ' + label + '（點擊切換比例）');
+}
+
+function toggleAnswerHint() {
+  AnswerHint.cycle();
+  if (window.Sfx) Sfx.sfxClick();
+  syncAnswerHintBtn();
+  refreshAnswerHintDisplay();
+}
+
+function refreshAnswerHintDisplay() {
+  if (!G.currentPrey) return;
+  const ri = document.getElementById('realInput');
+  updateInputDisplay(normalizeAnswer(ri ? ri.value : ''));
+}
+
+// ═══════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════
 let G = {
@@ -4418,10 +4525,12 @@ function applyLevelMode(lvl) {
   document.body.classList.toggle('listen-active', G.listenMode);
   // 選項點選關：隱藏底部打字輸入列（class 由 CSS 控制顯示/隱藏）
   document.body.classList.toggle('choice-active', G.isChoice);
+  document.body.classList.toggle('typing-active', !G.isChoice);
   // 填空關（L2 新設計）：右卡片＝提示卡（打散字母磚），作答在中央下方 #answerArea
   // 的答案格（打字依序填格），底部輸入顯示層隱藏。class 由 CSS 控制顯示切換。
   document.body.classList.toggle('blank-active', G.mode === 'blank');
   document.body.classList.toggle('blind-active', G.mode === 'blind');
+  syncAnswerHintBtn();
   // §進度條統一：所有關卡（L1-L5）獵人都當「底部關卡步道」進度條的跑者——換成「朝右跑姿」
   // sprite、站在木步道上往終點旗跑，水平位置＝本關進度（見 positionHunterAsProgress）。
   // 以前只有 L2(blank) 這樣，其餘關是蹲姿逼近獵物；使用者定案「進度條統一用 L2 那個」。
@@ -4660,11 +4769,11 @@ function mgPreviewAnswerHtml(answer) {
 }
 
 const MODE_GUIDE_SHOTS = {
-  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824e',
-  blank:          '/images/guide/level-2-blank.png?v=20260824e',
-  listen:         '/images/guide/level-3-listen.png?v=20260824e',
-  choice:         '/images/guide/level-4-choice.png?v=20260824e',
-  blind:          '/images/guide/level-5-blind.png?v=20260824e'
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824f',
+  blank:          '/images/guide/level-2-blank.png?v=20260824f',
+  listen:         '/images/guide/level-3-listen.png?v=20260824f',
+  choice:         '/images/guide/level-4-choice.png?v=20260824f',
+  blind:          '/images/guide/level-5-blind.png?v=20260824f'
 };
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
@@ -5281,6 +5390,8 @@ function renderAnswerCells(typed) {
   // 玩家打的字（去空白後）逐一填入答案格。normalizeAnswer 後空白已壓成單一空白，
   // 這裡再把打的字元也拆成「非空白字母序列」對位填入，讓玩家打的空白不佔格。
   const typedLetters = Array.from(typed || '').filter(c => !/\s/.test(c));
+  const answerLetters = skel.filter(c => !/\s/.test(c));
+  const revealPos = answerRevealPositions(answerLetters, AnswerHint.pct);
   let html = '';
   let cellIdx = 0;         // 已排出的答案格數（＝對應到第幾個玩家字母）
   let currentMarked = false;
@@ -5295,7 +5406,9 @@ function renderAnswerCells(typed) {
     } else {
       const cur = currentMarked ? '' : ' current';
       currentMarked = true;
-      html += `<span class="answer-cell${cur}"></span>`;
+      const gch = revealPos.has(cellIdx) ? _htmlEsc(answerLetters[cellIdx] || '') : '';
+      const ghostCls = gch ? ' ghost' : '';
+      html += `<span class="answer-cell${cur}${ghostCls}">${gch}</span>`;
     }
     cellIdx++;
   }
@@ -5358,9 +5471,30 @@ function updateInputDisplay(typed) {
       ? `<span style="color:#FFE566">${safeL}</span>` : '_';
     return;
   }
-  // 盲打（L5）：不顯示目標幽靈字也不給長度提示（無答案格），只把玩家實際打的字
-  //   原樣顯示（中性色），純憑記憶輸入。
+  // 盲打（L5）：預設 0% 時不給長度提示；玩家手動開啟答案提示後，
+  //   用淡字母 / 點號顯示部分骨架，純顯示，不影響判定與計分。
   if (G.mode === 'blind') {
+    if (AnswerHint.enabled && G.currentPrey) {
+      const answer = displayWordOf(G.currentPrey) || '';
+      const answerLetters = Array.from(answer).filter(c => !/\s/.test(c));
+      const revealPos = answerRevealPositions(answerLetters, AnswerHint.pct);
+      let letterIdx = 0;
+      let html = '';
+      Array.from(answer).forEach((ch, i) => {
+        if (/\s/.test(ch)) { html += '<span class="ghost"> </span>'; return; }
+        if (i < typed.length) {
+          const ok = normalizeAnswer(typed[i]) === normalizeAnswer(ch);
+          html += `<span class="${ok ? 'typed-correct' : 'typed-wrong'}">${_htmlEsc(typed[i])}</span>`;
+        } else if (revealPos.has(letterIdx)) {
+          html += `<span class="ghost">${_htmlEsc(ch)}</span>`;
+        } else {
+          html += '<span class="ghost">·</span>';
+        }
+        letterIdx++;
+      });
+      document.getElementById('inputDisplay').innerHTML = html || '_';
+      return;
+    }
     const safe = (typed || '').replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));
     document.getElementById('inputDisplay').innerHTML = safe
       ? `<span style="color:#FFE566">${safe}</span>` : '_';
@@ -6526,4 +6660,5 @@ function showLangToast(msg) {
 </script>
 </body>
 </html>
+
 
