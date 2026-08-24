@@ -1484,13 +1484,17 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   grid-column: 2; grid-row: 1 / 3; align-self: stretch;
   min-height: 0;
   border: 4px solid #3b210d; border-radius: 9px;
-  background:
-    linear-gradient(rgba(8,50,15,0.12), rgba(8,30,10,0.44)),
-    url('/images/ui/v2-background-game-cliff.jpg') center/cover no-repeat;
+  background:#081f08;
   box-shadow: 0 4px 0 #1b0f06, 0 10px 20px rgba(0,0,0,0.42);
   overflow: hidden;
-  display: grid; grid-template-rows: auto auto 1fr auto auto;
-  gap: 7px; padding: 11px 13px;
+  display: grid; place-items: center;
+  padding: 0;
+}
+.mg-guide-shot {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 .mg-prev-hud {
   display: flex; justify-content: space-between; gap: 8px;
@@ -2039,10 +2043,44 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
 
 .unlock-toast, .unlock-toast + * {}
 
+/* ── 封面入口下方合作 logo 列 ──
+   taipei-logo-02 是白色透明 logo，必須放在深綠底牌中才看得見。 */
+.cover-logo-row {
+  width:min(500px, 88%);
+  margin:7px auto 0;
+  padding:5px 10px;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:rgba(255,255,255,0.92);
+  border:2px solid rgba(245,166,35,0.78);
+  border-radius:14px;
+  box-shadow:0 3px 0 #5A3000, 0 8px 16px rgba(0,0,0,0.28);
+  z-index:2;
+  flex:0 0 auto;
+}
+.cover-logo {
+  display:block; object-fit:contain; flex:0 1 auto;
+}
+.cover-logo--mother-tongue {
+  width:min(210px, 42vw); max-height:34px;
+}
+.cover-logo-divider {
+  width:1px; height:30px; background:rgba(91,67,42,0.25); flex:0 0 auto;
+}
+.cover-logo-dark-tile {
+  width:min(210px, 36vw); min-height:38px; padding:5px 10px;
+  display:grid; place-items:center;
+  border-radius:10px;
+  background:linear-gradient(#174321,#0B2A12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.10);
+}
+.cover-logo--indigenous-affairs {
+  width:100%; max-height:27px;
+}
+
 /* ── 底部石質功能列 ── */
 .title-footer {
   display:flex; gap:6px; align-items:center; justify-content:center;
-  margin:8px auto 0; padding:6px 14px;
+  margin:6px auto 0; padding:6px 14px;
   background:linear-gradient(#4a4038,#2b241e);
   border-top:3px solid #6b5a48; border-bottom:3px solid #1a140e;
   box-shadow:0 -4px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,220,170,0.12);
@@ -2816,6 +2854,13 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
         <span class="lc-start">開始遊戲</span>
       </div>
     </div>
+    <div class="cover-logo-row" aria-label="合作與主辦單位">
+      <img class="cover-logo cover-logo--mother-tongue" src="/images/logos/taipei-logo-04.png" alt="臺北市母語巢">
+      <span class="cover-logo-divider" aria-hidden="true"></span>
+      <span class="cover-logo-dark-tile">
+        <img class="cover-logo cover-logo--indigenous-affairs" src="/images/logos/taipei-logo-02.png" alt="臺北市政府原住民族事務委員會">
+      </span>
+    </div>
     <!-- 底部石質功能列：排行榜 / 設定(暫沿用登出位) / 音效 / 登出。
          沿用既有 onclick（openLeaderboard / logout / onVolBtnClick），排成石bar。 -->
     <div class="title-footer">
@@ -3131,11 +3176,7 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <div class="mg-prev-hud"><span>HP <img class="ui-ico mg-heart" src="/images/ui/v2-ui-icon-heart.png" alt=""><img class="ui-ico mg-heart" src="/images/ui/v2-ui-icon-heart.png" alt=""><img class="ui-ico mg-heart" src="/images/ui/v2-ui-icon-heart.png" alt=""></span><span>SCORE 0</span><span id="mgPrevLevel">LEVEL 1</span></div>
-        <div class="mg-prev-title" id="mgPrevLang">TRUKU</div>
-        <div class="mg-prev-cue" id="mgPrevCue"><div class="mg-prev-audio"><img class="ui-ico" src="/images/ui/v2-ui-icon-sound.png" alt=""> 聽發音</div></div>
-        <div class="mg-prev-answer" id="mgPrevAnswer"><div class="mg-prev-options"><span>選項 A</span><span>選項 B</span><span>選項 C</span><span>選項 D</span></div></div>
-        <div class="mg-prev-progress">題目 1 / 8</div>
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824b" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -3813,18 +3854,19 @@ function showLockedHint(lvl) {
 //  聚焦「少量詞、多次重複」勝過「一關塞一堆詞各出一次」（間隔複習 > 集中複習）。
 //  每關實際題數 totalRounds 由 picK（本關不重複詞數）× 該詞目標出現次數推導：
 //    totalRounds ≈ picK × TARGET_REPEAT
-//  →  改「每詞出現幾次」只要動 TARGET_REPEAT；改「一關聚焦幾個詞」只要動該關 picK。
+//  →  2026-08-24 使用者定案：L1-L4 維持原節奏，只有 L5 縮成 5 題，降低畢業關負擔。
 //  config 內每關仍保留一個 totalRounds 欄位當「明示值/文件」，但實際跑的題數
 //  以 deriveTotalRounds() 重算後為準（見下方 config 定義後的迴圈），確保兩者一致。
+const LEVEL_ROUNDS = { 1:18, 2:18, 3:18, 4:18, 5:5 };
 const LEVEL_PICK = { 1:6, 2:6, 3:6, 4:6, 5:5 };  // 每關不重複詞數（L5 盲打最難→再少一點）
-const TARGET_REPEAT = 3;                          // 每個詞在一關內平均目標出現次數（≈3）
+const TARGET_REPEAT = 3;                          // L1-L4 每個詞在一關內平均目標出現次數
 // ═══════════════════════════════════════════════════
 const LEVEL_CONFIG = {
   1: { mode:'audio-choice', cue:'audio',   isChoice:true,  label:'LEVEL 1: 音選詞', labelShort:'音選詞', scene:'聽音辨詞', timePerRound:12, totalRounds:18, hp:120, hpLoss:15, picK:6, filter:'hasAudio' },
   2: { mode:'blank',        cue:'type',     isChoice:false, label:'LEVEL 2: 填空',   labelShort:'填空',   scene:'補齊缺字', timePerRound:12, totalRounds:18, hp:120, hpLoss:18, picK:6, filter:null       },
   3: { mode:'listen',       cue:'audio',    isChoice:false, label:'LEVEL 3: 聽打',   labelShort:'聽打',   scene:'聽音打字', timePerRound:14, totalRounds:18, hp:130, hpLoss:22, picK:6, filter:'hasAudio' },
   4: { mode:'choice',       cue:'picture',  isChoice:true,  label:'LEVEL 4: 看圖選詞', labelShort:'看圖選詞', scene:'看圖辨詞', timePerRound:12, totalRounds:18, hp:130, hpLoss:22, picK:6, filter:'hasImage' },
-  5: { mode:'blind',        cue:'type',     isChoice:false, label:'LEVEL 5: 盲打',   labelShort:'盲打',   scene:'憑記憶打', timePerRound:9,  totalRounds:15, hp:120, hpLoss:30, picK:5, filter:null       }
+  5: { mode:'blind',        cue:'type',     isChoice:false, label:'LEVEL 5: 盲打',   labelShort:'盲打',   scene:'憑記憶打', timePerRound:9,  totalRounds:5, hp:120, hpLoss:30, picK:5, filter:null       }
 };
 // §1.5-A：用單一真相來源（LEVEL_PICK × TARGET_REPEAT）重算每關 picK/totalRounds，
 // 讓「每關聚焦幾個詞」「每詞出現幾次」集中可調，config 手寫值只是文件/上限參考。
@@ -3832,7 +3874,7 @@ for (const lvl of Object.keys(LEVEL_CONFIG)) {
   const cfg = LEVEL_CONFIG[lvl];
   const k = LEVEL_PICK[lvl] || cfg.picK || 6;
   cfg.picK = k;
-  cfg.totalRounds = k * TARGET_REPEAT; // 例：picK 6 × repeat 3 = 18 題（每詞平均 3 次）
+  cfg.totalRounds = LEVEL_ROUNDS[lvl] || (k * TARGET_REPEAT);
 }
 const MAX_LEVEL = 5; // 前端解鎖上限，跟後端 MAX_LEVEL 對齊（用於 nextLvlBtn 判斷等）
 
@@ -4565,6 +4607,14 @@ function mgPreviewAnswerHtml(answer) {
   return '<div class="mg-prev-type"><span class="mg-prev-cells"><i></i><i></i><i></i><i></i><i></i></span><span class="mg-prev-submit">送出</span></div>';
 }
 
+const MODE_GUIDE_SHOTS = {
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824b',
+  blank:          '/images/guide/level-2-blank.png?v=20260824b',
+  listen:         '/images/guide/level-3-listen.png?v=20260824b',
+  choice:         '/images/guide/level-4-choice.png?v=20260824b',
+  blind:          '/images/guide/level-5-blind.png?v=20260824b'
+};
+
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
 // 不動任何判定。showBanner() 在顯示看板前呼叫。
 function fillModeGuide(mode) {
@@ -4579,6 +4629,8 @@ function fillModeGuide(mode) {
   const langEl = document.getElementById('mgPrevLang');
   if (langEl) langEl.textContent =
     (G.lang && ((G.lang.nameNative || '').toUpperCase() || G.lang.nameZh)) || '太魯閣語';
+  const shot = document.getElementById('mgGuideShot');
+  if (shot) shot.src = MODE_GUIDE_SHOTS[mode] || MODE_GUIDE_SHOTS['audio-choice'];
   const cue = document.getElementById('mgPrevCue');
   if (cue) cue.innerHTML = mgPreviewCueHtml(d.cue);
   const ans = document.getElementById('mgPrevAnswer');
