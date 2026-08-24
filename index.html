@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>族語射手 TRUKU WORD ARCHER</title>
 <!--
   ===================================================================
@@ -37,6 +40,7 @@
 <script>
 (function(){
   'use strict';
+  var APP_VERSION = '20260824b';
   var DESKTOP = 'hunter-truku-v2.html';
   var MOBILE  = 'mobile.html';
   var WIDTH_THRESHOLD = 820;   // <= 視為手機
@@ -72,6 +76,7 @@
 
   // 保留除 mode 外的既有查詢字串一併帶過去（例如 ?debug=1、?autostart=1）
   params.delete('mode');
+  if (!params.has('v')) params.set('v', APP_VERSION);
   var qs = params.toString();
   if (qs) target += (target.indexOf('?') >= 0 ? '&' : '?') + qs;
 
