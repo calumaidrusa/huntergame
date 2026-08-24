@@ -111,6 +111,16 @@ body {
   transform: scale(var(--game-scale));
   transform-origin: top left;
 }
+body.app-booting #hud,
+body.app-booting #stage,
+body.app-booting #bottomBar {
+  visibility: hidden;
+}
+body:not(.game-active) #hud,
+body:not(.game-active) #stage,
+body:not(.game-active) #bottomBar {
+  display: none;
+}
 
 /* ── LAYERED BACKGROUND ── */
 #bgCanvas {
@@ -2804,7 +2814,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
 }
 </style>
 </head>
-<body>
+<body class="app-booting">
 
 <!-- 標題畫面背景音（森林環境音，Public Domain）。與詞彙發音 _currentAudio 完全獨立。 -->
 <audio id="titleBgm" src="/audio/bgm/title-ambience.mp3" loop preload="auto"></audio>
@@ -3272,7 +3282,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824f" alt="">
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824g" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -3805,6 +3815,7 @@ async function refreshAuthMe() {
 }
 
 function showAuthScreen() {
+  document.body.classList.remove('app-booting', 'game-active');
   document.getElementById('titleScreen').style.display = 'none';
   document.getElementById('authScreen').classList.add('show');
   setTimeout(() => document.getElementById('authUsername').focus(), 50);
@@ -3815,6 +3826,7 @@ function hideAuthScreen() {
 }
 
 function showTitleScreen() {
+  document.body.classList.remove('app-booting', 'game-active');
   hideAuthScreen();
   document.getElementById('titleScreen').style.display = 'flex';
   document.getElementById('welcomeMsg').textContent = AUTH.isGuest
@@ -4506,6 +4518,8 @@ async function startGame(lvl) {
     return;
   }
   document.getElementById('titleScreen').style.display = 'none';
+  document.body.classList.remove('app-booting');
+  document.body.classList.add('game-active');
   fadeOutBgm(600); // 進遊戲：標題 BGM 淡出停止（混搭方向：遊戲中只有音效、無 BGM）
   G.level = lvl;
   applyLevelMode(lvl); // 依 LEVEL_CONFIG[lvl].mode 設定本關玩法（mode/listenMode/isChoice）
@@ -4769,11 +4783,11 @@ function mgPreviewAnswerHtml(answer) {
 }
 
 const MODE_GUIDE_SHOTS = {
-  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824f',
-  blank:          '/images/guide/level-2-blank.png?v=20260824f',
-  listen:         '/images/guide/level-3-listen.png?v=20260824f',
-  choice:         '/images/guide/level-4-choice.png?v=20260824f',
-  blind:          '/images/guide/level-5-blind.png?v=20260824f'
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824g',
+  blank:          '/images/guide/level-2-blank.png?v=20260824g',
+  listen:         '/images/guide/level-3-listen.png?v=20260824g',
+  choice:         '/images/guide/level-4-choice.png?v=20260824g',
+  blind:          '/images/guide/level-5-blind.png?v=20260824g'
 };
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
@@ -6318,6 +6332,7 @@ function goTitle() {
   document.getElementById('clearScreen').classList.remove('show');
   clearInterval(G.timer);
   G.active = false;
+  document.body.classList.remove('app-booting', 'game-active');
   document.body.classList.remove('listen-active');
   document.body.classList.remove('has-track'); // 回標題收起底部進度步道
   document.getElementById('titleScreen').style.display = 'flex';
@@ -6660,5 +6675,6 @@ function showLangToast(msg) {
 </script>
 </body>
 </html>
+
 
 
