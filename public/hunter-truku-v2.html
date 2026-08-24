@@ -3041,7 +3041,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
       <span class="hint-ic vico vico-bulb"></span><span id="hintBtnLabel">提示</span>
     </button>
     <button id="answerHintToggle" type="button" onclick="toggleAnswerHint()"
-            aria-pressed="false" title="答案提示：點擊切換顯示幾成字母（看著打，不影響計分）">
+            aria-pressed="false" title="答案提示：點擊切換顯示幾成字母；提示越多，答對得分越低">
       <span class="aht-ic vico vico-eye" aria-hidden="true"></span>
       <span class="aht-label">答案提示</span>
       <span class="aht-state" id="answerHintState">關</span>
@@ -3282,7 +3282,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824j" alt="">
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824k" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -4158,6 +4158,10 @@ function answerHintScoreMultiplier() {
   return ANSWER_HINT_SCORE_MULTIPLIER[AnswerHint.pct] || 1;
 }
 
+function answerHintScoreRuleText() {
+  return '答案提示會影響得分：30%=85%、50%=70%、70%=55%、100%=35%；一般提示每次再扣分。';
+}
+
 function answerRevealPositions(answerLetters, pct) {
   const n = answerLetters.length;
   const set = new Set();
@@ -4746,7 +4750,7 @@ function fillHowto(mode) {
 // 只是引導文字/示意預覽，不影響任何判定/計分/解鎖。
 function modeGuideData(mode) {
   const langZh = (G.lang && G.lang.nameZh) || '太魯閣語';
-  const scored = { t:'答對得分：', b:'完成題目後進入下一題。' };
+  const scored = { t:'答對得分：', b: answerHintScoreRuleText() };
   switch (mode) {
     case 'audio-choice': return {
       sub:'音選詞模式怎麼玩',
@@ -4800,11 +4804,11 @@ function mgPreviewAnswerHtml(answer) {
 }
 
 const MODE_GUIDE_SHOTS = {
-  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824j',
-  blank:          '/images/guide/level-2-blank.png?v=20260824j',
-  listen:         '/images/guide/level-3-listen.png?v=20260824j',
-  choice:         '/images/guide/level-4-choice.png?v=20260824j',
-  blind:          '/images/guide/level-5-blind.png?v=20260824j'
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824k',
+  blank:          '/images/guide/level-2-blank.png?v=20260824k',
+  listen:         '/images/guide/level-3-listen.png?v=20260824k',
+  choice:         '/images/guide/level-4-choice.png?v=20260824k',
+  blind:          '/images/guide/level-5-blind.png?v=20260824k'
 };
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
