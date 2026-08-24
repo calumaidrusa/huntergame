@@ -3282,7 +3282,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824g" alt="">
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824h" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -3407,7 +3407,9 @@ body.typing-active #answerHintToggle { display:inline-flex; }
 #bgmVolRange::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FBE7A6,#D99A2B 70%);border:1.5px solid #7a5214;box-shadow:0 1px 3px rgba(0,0,0,.5);cursor:pointer}
 #bgmVolRange::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FBE7A6,#D99A2B 70%);border:1.5px solid #7a5214;box-shadow:0 1px 3px rgba(0,0,0,.5);cursor:pointer}
 #bgmVolRange::-moz-range-track{height:6px;border-radius:999px;background:linear-gradient(90deg,#D99A2B,#F0C15A)}
-#siteCredit{position:fixed;left:50%;transform:translateX(-50%);bottom:8px;z-index:9998;max-width:min(90vw,560px);padding:3px 12px;background:rgba(20,32,16,.5);border:1px solid rgba(169,116,31,.45);border-radius:8px;color:#E6CE8C;font-size:11px;line-height:1.4;letter-spacing:.3px;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none;user-select:none;white-space:nowrap}
+#siteCredit{position:fixed;left:50%;transform:translateX(-50%);bottom:8px;z-index:9998;max-width:min(94vw,980px);padding:3px 12px;background:rgba(20,32,16,.5);border:1px solid rgba(169,116,31,.45);border-radius:8px;color:#E6CE8C;font-size:10px;line-height:1.4;letter-spacing:.2px;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:auto;user-select:none;white-space:normal}
+#siteCredit a{color:#FFE9B0;text-decoration:none;border-bottom:1px dotted rgba(255,233,176,.55)}
+#siteCredit a:hover{color:#FFD700;border-bottom-color:#FFD700}
 @media (max-width:600px){#bgmVolBar{right:8px;top:8px}#bgmVolBar:hover,#bgmVolBar.open{width:180px}#bgmVolBar .bvb-label{display:none}#siteCredit{font-size:9px;padding:2px 8px;max-width:94vw;white-space:normal}}
 </style>
 <div id="bgmVolBar" role="group" aria-label="音樂音量">
@@ -3417,7 +3419,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
 </div>
 
 <!-- 版權/授權來源標示（右下，錯開音量條 #bgmVolBar 的正上方） -->
-<div id="siteCredit">本網站之單詞以及單詞圖卡由原住民族語E樂園 製作</div>
+<div id="siteCredit">資料來源：<a href="https://web.klokah.tw/" target="_blank" rel="noopener">原住民族語E樂園</a>由財團法人原住民族語言研究發展基金會製作，以 <a href="https://web.klokah.tw/creativeCommons/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> 釋出；本遊戲為非商業教育改作。</div>
 
 <!-- Hidden focus input -->
 <input type="text" id="typeInput" style="position:fixed;opacity:0;pointer-events:none;left:-999px">
@@ -4783,11 +4785,11 @@ function mgPreviewAnswerHtml(answer) {
 }
 
 const MODE_GUIDE_SHOTS = {
-  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824g',
-  blank:          '/images/guide/level-2-blank.png?v=20260824g',
-  listen:         '/images/guide/level-3-listen.png?v=20260824g',
-  choice:         '/images/guide/level-4-choice.png?v=20260824g',
-  blind:          '/images/guide/level-5-blind.png?v=20260824g'
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824h',
+  blank:          '/images/guide/level-2-blank.png?v=20260824h',
+  listen:         '/images/guide/level-3-listen.png?v=20260824h',
+  choice:         '/images/guide/level-4-choice.png?v=20260824h',
+  blind:          '/images/guide/level-5-blind.png?v=20260824h'
 };
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
@@ -6675,6 +6677,7 @@ function showLangToast(msg) {
 </script>
 </body>
 </html>
+
 
 
 

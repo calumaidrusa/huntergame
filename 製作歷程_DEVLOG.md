@@ -134,6 +134,9 @@
 - 修正頁面載入時會先短暫露出遊戲 HUD/場景的初始化閃爍：`body.app-booting` 初始隱藏遊戲層，登入畫面或首頁判斷完成後再解除。
 - 新增 `body.game-active` 作為遊戲主畫面顯示 gate，未進關卡時 `#hud`、`#stage`、`#bottomBar` 不參與顯示，避免首頁前先看到舊關卡畫面。
 
+### 📜 Klokah 授權署名修正（2026-08-24）
+- 依原住民族語E樂園 Creative Commons 頁面，底部署名改為標示資料來源、製作單位、原網站網址、`CC BY-NC-SA 4.0` 與非商業教育改作說明。
+
 ### 🐛 兩個 bug 修正（2026-07-05）
 - **語別選單「要一直按著才能選」**：`.lang-select` 的 hover transform 讓 Chromium 原生下拉一放開就收起，移除 transform（hover 回饋改亮度／邊框）。
 - **關卡選擇頁登出按鈕被切**：統一後的新 logo 較高，把底部功能列推出固定畫面高被 overflow 裁掉；縮小 logo 讓 5 關卡片＋功能列完整落在畫面內。
