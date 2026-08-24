@@ -2039,10 +2039,44 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
 
 .unlock-toast, .unlock-toast + * {}
 
+/* ── 封面入口下方合作 logo 列 ──
+   taipei-logo-02 是白色透明 logo，必須放在深綠底牌中才看得見。 */
+.cover-logo-row {
+  width:min(500px, 88%);
+  margin:7px auto 0;
+  padding:5px 10px;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:rgba(255,255,255,0.92);
+  border:2px solid rgba(245,166,35,0.78);
+  border-radius:14px;
+  box-shadow:0 3px 0 #5A3000, 0 8px 16px rgba(0,0,0,0.28);
+  z-index:2;
+  flex:0 0 auto;
+}
+.cover-logo {
+  display:block; object-fit:contain; flex:0 1 auto;
+}
+.cover-logo--mother-tongue {
+  width:min(210px, 42vw); max-height:34px;
+}
+.cover-logo-divider {
+  width:1px; height:30px; background:rgba(91,67,42,0.25); flex:0 0 auto;
+}
+.cover-logo-dark-tile {
+  width:min(210px, 36vw); min-height:38px; padding:5px 10px;
+  display:grid; place-items:center;
+  border-radius:10px;
+  background:linear-gradient(#174321,#0B2A12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.10);
+}
+.cover-logo--indigenous-affairs {
+  width:100%; max-height:27px;
+}
+
 /* ── 底部石質功能列 ── */
 .title-footer {
   display:flex; gap:6px; align-items:center; justify-content:center;
-  margin:8px auto 0; padding:6px 14px;
+  margin:6px auto 0; padding:6px 14px;
   background:linear-gradient(#4a4038,#2b241e);
   border-top:3px solid #6b5a48; border-bottom:3px solid #1a140e;
   box-shadow:0 -4px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,220,170,0.12);
@@ -2815,6 +2849,13 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
         <span class="lc-desc">點族語詞＋對應中文，限時消一消</span>
         <span class="lc-start">開始遊戲</span>
       </div>
+    </div>
+    <div class="cover-logo-row" aria-label="合作與主辦單位">
+      <img class="cover-logo cover-logo--mother-tongue" src="/images/logos/taipei-logo-04.png" alt="臺北市母語巢">
+      <span class="cover-logo-divider" aria-hidden="true"></span>
+      <span class="cover-logo-dark-tile">
+        <img class="cover-logo cover-logo--indigenous-affairs" src="/images/logos/taipei-logo-02.png" alt="臺北市政府原住民族事務委員會">
+      </span>
     </div>
     <!-- 底部石質功能列：排行榜 / 設定(暫沿用登出位) / 音效 / 登出。
          沿用既有 onclick（openLeaderboard / logout / onVolBtnClick），排成石bar。 -->
