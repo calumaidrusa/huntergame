@@ -2128,13 +2128,13 @@ body.choice-active #bottomInfoBar .info-hint { display: none; }
   .cover-logo--indigenous-affairs { max-height:24px; }
 }
 
-/* ── 底部石質功能列 ── */
+/* ── 底部功能按鈕 ── */
 .title-footer {
   display:flex; gap:6px; align-items:center; justify-content:center;
-  margin:6px auto 0; padding:6px 14px;
-  background:linear-gradient(#4a4038,#2b241e);
-  border-top:3px solid #6b5a48; border-bottom:3px solid #1a140e;
-  box-shadow:0 -4px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,220,170,0.12);
+  margin:6px auto 0; padding:0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
   z-index:2;
 }
 .title-small-btn {
@@ -3227,7 +3227,7 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824d" alt="">
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824e" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -4660,11 +4660,11 @@ function mgPreviewAnswerHtml(answer) {
 }
 
 const MODE_GUIDE_SHOTS = {
-  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824d',
-  blank:          '/images/guide/level-2-blank.png?v=20260824d',
-  listen:         '/images/guide/level-3-listen.png?v=20260824d',
-  choice:         '/images/guide/level-4-choice.png?v=20260824d',
-  blind:          '/images/guide/level-5-blind.png?v=20260824d'
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824e',
+  blank:          '/images/guide/level-2-blank.png?v=20260824e',
+  listen:         '/images/guide/level-3-listen.png?v=20260824e',
+  choice:         '/images/guide/level-4-choice.png?v=20260824e',
+  blind:          '/images/guide/level-5-blind.png?v=20260824e'
 };
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
@@ -6526,3 +6526,4 @@ function showLangToast(msg) {
 </script>
 </body>
 </html>
+
