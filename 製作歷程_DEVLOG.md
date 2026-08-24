@@ -110,10 +110,14 @@
 - 白色原民會 logo 以深綠底牌承載，避免透明白字落在亮背景上不可見；彩色母語巢 logo 保持白底牌呈現。
 - 僅調整首頁入口區 HTML/CSS 與靜態素材，未變更遊戲流程、帳號、排行榜、API 或資料庫。
 
-### 🧭 L5 題數縮短 + 說明圖與快取修正（2026-08-24）
-- L1-L4 維持原本 18 題節奏；L5 盲打縮為 5 題，降低畢業關負擔，底部步道與題號會同步顯示 `第 X / 5 題`。
+### 🧭 全關卡題數縮短 + 說明圖與快取修正（2026-08-24）
+- L1-L5 統一縮為每關 5 題，降低單關負擔，底部步道與題號會同步顯示 `第 X / 5 題`。
 - 玩法說明看板中央預覽改用實際遊戲截圖，不再使用 CSS 假示意圖；新增 `public/images/guide/level-1-audio-choice.png` 到 `level-5-blind.png`。
-- 首頁薄路由自動帶 `v=20260824b` 版本參數，並在 Vercel 對 `/`、`index.html`、`hunter-truku-v2.html`、`mobile.html` 設定 HTML `no-store`，減少進站後仍看到舊版的快取問題。
+- 首頁薄路由自動帶版本參數，並在 Vercel 對 `/`、`index.html`、`hunter-truku-v2.html`、`mobile.html` 設定 HTML `no-store`，減少進站後仍看到舊版的快取問題。
+
+### 🏷️ 封面官方 logo RWD 修正（2026-08-24）
+- 封面 logo 改成透明 PNG 浮在右下角，不再使用白色橫條卡片，避免擠壓首頁入口與底部功能列。
+- 加入窄螢幕/低高度尺寸限制，logo 不參與 flex 排版、不再造成底部裁切。
 
 ### 🐛 兩個 bug 修正（2026-07-05）
 - **語別選單「要一直按著才能選」**：`.lang-select` 的 hover transform 讓 Chromium 原生下拉一放開就收起，移除 transform（hover 回饋改亮度／邊框）。
