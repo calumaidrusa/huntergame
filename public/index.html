@@ -365,6 +365,47 @@ body.choice-active #modeTaskHint { display: none; }
   from { transform: translate(0, 0) rotate(var(--arrow-angle, 0deg)); opacity: 1; }
   to   { transform: translate(var(--arrow-dx), var(--arrow-dy)) rotate(var(--arrow-angle, 0deg)); opacity: 0.2; }
 }
+body.blind-active #hunter.blind-shooting {
+  animation: blindHunterShot 0.62s ease-out, hunterRunTrack 0.42s steps(2) infinite;
+  filter: drop-shadow(0 0 12px rgba(255,215,0,0.9)) drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+}
+@keyframes blindHunterShot {
+  0%   { transform: translateX(0) rotate(0deg) scale(1); }
+  28%  { transform: translateX(-8px) rotate(-2deg) scale(1.03); }
+  56%  { transform: translateX(6px) rotate(2deg) scale(1.02); }
+  100% { transform: translateX(0) rotate(0deg) scale(1); }
+}
+.arrow.blind-arrow {
+  font-size: 46px;
+  z-index: 38;
+  color:#FFF17A;
+  filter: drop-shadow(0 0 10px rgba(255,215,0,1)) drop-shadow(0 3px 4px rgba(0,0,0,0.65));
+  animation: blindArrowFly 0.72s cubic-bezier(.12,.78,.12,1) forwards;
+}
+@keyframes blindArrowFly {
+  0%   { transform: translate(0, 0) rotate(var(--arrow-angle, 0deg)) scale(0.72); opacity:0; }
+  10%  { opacity:1; }
+  78%  { opacity:1; }
+  100% { transform: translate(var(--arrow-dx), var(--arrow-dy)) rotate(var(--arrow-angle, 0deg)) scale(1.15); opacity:0; }
+}
+.blind-shot-target {
+  position:absolute;
+  width:74px; height:74px;
+  margin-left:-37px; margin-top:-37px;
+  border-radius:50%;
+  z-index:37;
+  pointer-events:none;
+  background:
+    radial-gradient(circle, rgba(255,245,170,1) 0 10%, rgba(255,180,30,0.95) 11% 18%, transparent 19% 100%),
+    repeating-radial-gradient(circle, rgba(255,225,70,0) 0 12px, rgba(255,225,70,0.9) 13px 15px, rgba(255,225,70,0) 16px 24px);
+  box-shadow:0 0 22px rgba(255,215,0,0.88);
+  animation: blindShotTargetPop 0.55s ease forwards;
+}
+@keyframes blindShotTargetPop {
+  0% { opacity:0; transform:scale(0.45); }
+  28% { opacity:1; transform:scale(1.12); }
+  100% { opacity:0; transform:scale(1.45); }
+}
 
 /* ── 全站禁 emoji：純向量機能圖示（取代 ✓✗✕▶▾⬇➤ 等符號字元）────────────
    用 CSS mask + SVG（僅取形狀 alpha），顏色一律吃父層 currentColor，可像文字一樣著色/縮放。
@@ -3186,7 +3227,7 @@ body.fly-choice .choice-opt.wrong   { box-shadow: 0 0 0 3px rgba(255,80,80,0.8);
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824c" alt="">
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824d" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -4380,6 +4421,7 @@ function applyLevelMode(lvl) {
   // 填空關（L2 新設計）：右卡片＝提示卡（打散字母磚），作答在中央下方 #answerArea
   // 的答案格（打字依序填格），底部輸入顯示層隱藏。class 由 CSS 控制顯示切換。
   document.body.classList.toggle('blank-active', G.mode === 'blank');
+  document.body.classList.toggle('blind-active', G.mode === 'blind');
   // §進度條統一：所有關卡（L1-L5）獵人都當「底部關卡步道」進度條的跑者——換成「朝右跑姿」
   // sprite、站在木步道上往終點旗跑，水平位置＝本關進度（見 positionHunterAsProgress）。
   // 以前只有 L2(blank) 這樣，其餘關是蹲姿逼近獵物；使用者定案「進度條統一用 L2 那個」。
@@ -4618,11 +4660,11 @@ function mgPreviewAnswerHtml(answer) {
 }
 
 const MODE_GUIDE_SHOTS = {
-  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824c',
-  blank:          '/images/guide/level-2-blank.png?v=20260824c',
-  listen:         '/images/guide/level-3-listen.png?v=20260824c',
-  choice:         '/images/guide/level-4-choice.png?v=20260824c',
-  blind:          '/images/guide/level-5-blind.png?v=20260824c'
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824d',
+  blank:          '/images/guide/level-2-blank.png?v=20260824d',
+  listen:         '/images/guide/level-3-listen.png?v=20260824d',
+  choice:         '/images/guide/level-4-choice.png?v=20260824d',
+  blind:          '/images/guide/level-5-blind.png?v=20260824d'
 };
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
@@ -5149,7 +5191,7 @@ function selectChoice(opt, btn) {
   if (opt.isCorrect) {
     G.hitAttempts++;
     // 命中：沿用打字關的射箭 + 命中流程
-    fireArrow();
+    fireArrow(G.mode === 'blind' ? { blindShot: true } : undefined);
     logRound('correct');
     caughtPrey();
   } else {
@@ -5586,7 +5628,7 @@ function submitWord() {
 
     // Fire arrow (hunter movement is round-driven — see nextRound() — so a
     // correct word only fires; it no longer steps the hunter forward)
-    fireArrow();
+    fireArrow(G.mode === 'blind' ? { blindShot: true } : undefined);
 
     if (G.wordIdx >= G.currentPrey.words.length) {
       // CAUGHT
@@ -5710,7 +5752,38 @@ function moveHunterTowardPrey() {
   hunter.style.left = Math.max(HUNTER_START_LEFT, targetLeft) + 'px';
 }
 
-function fireArrow() {
+function getLevel5ShotTarget(stageRect, scale) {
+  const card = document.getElementById('wordBubble');
+  const answer = document.getElementById('answerArea');
+  const targetEl = (card && card.offsetParent !== null) ? card : answer;
+  if (targetEl) {
+    const r = targetEl.getBoundingClientRect();
+    return {
+      x: (r.left + r.width * 0.5 - stageRect.left) / scale,
+      y: (r.top + r.height * 0.46 - stageRect.top) / scale
+    };
+  }
+  const prey = document.getElementById('prey');
+  const r = prey.getBoundingClientRect();
+  return {
+    x: (r.left + r.width / 2 - stageRect.left) / scale,
+    y: (r.top + r.height / 2 - stageRect.top) / scale
+  };
+}
+
+function showBlindShotTarget(x, y) {
+  const stage = document.getElementById('stage');
+  if (!stage) return;
+  const target = document.createElement('div');
+  target.className = 'blind-shot-target';
+  target.style.left = x + 'px';
+  target.style.top = y + 'px';
+  stage.appendChild(target);
+  setTimeout(() => target.remove(), 620);
+}
+
+function fireArrow(opts) {
+  const blindShot = !!(opts && opts.blindShot);
   if (window.Sfx) Sfx.sfxShoot(); // #1 射箭「咻」——每打對一字響一次
   const stage = document.getElementById('stage');
   const hunter = document.getElementById('hunter');
@@ -5728,10 +5801,11 @@ function fireArrow() {
   const startX = (hunterRect.right - stageRect.left) / scale - 10;
   const startY = (hunterRect.top - stageRect.top + hunterRect.height * 0.35) / scale;
 
-  // End point: prey's actual visual center, wherever it currently is and
-  // whatever size its image/emoji happens to be (varies per vocab item).
-  const endX = (preyRect.left + preyRect.width / 2 - stageRect.left) / scale;
-  const endY = (preyRect.top + preyRect.height / 2 - stageRect.top) / scale;
+  // End point: prey's actual visual center. L5 盲打改射向右側提示卡中心，
+  // 讓「答對一題射一箭」有明確命中目標，而不是飛向看不見的 #prey 錨點。
+  const blindTarget = blindShot ? getLevel5ShotTarget(stageRect, scale) : null;
+  const endX = blindTarget ? blindTarget.x : (preyRect.left + preyRect.width / 2 - stageRect.left) / scale;
+  const endY = blindTarget ? blindTarget.y : (preyRect.top + preyRect.height / 2 - stageRect.top) / scale;
 
   const dx = endX - startX;
   const dy = endY - startY;
@@ -5739,6 +5813,13 @@ function fireArrow() {
 
   const el = document.createElement('div');
   el.className = 'arrow';
+  if (blindShot) {
+    el.classList.add('blind-arrow');
+    hunter.classList.add('blind-shooting');
+    clearTimeout(hunter._blindShootT);
+    hunter._blindShootT = setTimeout(() => hunter.classList.remove('blind-shooting'), 660);
+    setTimeout(() => showBlindShotTarget(endX, endY), 560);
+  }
   el.innerHTML = '<i class="vico vico-arrow"></i>'; // 全站禁 emoji：飛箭 ➤ 改純向量
   el.style.color = '#ffd700';
   el.style.left = startX + 'px';
@@ -5751,8 +5832,8 @@ function fireArrow() {
   // arrowFly's CSS animation is 0.4s — spawn the impact flash right as the
   // arrow actually reaches the prey, not immediately on fire, so the glow
   // visually lines up with the "hit" instead of appearing at the start point.
-  setTimeout(() => showImpactFlash(endX, endY), 380);
-  setTimeout(() => el.remove(), 500);
+  setTimeout(() => showImpactFlash(endX, endY), blindShot ? 640 : 380);
+  setTimeout(() => el.remove(), blindShot ? 820 : 500);
 }
 
 // Short-lived glow burst at the point an arrow lands — purely decorative,
