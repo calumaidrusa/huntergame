@@ -3282,7 +3282,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824i" alt="">
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824j" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -4127,6 +4127,13 @@ const LEVELS = new Proxy({}, {
 // ═══════════════════════════════════════════════════
 const ANSWER_HINT_KEY = 'ht_answer_hint_pct';
 const ANSWER_HINT_LEVELS = [0, 30, 50, 70, 100];
+const ANSWER_HINT_SCORE_MULTIPLIER = {
+  0: 1,
+  30: 0.85,
+  50: 0.70,
+  70: 0.55,
+  100: 0.35
+};
 const AnswerHint = {
   pct: (function () {
     try {
@@ -4146,6 +4153,10 @@ const AnswerHint = {
     this.setPct(ANSWER_HINT_LEVELS[(i + 1) % ANSWER_HINT_LEVELS.length]);
   }
 };
+
+function answerHintScoreMultiplier() {
+  return ANSWER_HINT_SCORE_MULTIPLIER[AnswerHint.pct] || 1;
+}
 
 function answerRevealPositions(answerLetters, pct) {
   const n = answerLetters.length;
@@ -4168,7 +4179,9 @@ function syncAnswerHintBtn() {
   const st = document.getElementById('answerHintState');
   const label = on ? (AnswerHint.pct + '%') : '關';
   if (st) st.textContent = label;
-  btn.setAttribute('aria-label', '答案提示，目前顯示 ' + label + '（點擊切換比例）');
+  const scorePct = Math.round(answerHintScoreMultiplier() * 100);
+  btn.setAttribute('aria-label', '答案提示，目前顯示 ' + label + '，答對得分 ' + scorePct + '%（點擊切換比例）');
+  btn.title = '答案提示：' + label + '，答對得分 ' + scorePct + '%';
 }
 
 function toggleAnswerHint() {
@@ -4787,11 +4800,11 @@ function mgPreviewAnswerHtml(answer) {
 }
 
 const MODE_GUIDE_SHOTS = {
-  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824i',
-  blank:          '/images/guide/level-2-blank.png?v=20260824i',
-  listen:         '/images/guide/level-3-listen.png?v=20260824i',
-  choice:         '/images/guide/level-4-choice.png?v=20260824i',
-  blind:          '/images/guide/level-5-blind.png?v=20260824i'
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824j',
+  blank:          '/images/guide/level-2-blank.png?v=20260824j',
+  listen:         '/images/guide/level-3-listen.png?v=20260824j',
+  choice:         '/images/guide/level-4-choice.png?v=20260824j',
+  blind:          '/images/guide/level-5-blind.png?v=20260824j'
 };
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
@@ -6026,8 +6039,13 @@ function caughtPrey() {
   setHintVisible(false); // 答對後收起提示鈕（下一題 nextRound 再顯示）
   const timePts = G.timeLeft * 3;
   const comboPts = G.combo > 1 ? G.combo * 15 : 0;
-  // §提示代價：本題用過提示則從得分扣 G.hintPenalty，但保底 20 分（仍鼓勵作答）。
-  const pts = Math.max(20, 100 + timePts + comboPts - (G.hintPenalty || 0));
+  // §提示代價：
+  // 1. 手動提示（按「提示」）先扣固定分。
+  // 2. 透明答案提示依開啟比例套乘數，開越多分越低，避免排行榜被全提示分數灌高。
+  const rawPts = Math.max(20, 100 + timePts + comboPts - (G.hintPenalty || 0));
+  const hintPct = AnswerHint.enabled ? AnswerHint.pct : 0;
+  const hintMultiplier = answerHintScoreMultiplier();
+  const pts = Math.max(10, Math.round(rawPts * hintMultiplier));
   G.score += pts;
 
   document.getElementById('prey').classList.add('caught');
@@ -6035,7 +6053,9 @@ function caughtPrey() {
   document.getElementById('comboNum').textContent = 'x' + G.combo;
   updateComboDots();
 
-  const msg = G.combo >= 3 ? `COMBO x${G.combo}!` : `+${pts}`; // 全站禁 emoji：🔥 移除，金字＋HUD 已表達連擊
+  const msg = G.combo >= 3
+    ? `COMBO x${G.combo}!`
+    : (hintPct ? `+${pts} (${hintPct}%提示)` : `+${pts}`); // 全站禁 emoji：🔥 移除，金字＋HUD 已表達連擊
   showHit(msg, '#FFD700', true);
   showHunterBubble(G.combo >= 3 ? `連擊 x${G.combo}！` : '答對了！', 'good');
   showCorrectBanner();
