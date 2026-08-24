@@ -2861,7 +2861,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
       </div>
       <div class="auth-row" id="authEmailRow" style="display:none">
         <span class="auth-ic auth-ic-person"></span>
-        <input type="email" id="authEmail" class="auth-field" placeholder="Email（用於抽獎通知，可留空）" autocomplete="email">
+        <input type="email" id="authEmail" class="auth-field" placeholder="Email（用於抽獎通知，必填）" autocomplete="email" required aria-required="true">
       </div>
       <button class="img-btn auth-submit" id="authSubmitBtn" onclick="submitAuth()">登入</button>
       <div class="auth-error" id="authError"></div>
@@ -3282,7 +3282,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824h" alt="">
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824i" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -3846,6 +3846,7 @@ function switchAuthTab(mode) {
   document.getElementById('authTabRegister').classList.toggle('active', mode === 'register');
   document.getElementById('authDisplayName').style.display = mode === 'register' ? 'block' : 'none';
   document.getElementById('authEmailRow').style.display = mode === 'register' ? '' : 'none';
+  document.getElementById('authEmail').required = mode === 'register';
   document.getElementById('authSubmitBtn').textContent = mode === 'register' ? '註冊' : '登入';
   document.getElementById('authError').textContent = '';
 }
@@ -3861,7 +3862,8 @@ async function submitAuth() {
 
   if (!username || !password) { errEl.textContent = '請輸入帳號與密碼'; return; }
   if (_authMode === 'register' && !displayName) { errEl.textContent = '請輸入顯示名稱'; return; }
-  if (_authMode === 'register' && email && !/^\S+@\S+\.\S+$/.test(email)) { errEl.textContent = 'Email 格式不正確（或留空）'; return; }
+  if (_authMode === 'register' && !email) { errEl.textContent = '請輸入 Email'; return; }
+  if (_authMode === 'register' && !/^\S+@\S+\.\S+$/.test(email)) { errEl.textContent = 'Email 格式不正確'; return; }
 
   btn.disabled = true;
   const originalText = btn.textContent;
@@ -4785,11 +4787,11 @@ function mgPreviewAnswerHtml(answer) {
 }
 
 const MODE_GUIDE_SHOTS = {
-  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824h',
-  blank:          '/images/guide/level-2-blank.png?v=20260824h',
-  listen:         '/images/guide/level-3-listen.png?v=20260824h',
-  choice:         '/images/guide/level-4-choice.png?v=20260824h',
-  blind:          '/images/guide/level-5-blind.png?v=20260824h'
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824i',
+  blank:          '/images/guide/level-2-blank.png?v=20260824i',
+  listen:         '/images/guide/level-3-listen.png?v=20260824i',
+  choice:         '/images/guide/level-4-choice.png?v=20260824i',
+  blind:          '/images/guide/level-5-blind.png?v=20260824i'
 };
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），

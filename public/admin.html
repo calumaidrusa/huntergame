@@ -137,6 +137,7 @@ header a:hover { color:#ffd700; }
 /* Leaderboard table */
 .lb-section { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:20px; }
 .lb-filter { display:flex; gap:8px; margin-bottom:16px; }
+.table-wrap { width:100%; overflow-x:auto; }
 table { width:100%; border-collapse:collapse; }
 th { font-size:10px; color:#888; padding:8px 12px; border-bottom:1px solid #30363d; text-align:left; }
 td { font-size:12px; padding:9px 12px; border-bottom:1px solid #161b22; }
@@ -144,6 +145,8 @@ tr:hover td { background:rgba(255,215,0,0.03); }
 .rank-1 td { color:#ffd700; }
 .rank-2 td { color:#c0c0c0; }
 .rank-3 td { color:#cd7f32; }
+.muted { color:#666; font-size:11px; }
+.mono { font-family:'Press Start 2P',monospace; font-size:9px; }
 
 /* ── LOGIN SCREEN ── */
 #loginScreen {
@@ -204,6 +207,7 @@ tr:hover td { background:rgba(255,215,0,0.03); }
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('vocab',this)">📚 詞彙管理</button>
     <button class="tab-btn" onclick="switchTab('leaderboard',this)">🏆 排行榜</button>
+    <button class="tab-btn" onclick="switchTab('players',this)">👤 玩家名單</button>
   </div>
 
   <!-- ── 詞彙管理 ── -->
@@ -275,12 +279,30 @@ tr:hover td { background:rgba(255,215,0,0.03); }
       <div class="stat-item"><div class="stat-val" id="s-best">—</div><div class="stat-lbl">最高分</div></div>
     </div>
     <div class="lb-section">
-      <table>
-        <thead><tr>
-          <th>#</th><th>獵人</th><th>累計總分</th><th>已完成關卡數</th>
-        </tr></thead>
-        <tbody id="lb-tbody"><tr><td colspan="4" style="color:#555;text-align:center;padding:20px">載入中...</td></tr></tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>獵人</th><th>累計總分</th><th>已完成關卡數</th>
+          </tr></thead>
+          <tbody id="lb-tbody"><tr><td colspan="4" style="color:#555;text-align:center;padding:20px">載入中...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 玩家名單 ── -->
+  <div id="tab-players" class="tab-panel">
+    <div class="lb-section">
+      <div class="section-title">註冊玩家資料</div>
+      <p class="muted" style="margin-bottom:14px">Email 用於抽獎通知與聯絡；總分只計 Level 1-4。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>帳號</th><th>顯示名稱</th><th>Email</th><th>註冊時間</th><th>前四關總分</th><th>完成關卡</th>
+          </tr></thead>
+          <tbody id="players-tbody"><tr><td colspan="7" style="color:#555;text-align:center;padding:20px">載入中...</td></tr></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -366,6 +388,7 @@ function switchTab(name, btn) {
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
   if (name === 'leaderboard') { loadStats(); loadLb(); }
+  if (name === 'players') { loadPlayers(); }
 }
 
 // ── 詞彙 ─────────────────────────────────────────
@@ -527,6 +550,40 @@ async function loadLb() {
       <td>${r.score.toLocaleString()}</td>
       <td>${r.levels_played}</td>
     </tr>`).join('');
+}
+
+async function loadPlayers() {
+  const tbody = document.getElementById('players-tbody');
+  tbody.innerHTML = '<tr><td colspan="7" style="color:#555;text-align:center;padding:20px">載入中...</td></tr>';
+  try {
+    const rawRes = await fetch(`${API}/api/admin/players`, { headers: authHeader() });
+    if (rawRes.status === 401 || rawRes.status === 403) { doAdminLogout(); return; }
+    const d = await rawRes.json();
+    if (!rawRes.ok) throw new Error(d.error || '載入失敗');
+    if (!d.data.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="color:#555;text-align:center;padding:20px">還沒有玩家註冊</td></tr>';
+      return;
+    }
+    tbody.innerHTML = d.data.map((r, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td class="mono">${r.username || ''}</td>
+        <td>${r.display_name || ''}</td>
+        <td>${r.email || '<span class="muted">舊帳號未填</span>'}</td>
+        <td>${formatDateTime(r.created_at)}</td>
+        <td>${Number(r.total_score || 0).toLocaleString()}</td>
+        <td>${r.cleared_levels || 0}</td>
+      </tr>`).join('');
+  } catch (e) {
+    tbody.innerHTML = '<tr><td colspan="7" style="color:#ff6666;text-align:center;padding:20px">玩家名單載入失敗</td></tr>';
+  }
+}
+
+function formatDateTime(value) {
+  if (!value) return '—';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleString('zh-TW', { hour12: false });
 }
 
 // 初始載入：先檢查是否已登入管理員帳號，登入成功才載入詞彙（fetchVocab 由 showApp() 觸發）

@@ -13,7 +13,10 @@ module.exports = async (req, res) => {
     const unlockedLevel = await getUnlockedLevel(player.id);
     const totalRow = await get(`
       SELECT COALESCE(SUM(best.score), 0) AS totalScore FROM (
-        SELECT level, MAX(score) AS score FROM scores WHERE player_id = ? GROUP BY level
+        SELECT level, MAX(score) AS score
+        FROM scores
+        WHERE player_id = ? AND level BETWEEN 1 AND 4
+        GROUP BY level
       ) best
     `, [player.id]);
 

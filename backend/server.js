@@ -288,8 +288,8 @@ app.get('/api/health', (req, res) => {
 
 // ── 玩家帳號 API ────────────────────────────────
 
-// POST /api/auth/register — { username, password, display_name, email? }
-// email 為選填（抽獎用）；有填才驗格式並存入，未填存 NULL。
+// POST /api/auth/register — { username, password, display_name, email }
+// email 為必填（抽獎通知 / 聯絡用）。
 app.post('/api/auth/register', (req, res) => {
   const { username, password, display_name, email } = req.body || {};
   if (!username || !password || !display_name) {
@@ -297,11 +297,12 @@ app.post('/api/auth/register', (req, res) => {
   }
   const uname = String(username).trim();
   const dname = String(display_name).trim().slice(0, 20);
-  const mail  = email ? String(email).trim().slice(0, 120) : null;
+  const mail  = email ? String(email).trim().slice(0, 120) : '';
   if (uname.length < 3) return res.status(400).json({ error: '帳號至少需要 3 個字元' });
   if (String(password).length < 4) return res.status(400).json({ error: '密碼至少需要 4 個字元' });
   if (!dname) return res.status(400).json({ error: '顯示名稱不可為空' });
-  if (mail && !/^\S+@\S+\.\S+$/.test(mail)) return res.status(400).json({ error: 'Email 格式不正確' });
+  if (!mail) return res.status(400).json({ error: '請輸入 Email' });
+  if (!/^\S+@\S+\.\S+$/.test(mail)) return res.status(400).json({ error: 'Email 格式不正確' });
 
   const existing = db.prepare('SELECT id FROM players WHERE username = ?').get(uname);
   if (existing) return res.status(409).json({ error: '這個帳號已經被使用了' });
@@ -358,6 +359,40 @@ app.post('/api/admin/login', (req, res) => {
   }
   const token = signToken({ id: admin.id, role: 'admin' });
   res.json({ success: true, token });
+});
+
+// GET /api/admin/players — 管理員查看註冊玩家資料。
+app.get('/api/admin/players', requireAdminAuth, (req, res) => {
+  const rows = db.prepare(`
+    SELECT
+      p.id,
+      p.username,
+      p.display_name,
+      p.email,
+      p.created_at,
+      COALESCE(c.cleared_levels, 0) AS cleared_levels,
+      COALESCE(t.total_score, 0) AS total_score
+    FROM players p
+    LEFT JOIN (
+      SELECT player_id, COUNT(DISTINCT level) AS cleared_levels
+      FROM scores
+      WHERE cleared = 1 AND level BETWEEN 1 AND 4
+      GROUP BY player_id
+    ) c ON c.player_id = p.id
+    LEFT JOIN (
+      SELECT player_id, SUM(score) AS total_score
+      FROM (
+        SELECT player_id, level, MAX(score) AS score
+        FROM scores
+        WHERE level BETWEEN 1 AND 4
+        GROUP BY player_id, level
+      ) best
+      GROUP BY player_id
+    ) t ON t.player_id = p.id
+    ORDER BY p.created_at DESC, p.id DESC
+    LIMIT 500
+  `).all();
+  res.json({ data: rows });
 });
 
 // ── 詞彙 API ────────────────────────────────────

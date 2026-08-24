@@ -1,5 +1,5 @@
-// POST /api/auth/register — { username, password, display_name, email? }
-// email 為選填（抽獎用）；有填才驗格式並存入，未填存 NULL。對齊 server.js。
+// POST /api/auth/register — { username, password, display_name, email }
+// email 為必填（抽獎通知 / 聯絡用）；對齊 server.js。
 const { get, run } = require('../_lib/db');
 const { bcrypt, signToken, parseBody } = require('../_lib/auth');
 
@@ -12,11 +12,12 @@ module.exports = async (req, res) => {
     }
     const uname = String(username).trim();
     const dname = String(display_name).trim().slice(0, 20);
-    const mail  = email ? String(email).trim().slice(0, 120) : null;
+    const mail  = email ? String(email).trim().slice(0, 120) : '';
     if (uname.length < 3) return res.status(400).json({ error: '帳號至少需要 3 個字元' });
     if (String(password).length < 4) return res.status(400).json({ error: '密碼至少需要 4 個字元' });
     if (!dname) return res.status(400).json({ error: '顯示名稱不可為空' });
-    if (mail && !/^\S+@\S+\.\S+$/.test(mail)) return res.status(400).json({ error: 'Email 格式不正確' });
+    if (!mail) return res.status(400).json({ error: '請輸入 Email' });
+    if (!/^\S+@\S+\.\S+$/.test(mail)) return res.status(400).json({ error: 'Email 格式不正確' });
 
     const existing = await get('SELECT id FROM players WHERE username = ?', [uname]);
     if (existing) return res.status(409).json({ error: '這個帳號已經被使用了' });

@@ -1,5 +1,6 @@
 // GET /api/leaderboard?limit=10&platform=mobile — 每「玩家×語別×平台」一列的累計分數。
 // 完整對齊 server.js：內層各關 MAX、外層 SUM，逐語別逐平台獨立不跨組加總；只計有 player_id 者。
+// 桌機排行榜總分只計 L1-L4；L5 是射箭演出/挑戰關，不列入累計總分。
 // libSQL 具名參數：SQL 用 :name，args 傳 { name: value }（不含冒號的 key）。
 const { all } = require('../_lib/db');
 
@@ -19,7 +20,8 @@ module.exports = async (req, res) => {
              best.platform AS platform
       FROM (
         SELECT player_id, lang_code, platform, level, MAX(score) AS score
-        FROM scores WHERE player_id IS NOT NULL
+        FROM scores
+        WHERE player_id IS NOT NULL AND (platform = 'mobile' OR level BETWEEN 1 AND 4)
         GROUP BY player_id, lang_code, platform, level
       ) best
       JOIN players p ON p.id = best.player_id
