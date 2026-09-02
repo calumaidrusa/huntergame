@@ -3282,7 +3282,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
         <p id="mgc2b">從 4 個選項中找出聽到的族語單字。</p>
       </article>
       <div class="mg-preview" aria-hidden="true">
-        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260824k" alt="">
+        <img class="mg-guide-shot" id="mgGuideShot" src="/images/guide/level-1-audio-choice.png?v=20260902a" alt="">
       </div>
       <article class="mg-card mg-card--lb">
         <span class="mg-num">3</span>
@@ -4804,11 +4804,11 @@ function mgPreviewAnswerHtml(answer) {
 }
 
 const MODE_GUIDE_SHOTS = {
-  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260824k',
-  blank:          '/images/guide/level-2-blank.png?v=20260824k',
-  listen:         '/images/guide/level-3-listen.png?v=20260824k',
-  choice:         '/images/guide/level-4-choice.png?v=20260824k',
-  blind:          '/images/guide/level-5-blind.png?v=20260824k'
+  'audio-choice': '/images/guide/level-1-audio-choice.png?v=20260902a',
+  blank:          '/images/guide/level-2-blank.png?v=20260902a',
+  listen:         '/images/guide/level-3-listen.png?v=20260902a',
+  choice:         '/images/guide/level-4-choice.png?v=20260902a',
+  blind:          '/images/guide/level-5-blind.png?v=20260902a'
 };
 
 // 把 modeGuideData(mode) 填進海報式看板 DOM。純 textContent/innerHTML（示意內容），
@@ -5683,15 +5683,32 @@ function renderSpecialCharBar() {
 //   1) 手動 dispatch 'input' 事件 → 觸發既有監聽器（updateInputDisplay/答案格更新）。
 //   2) focus 回 #realInput 並把游標移到插入字元之後，讓玩家能接著打字。
 // tabindex=-1 + mousedown preventDefault 讓按鈕不搶走輸入框 focus。
+// 部分瀏覽器在按下特殊字元按鈕前仍會短暫重設 selectionStart；因此另外
+// 保存輸入框最後一次已知的選取範圍，避免字元被錯誤插到答案最前面。
+let savedInputSelection = { start: 0, end: 0 };
+function rememberInputSelection() {
+  const inp = document.getElementById('realInput');
+  if (!inp) return;
+  if (typeof inp.selectionStart === 'number' && typeof inp.selectionEnd === 'number') {
+    savedInputSelection = { start: inp.selectionStart, end: inp.selectionEnd };
+  }
+}
+
 function insertSpecialChar(ch) {
   const inp = document.getElementById('realInput');
   if (!inp || !ch) return;
-  const start = (typeof inp.selectionStart === 'number') ? inp.selectionStart : inp.value.length;
-  const end   = (typeof inp.selectionEnd === 'number')   ? inp.selectionEnd   : inp.value.length;
+  const hasSelection = document.activeElement === inp &&
+    typeof inp.selectionStart === 'number' && typeof inp.selectionEnd === 'number';
+  const selection = hasSelection
+    ? { start: inp.selectionStart, end: inp.selectionEnd }
+    : savedInputSelection;
+  const start = Math.max(0, Math.min(inp.value.length, selection.start));
+  const end = Math.max(start, Math.min(inp.value.length, selection.end));
   const before = inp.value.slice(0, start);
   const after  = inp.value.slice(end);
   inp.value = before + ch + after;
   const caret = start + ch.length;
+  savedInputSelection = { start: caret, end: caret };
   // dispatch input 事件（讓既有 input 監聽器跑 updateInputDisplay / 答案格）
   inp.dispatchEvent(new Event('input', { bubbles: true }));
   // focus 回輸入框並定位游標到插入字元之後
@@ -5720,6 +5737,12 @@ document.getElementById('realInput').addEventListener('input', function(e) {
   // 用跟 submitWord() 同一套正規化（normalizeAnswer：trim/壓空格/小寫/統一撇號），
   // 顯示與判定一致，鍵盤 ' 才會即時對到資料裡的 ʼ/’。
   updateInputDisplay(normalizeAnswer(e.target.value));
+});
+
+// 即使特殊字元按鈕讓輸入框短暫失焦，也保留玩家最後輸入的位置。
+const realInput = document.getElementById('realInput');
+['input', 'keyup', 'mouseup', 'select', 'focus'].forEach(type => {
+  realInput.addEventListener(type, rememberInputSelection);
 });
 
 // §Enter 送出改「全域」（修「要按兩次 Enter」）：以前只綁在 #realInput 上，一旦焦點掉到
