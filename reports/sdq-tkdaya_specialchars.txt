@@ -1,0 +1,38 @@
+# 特殊字元 / 清理報表 — 德固達雅語 (dialectId=16, lang_code=sdq-tkdaya)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1093,
+  "skipped_placeholder": 1,
+  "levels": {
+    "1": 255,
+    "2": 237,
+    "3": 299,
+    "4": 302
+  },
+  "cleaned": 2,
+  "with_image": 602,
+  "with_audio": 1093,
+  "apostrophe_words": 0,
+  "slash_words": 7,
+  "caret_words": 0,
+  "special_chars": {
+    "/": 7,
+    ")": 1,
+    "(": 1,
+    ".": 1,
+    "…": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 03-06	哪一個	'kenu/ginu'	正式拼寫特殊字:/
+[FORMAL] 04-07	配偶(先生/太太)	'seno/qedil'	正式拼寫特殊字:/
+[FORMAL] 05-19	閩南人	'Plmukan/Klmukan'	正式拼寫特殊字:/
+[FORMAL] 06-43	腰部	'hwinuk/hginuk'	正式拼寫特殊字:/
+[FORMAL] 25-06	買	'maruy/mari'	正式拼寫特殊字:/
+[FORMAL] 25-07	給	'ege/biqi'	正式拼寫特殊字:/
+[MEMO?] 26-06	玩(球)	'theyaq(cubu)'	疑似備註字元:()
+[FORMAL] 36-02	正在	'ga/gaga'	正式拼寫特殊字:/
+[MEMO?] 36-07	立即	'asi...'	疑似備註字元:.
+[MEMO?] 36-15	不該	'naka ini…'	疑似備註字元:…

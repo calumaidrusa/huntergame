@@ -1,0 +1,583 @@
+# 特殊字元 / 清理報表 — 澤敖利泰雅語 (dialectId=7, lang_code=tay-culi)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1094,
+  "skipped_placeholder": 0,
+  "levels": {
+    "1": 256,
+    "2": 237,
+    "3": 299,
+    "4": 302
+  },
+  "cleaned": 1,
+  "with_image": 602,
+  "with_audio": 1094,
+  "apostrophe_words": 168,
+  "slash_words": 480,
+  "caret_words": 0,
+  "special_chars": {
+    "/": 480,
+    "’": 118,
+    "ʼ": 51,
+    "_": 5,
+    ")": 1,
+    "(": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 01-03	三	'tugan/cyugan'	正式拼寫特殊字:/
+[FORMAL] 01-06	六	'mtyu / tyu / matayu'	正式拼寫特殊字:/
+[FORMAL] 01-07	七	'mpitu / mapitu'	正式拼寫特殊字:/
+[FORMAL] 01-08	八	'mspat / masapat'	正式拼寫特殊字:/
+[FORMAL] 01-09	九	'm’isu / ma’isu'	正式拼寫特殊字:/’
+[FORMAL] 01-10	十	'mpuw / mapuw'	正式拼寫特殊字:/
+[FORMAL] 01-11	十一	'mpuw utux / mapuw utux'	正式拼寫特殊字:/
+[FORMAL] 01-12	十二	'mpuw sazing / mapuw sazing'	正式拼寫特殊字:/
+[FORMAL] 01-13	十三	'mpuw tugan / mpuw cyugan / mapuw tugan / mapuw cyugan'	正式拼寫特殊字:/
+[FORMAL] 01-14	十四	'mpuw payat / mapuw payat'	正式拼寫特殊字:/
+[FORMAL] 01-15	十五	'mpuw magan / mapuw magan'	正式拼寫特殊字:/
+[FORMAL] 01-16	十六	'mpuw mtyu / mapuw matayu'	正式拼寫特殊字:/
+[FORMAL] 01-17	十七	'mpuw mpitu / mapuw mapitu'	正式拼寫特殊字:/
+[FORMAL] 01-18	十八	'mpuw mspat / mapuw masapat'	正式拼寫特殊字:/
+[FORMAL] 01-19	十九	'mpuw m’isu / mapuw m’isu'	正式拼寫特殊字:/’
+[FORMAL] 01-20	二十	'mpusan / mapusan'	正式拼寫特殊字:/
+[FORMAL] 01-21	二十一	'mpusan utux / mapusan utux'	正式拼寫特殊字:/
+[FORMAL] 01-22	二十二	'mpusan sazing / mapusan sazing'	正式拼寫特殊字:/
+[FORMAL] 01-23	二十三	'mpusan tugan/mpusan cyugan'	正式拼寫特殊字:/
+[FORMAL] 01-24	二十四	'mpusan payat / mapusan payt'	正式拼寫特殊字:/
+[FORMAL] 01-25	二十五	'mpuwsan magan / mapusan magan'	正式拼寫特殊字:/
+[FORMAL] 01-26	三十	'mtyun / matayun'	正式拼寫特殊字:/
+[FORMAL] 01-27	三十一	'mtyun / matayun utux'	正式拼寫特殊字:/
+[FORMAL] 01-28	四十	'mspatun / masapatun'	正式拼寫特殊字:/
+[FORMAL] 01-29	五十	'mziman / maziman'	正式拼寫特殊字:/
+[FORMAL] 01-30	六十	'mtyu pgan / matayu pagan'	正式拼寫特殊字:/
+[FORMAL] 01-31	七十	'mpitu pgan / mapitu pagan'	正式拼寫特殊字:/
+[FORMAL] 01-32	八十	'mspat pgan / masapat pagan'	正式拼寫特殊字:/
+[FORMAL] 01-33	九十	'm’isu pgan / ma’isu pagan'	正式拼寫特殊字:/’
+[FORMAL] 01-34	百	'kbhun / kabahun'	正式拼寫特殊字:/
+[FORMAL] 01-35	一百	'utux kbhun / utux kabahun'	正式拼寫特殊字:/
+[FORMAL] 01-36	兩百	'sazing kbhun / sazing kabahun'	正式拼寫特殊字:/
+[FORMAL] 01-38	一些	'tikay / ini kpyux / ini kapayux'	正式拼寫特殊字:/
+[FORMAL] 01-39	一次	'kin’utux/minxaliy'	正式拼寫特殊字:/’
+[FORMAL] 01-42	一對	'sazing / rrusa/ rarusa'	正式拼寫特殊字:/
+[FORMAL] 01-45	一半	'saka / smaka / ska'	正式拼寫特殊字:/
+[FORMAL] 02-01	你	'isu/su'	正式拼寫特殊字:/
+[FORMAL] 02-02	我	'kuzing/kung'	正式拼寫特殊字:/
+[FORMAL] 02-05	我們	'sami/ita'	正式拼寫特殊字:/
+[FORMAL] 02-08	我們的	'ta/myan'	正式拼寫特殊字:/
+[FORMAL] 02-11	我的	'mu / muw'	正式拼寫特殊字:/
+[FORMAL] 02-18	這裡	'hani/shani/runiy'	正式拼寫特殊字:/
+[FORMAL] 02-19	那裡	'thasa / tehasa / tihasa'	正式拼寫特殊字:/
+[FORMAL] 02-20	(像)這樣	'isiga/’siga/siga'	正式拼寫特殊字:/’
+[FORMAL] 03-03	如何	'son nanu/sawn nanu'	正式拼寫特殊字:/
+[FORMAL] 03-04	何時(未發生)	'kanuwan/knwan'	正式拼寫特殊字:/
+[FORMAL] 03-06	哪一個(物)	'n’inu'	正式拼寫特殊字:’
+[FORMAL] 03-08	是誰的	'mr’ima / rwa ima'	正式拼寫特殊字:/’
+[FORMAL] 03-11	多少(程度大小)	'ktuwa / katuwa'	正式拼寫特殊字:/
+[FORMAL] 03-13	何時(已發生)	'sknuwan/sakanuwan'	正式拼寫特殊字:/
+[FORMAL] 04-01	爸爸	'yaba/uba'	正式拼寫特殊字:/
+[FORMAL] 04-02	媽媽	'yaya/uya'	正式拼寫特殊字:/
+[FORMAL] 04-03	堂、表兄弟姐妹	'masyunu/msyunu'	正式拼寫特殊字:/
+[FORMAL] 04-04	男性長輩(祖父；外公；岳父)	'yutas/yutas/yaba'	正式拼寫特殊字:/
+[FORMAL] 04-05	女性長輩(祖母；外婆；岳母)	'yaki/yaki/yaya'	正式拼寫特殊字:/
+[FORMAL] 04-06	親戚	'lpyung / gluw'	正式拼寫特殊字:/
+[FORMAL] 04-07	配偶	'bes / bays'	正式拼寫特殊字:/
+[FORMAL] 04-13	孫子/孫女	'kinbahan /mago / maguw'	正式拼寫特殊字:/
+[FORMAL] 04-14	夫妻	'utux tnuxan / utux b’ni'	正式拼寫特殊字:/’
+[FORMAL] 04-15	丈夫	'tmalung / tamalung'	正式拼寫特殊字:/
+[FORMAL] 04-17	兄弟姊妹	'mntsway / mtsway / matasway'	正式拼寫特殊字:/
+[FORMAL] 04-18	兄長	'bsuyan tmalaung / basuyan tamalung'	正式拼寫特殊字:/
+[FORMAL] 04-19	(哥哥；姊姊)通稱	'bsuyan/basuyan'	正式拼寫特殊字:/
+[FORMAL] 04-20	姊姊	'bsuyan knerin / basuyan kanayrin'	正式拼寫特殊字:/
+[FORMAL] 04-21	哥哥	'bsuyan tmalung / basuyan tamalung'	正式拼寫特殊字:/
+[FORMAL] 04-22	(弟弟；妹妹)通稱	'sway/saway'	正式拼寫特殊字:/
+[FORMAL] 04-23	弟弟	'sway tmalung / saway tamalung'	正式拼寫特殊字:/
+[FORMAL] 04-24	妹妹	'sway knerin / saway kanayrin'	正式拼寫特殊字:/
+[FORMAL] 05-02	男孩	'la’i tmalaung / a’i tamalaung'	正式拼寫特殊字:/’
+[FORMAL] 05-03	女孩	'la’i knerin / la’i kanayrin'	正式拼寫特殊字:/’
+[FORMAL] 05-04	朋友	'rawin / rangi'	正式拼寫特殊字:/
+[FORMAL] 05-05	孩童	'laʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 05-06	老人家	'bnkis / yayutas nbkis'	正式拼寫特殊字:/
+[FORMAL] 05-07	女性	'knerin/kanayrin'	正式拼寫特殊字:/
+[FORMAL] 05-08	男性	'tamalung/tmalung'	正式拼寫特殊字:/
+[FORMAL] 05-09	人	'tayan / s’uli'	正式拼寫特殊字:/’
+[FORMAL] 05-11	老師	'psba biru / pcba biru / pasaba biru'	正式拼寫特殊字:/
+[FORMAL] 05-13	長官	'thoki/tahawki'	正式拼寫特殊字:/
+[FORMAL] 05-17	客家人	'Ngayngay/Pmukan'	正式拼寫特殊字:/
+[FORMAL] 05-18	校長	'kucyu/kocyo'	正式拼寫特殊字:/
+[FORMAL] 05-20	青年	'mrkyas / sining / marakiyas'	正式拼寫特殊字:/
+[FORMAL] 05-21	神父	'sunbu/sunfu'	正式拼寫特殊字:/
+[FORMAL] 05-23	外省人	'Tahayluw/Cyukok'	正式拼寫特殊字:/
+[FORMAL] 05-24	小姐	'mkrakis/yusi'	正式拼寫特殊字:/
+[FORMAL] 05-25	學生	'mkbaga biru/makabaga biru'	正式拼寫特殊字:/
+[FORMAL] 06-04	臉	'r’iyas / ra’iyas'	正式拼寫特殊字:/’
+[FORMAL] 06-05	嘴巴	'nga’uwa/uwa'	正式拼寫特殊字:/’
+[FORMAL] 06-08	手	'ba/ ba'	正式拼寫特殊字:/
+[FORMAL] 06-11	腳	'kakay / kuzih'	正式拼寫特殊字:/
+[FORMAL] 06-12	牙齒	'g’nux / ’nux / ga’anux'	正式拼寫特殊字:/’
+[FORMAL] 06-13	頭髮	'snunux / sanunux'	正式拼寫特殊字:/
+[FORMAL] 06-14	血	'muyux/rmuyux'	正式拼寫特殊字:/
+[FORMAL] 06-17	肚子	'nbuwas/buwas'	正式拼寫特殊字:/
+[FORMAL] 06-21	下巴	'abay / angi'	正式拼寫特殊字:/
+[FORMAL] 06-23	皮	'kyahin / yula'	正式拼寫特殊字:/
+[FORMAL] 06-24	胸部；胸腔	'skutaw / sakutaw'	正式拼寫特殊字:/
+[FORMAL] 06-25	男性生殖器(陰莖)	'ugiy / ugi'	正式拼寫特殊字:/
+[FORMAL] 06-27	肺	'bhiluk / bahiluk'	正式拼寫特殊字:/
+[FORMAL] 06-29	手肘	'heku / hiku / hayku'	正式拼寫特殊字:/
+[FORMAL] 06-30	口水	'cyuna / tyuna'	正式拼寫特殊字:/
+[FORMAL] 06-32	傷口	'pangih / ilis'	正式拼寫特殊字:/
+[FORMAL] 06-33	胃	'kwa / lhbun'	正式拼寫特殊字:/
+[FORMAL] 06-35	痰	'hrhan / rhan / rahan'	正式拼寫特殊字:/
+[FORMAL] 06-37	油脂	'abura / syam/ preh suyaw'	正式拼寫特殊字:/
+[FORMAL] 06-41	喉嚨	'olu takan / awlu takan'	正式拼寫特殊字:/
+[FORMAL] 06-42	舌頭	'hmaʼuy'	正式拼寫特殊字:ʼ
+[FORMAL] 06-45	門牙	'lihun ’nux / balihun ga’anux'	正式拼寫特殊字:/’
+[FORMAL] 06-47	脖子	'olu / awlu / gryung'	正式拼寫特殊字:/
+[FORMAL] 06-51	腳掌	'tapa kakay / tapa kukuy'	正式拼寫特殊字:/
+[FORMAL] 06-52	後頸	'rgyung / wryung / ragiyung'	正式拼寫特殊字:/
+[FORMAL] 06-55	嘴唇	'prhuman / parahuman'	正式拼寫特殊字:/
+[FORMAL] 07-02	豬	'bewak / wewak / baywak'	正式拼寫特殊字:/
+[FORMAL] 07-06	鳥	'kbhni / kabahni'	正式拼寫特殊字:/
+[FORMAL] 07-07	魚	'syux/ ’syux'	正式拼寫特殊字:/’
+[FORMAL] 07-09	猴子	'yungay/yungay nguk'	正式拼寫特殊字:/
+[FORMAL] 07-10	牛	'kating/kacing'	正式拼寫特殊字:/
+[FORMAL] 07-11	老鼠(統稱)	'olit/awlit'	正式拼寫特殊字:/
+[FORMAL] 07-15	山豬	'bewak nnahi / baywak nnahi'	正式拼寫特殊字:/
+[FORMAL] 07-19	蛇	'm’u / kumay'	正式拼寫特殊字:/’
+[FORMAL] 07-22	水鹿	'waʼanux'	正式拼寫特殊字:ʼ
+[FORMAL] 07-26	蜻蜓	'lengun / layngun'	正式拼寫特殊字:/
+[FORMAL] 07-28	蜘蛛	'kyukit/kyokit'	正式拼寫特殊字:/
+[FORMAL] 07-29	雄性動物生殖器官	'ptahuk / patahuk'	正式拼寫特殊字:/
+[FORMAL] 07-36	雄性(動物)	'kintahuk/blsuy'	正式拼寫特殊字:/
+[FORMAL] 07-37	乳豬	'uyuk bewak / uyuk baywak'	正式拼寫特殊字:/
+[FORMAL] 07-38	鴨	'babun/koyay'	正式拼寫特殊字:/
+[FORMAL] 07-40	動物的內臟	'sahuy ’sinu / sahuy sinuw'	正式拼寫特殊字:/’
+[FORMAL] 07-44	馬	'uma/rmay'	正式拼寫特殊字:/
+[FORMAL] 07-48	百步蛇	'mrhitung/mhitung'	正式拼寫特殊字:/
+[FORMAL] 07-53	鍬形蟲	'pakarip/waʼit'	正式拼寫特殊字:/ʼ
+[FORMAL] 07-55	螞蟻	'tahi/hhyu'	正式拼寫特殊字:/
+[FORMAL] 07-60	跳蚤	'mngan / mangan'	正式拼寫特殊字:/
+[FORMAL] 07-61	眼鏡蛇	'ps’has / pasahas'	正式拼寫特殊字:/’
+[FORMAL] 07-62	烏鴉	'taʼuy'	正式拼寫特殊字:ʼ
+[FORMAL] 08-03	樹	'khoni/khawni'	正式拼寫特殊字:/
+[FORMAL] 08-06	葉子	'abaw / lbak'	正式拼寫特殊字:/
+[FORMAL] 08-09	花朵	'kaka/hana'	正式拼寫特殊字:/
+[FORMAL] 08-10	南瓜	'abang/bon/bawn'	正式拼寫特殊字:/
+[FORMAL] 08-11	雜草	'mk’man / mka’aman'	正式拼寫特殊字:/’
+[FORMAL] 08-18	香菇	'tʼinuw'	正式拼寫特殊字:ʼ
+[FORMAL] 08-19	鳳梨	'phngran / pahangaran'	正式拼寫特殊字:/
+[FORMAL] 08-20	草	'k’man / ka’aman'	正式拼寫特殊字:/’
+[FORMAL] 08-22	桃子	'zimux / remux'	正式拼寫特殊字:/
+[FORMAL] 08-24	水果	'buway khoni / buway kahawni'	正式拼寫特殊字:/
+[FORMAL] 08-25	樹頭	'pu’ing khoni / pu’ing kahawni'	正式拼寫特殊字:/’
+[FORMAL] 08-26	木耳	'papak khoni / papak kahawni'	正式拼寫特殊字:/
+[FORMAL] 08-30	姑婆芋	'bgaci / bgati'	正式拼寫特殊字:/
+[FORMAL] 08-33	胡蘿蔔	'sawpu tanah / sepu tanah'	正式拼寫特殊字:/
+[MEMO?] 08-34	空心菜	'kung_sincay'	疑似備註字元:_
+[FORMAL] 08-35	長豆	'girang/erang'	正式拼寫特殊字:/
+[FORMAL] 08-40	百香果	'tkisuw / takisuw'	正式拼寫特殊字:/
+[FORMAL] 08-49	咬人貓	'sʼga'	正式拼寫特殊字:ʼ
+[FORMAL] 08-50	山胡椒	'maʼaw'	正式拼寫特殊字:ʼ
+[FORMAL] 08-53	菸草	'maku/tmaku'	正式拼寫特殊字:/
+[FORMAL] 08-54	辣椒(通稱)	'meluh / mayluh'	正式拼寫特殊字:/
+[FORMAL] 08-57	番石榴	'puwan / zbuwan / rpuwan'	正式拼寫特殊字:/
+[MEMO?] 09-05	電話	'ling_wa'	疑似備註字元:_
+[FORMAL] 09-07	椅子	'tlngan / ’ngan / t’ngan'	正式拼寫特殊字:/’
+[FORMAL] 09-10	雨傘	'tbakuy / rruku / tabakuy'	正式拼寫特殊字:/
+[FORMAL] 09-16	針	'rawm/rom'	正式拼寫特殊字:/
+[FORMAL] 09-17	木杵	'sʼxu'	正式拼寫特殊字:ʼ
+[MEMO?] 09-27	電燈	'raka / ling_ki / rengki'	疑似備註字元:_
+[FORMAL] 09-27	電燈	'raka / ling_ki / rengki'	正式拼寫特殊字:/
+[FORMAL] 09-34	網子	'tara / kawbu / sguyu / pusung'	正式拼寫特殊字:/
+[FORMAL] 09-35	飯鍋	'puluw/sinpuluy'	正式拼寫特殊字:/
+[FORMAL] 09-36	鋸子	'hrhin / harahin'	正式拼寫特殊字:/
+[FORMAL] 09-37	紙張	'rban / raban / brban'	正式拼寫特殊字:/
+[FORMAL] 09-39	釣具	'ya’aya pnayp / ya’aya panayp'	正式拼寫特殊字:/’
+[FORMAL] 09-45	梗	'la’aw'	正式拼寫特殊字:’
+[FORMAL] 09-47	工具	'yeʼaya / yaʼaya'	正式拼寫特殊字:/ʼ
+[FORMAL] 09-48	弧形(底)鍋	'supih / zibaw / tbali'	正式拼寫特殊字:/
+[FORMAL] 09-50	瓶子	'yuyut / tunay / thi'	正式拼寫特殊字:/
+[FORMAL] 09-51	湯匙	'kobih / kawbih'	正式拼寫特殊字:/
+[FORMAL] 09-54	肥皂	'masa/siking'	正式拼寫特殊字:/
+[FORMAL] 09-56	梳子	'kalu / kkalu'	正式拼寫特殊字:/
+[FORMAL] 09-57	揹帶(包包的帶子)	'habuk / wakin'	正式拼寫特殊字:/
+[FORMAL] 09-66	鐵釘	'law’iy / lo’iy'	正式拼寫特殊字:/’
+[FORMAL] 09-69	魚網	'tara / kawbu / sguyu / pusung'	正式拼寫特殊字:/
+[FORMAL] 09-70	橡皮擦	'iʼing'	正式拼寫特殊字:ʼ
+[FORMAL] 10-01	道路	'tuʼiy'	正式拼寫特殊字:ʼ
+[FORMAL] 10-02	山林	'rrgyax / raragiyax'	正式拼寫特殊字:/
+[FORMAL] 10-05	沙子	'naʼiy'	正式拼寫特殊字:ʼ
+[FORMAL] 10-08	湖泊	'bsilung / mslubung'	正式拼寫特殊字:/
+[FORMAL] 10-10	縫隙	'mbling / sgli’an'	正式拼寫特殊字:/’
+[FORMAL] 10-12	山腳下	'puʼing ragiyax'	正式拼寫特殊字:ʼ
+[FORMAL] 10-13	土堆	'ʼuraw yayamay'	正式拼寫特殊字:ʼ
+[FORMAL] 10-15	草原	'be’nux kk’man / bay’anux kaka’man'	正式拼寫特殊字:/’
+[FORMAL] 10-17	峽谷	'ibaw lluhiy / ibaw laluhiy kiyup'	正式拼寫特殊字:/
+[FORMAL] 10-18	山洞	'bling rgyax / bling ragiyax'	正式拼寫特殊字:/
+[FORMAL] 10-21	獨立的小山頭	'bʼbu rgyax'	正式拼寫特殊字:ʼ
+[FORMAL] 11-01	下雨	'mwalax / mawalax'	正式拼寫特殊字:/
+[FORMAL] 11-03	月亮	'byating/byacing'	正式拼寫特殊字:/
+[FORMAL] 11-07	雪	'hlaʼiy'	正式拼寫特殊字:ʼ
+[FORMAL] 11-08	冬天	'misan / ’misan'	正式拼寫特殊字:/’
+[FORMAL] 11-09	夏天	'bagan / ’bagan'	正式拼寫特殊字:/’
+[FORMAL] 11-10	雷	'sbisuw/mkayum'	正式拼寫特殊字:/
+[FORMAL] 11-11	露水	'lngut / langut'	正式拼寫特殊字:/
+[FORMAL] 11-16	陰天	'msuruw / masuruw'	正式拼寫特殊字:/
+[FORMAL] 11-21	颱風	'rhuyan / rahuyan'	正式拼寫特殊字:/
+[FORMAL] 11-24	水患	'mshwah / masahwah'	正式拼寫特殊字:/
+[FORMAL] 11-26	海邊	'syaw silung / syaw bsilung / syaw basilung'	正式拼寫特殊字:/
+[FORMAL] 11-28	彩虹	'hawngu lyutux / hongu lyutux'	正式拼寫特殊字:/
+[FORMAL] 11-30	天黑	'mkuʼum kayan'	正式拼寫特殊字:ʼ
+[FORMAL] 11-31	雨停	'msiwat / masiwat'	正式拼寫特殊字:/
+[FORMAL] 12-02	窗戶	'nyaway/gnyaway'	正式拼寫特殊字:/
+[FORMAL] 12-03	門	'lihun/blihun'	正式拼寫特殊字:/
+[FORMAL] 12-04	學校	'pkba’an biru / gako'	正式拼寫特殊字:/’
+[FORMAL] 12-06	屋頂	'rmu’iy / mu’iy'	正式拼寫特殊字:/’
+[FORMAL] 12-07	橋樑	'hawngu/hongu'	正式拼寫特殊字:/
+[FORMAL] 12-09	廁所	'pstiyan / tbukan / pstiyan pasatiyan'	正式拼寫特殊字:/
+[FORMAL] 12-13	樓梯	'kelang / kaylang'	正式拼寫特殊字:/
+[FORMAL] 12-14	庭院	'hiyay/hhyay'	正式拼寫特殊字:/
+[FORMAL] 12-16	穀倉	'khu / kahu'	正式拼寫特殊字:/
+[FORMAL] 12-17	蓋屋頂	'kbalay / rmu’iy'	正式拼寫特殊字:/’
+[FORMAL] 12-18	搭建圍籬	'sp’inryang'	正式拼寫特殊字:’
+[FORMAL] 13-02	晚上	'gbyan / gabiyan mlhngan'	正式拼寫特殊字:/
+[FORMAL] 13-03	昨天	'hesa/shesa/shisa'	正式拼寫特殊字:/
+[FORMAL] 13-04	明天	'sasan/suxan'	正式拼寫特殊字:/
+[FORMAL] 13-05	今天	'ryax soni / ryax sawni'	正式拼寫特殊字:/
+[FORMAL] 13-06	早上	'myabu / mgyebu / myebu'	正式拼寫特殊字:/
+[FORMAL] 13-10	黑暗	'mkuʼum'	正式拼寫特殊字:ʼ
+[FORMAL] 13-11	傍晚	'smsman / masaman'	正式拼寫特殊字:/
+[FORMAL] 13-12	接續	'luhing / ’mubuy'	正式拼寫特殊字:/’
+[FORMAL] 13-13	半夜	's’ka byangi / smka byangi'	正式拼寫特殊字:/’
+[FORMAL] 13-14	當時	'trang / ryax s’asa'	正式拼寫特殊字:/’
+[FORMAL] 13-16	待會兒	'kisa / naga cikay / naga tikay'	正式拼寫特殊字:/
+[FORMAL] 13-18	亮光	'slwan kayan/psyax kayan'	正式拼寫特殊字:/
+[FORMAL] 13-19	後天	'kaxa/mkaxa'	正式拼寫特殊字:/
+[FORMAL] 13-20	上午	'sasan soni / zik kryaxan'	正式拼寫特殊字:/
+[FORMAL] 13-23	年輕時	'trang mrkyas / wakay sining'	正式拼寫特殊字:/
+[FORMAL] 13-24	一下子	'misuw wayan /ini kenga'	正式拼寫特殊字:/
+[FORMAL] 13-25	下午	'babaw kinryax / ’lyan'	正式拼寫特殊字:/’
+[FORMAL] 13-26	(幾)點鐘	'tmuting / tmucing / spngan'	正式拼寫特殊字:/
+[FORMAL] 13-27	星期日	'hngi’an ryax / rehay'	正式拼寫特殊字:/’
+[FORMAL] 13-29	天天	'krryax / karariyax'	正式拼寫特殊字:/
+[FORMAL] 13-30	現在	'misuw soni / misuw sawni'	正式拼寫特殊字:/
+[FORMAL] 14-01	裡面	'sahuy / zik'	正式拼寫特殊字:/
+[FORMAL] 14-04	前面	'gleng / glayng'	正式拼寫特殊字:/
+[FORMAL] 14-06	中間	's’ka / ska/ ss’ka'	正式拼寫特殊字:/’
+[FORMAL] 14-10	右邊	'ʼlelaw / ’laylaw'	正式拼寫特殊字:/ʼ’
+[FORMAL] 14-11	左邊	'min/’min'	正式拼寫特殊字:/’
+[FORMAL] 14-14	經過	'hminas / haminas'	正式拼寫特殊字:/
+[FORMAL] 15-01	鋤草(除草)	'm’umah'	正式拼寫特殊字:’
+[FORMAL] 15-02	犁田	'kmahat / kamahat'	正式拼寫特殊字:/
+[FORMAL] 15-05	穀物乾燥簍	'luku/bluku'	正式拼寫特殊字:/
+[FORMAL] 15-07	鐮刀	'sawki / soki'	正式拼寫特殊字:/
+[FORMAL] 15-09	倉庫	'khu / kahu'	正式拼寫特殊字:/
+[FORMAL] 15-11	肥料	'bulit / xiryo'	正式拼寫特殊字:/
+[FORMAL] 15-12	篩穀器具	'tpsan / tapasan'	正式拼寫特殊字:/
+[FORMAL] 15-13	催熟(果實)	'ʼmbuw / sptanah / paga tanah'	正式拼寫特殊字:/ʼ
+[FORMAL] 16-03	箭	'pnelu / awcing pnelu / awcing panaylu'	正式拼寫特殊字:/
+[FORMAL] 16-06	獵刀	'putting / pucing'	正式拼寫特殊字:/
+[FORMAL] 16-07	直形獵刀	'snlux puting / snlux pucing'	正式拼寫特殊字:/
+[FORMAL] 16-08	獵獲物(統稱)	'sinuw/’sinuw'	正式拼寫特殊字:/’
+[FORMAL] 16-12	捕鳥陷阱	't’uya / ta’uya'	正式拼寫特殊字:/’
+[FORMAL] 17-01	禁忌	'psani / pasani'	正式拼寫特殊字:/
+[FORMAL] 17-02	夢	'spyan / sapiyan'	正式拼寫特殊字:/
+[FORMAL] 17-03	巫術	'mahawni / mhoni'	正式拼寫特殊字:/
+[FORMAL] 17-05	祖靈祭	'Psyurak / Maho'	正式拼寫特殊字:/
+[FORMAL] 17-08	法器(巫醫治病用)	'ya’aya phgup'	正式拼寫特殊字:’
+[FORMAL] 18-01	帽子	'bubing/busi'	正式拼寫特殊字:/
+[FORMAL] 18-02	衣服	'latan/lukus'	正式拼寫特殊字:/
+[FORMAL] 18-03	編織	'tminun / taminun'	正式拼寫特殊字:/
+[FORMAL] 18-05	男用耳環	'banay tmalung / banay tamalung'	正式拼寫特殊字:/
+[FORMAL] 18-06	女用耳環	'banay knayrin / banay kanayrin'	正式拼寫特殊字:/
+[FORMAL] 18-13	染色	'ʼmbuw'	正式拼寫特殊字:ʼ
+[FORMAL] 18-17	布匹	'gali / pala / plyung'	正式拼寫特殊字:/
+[FORMAL] 18-24	裙子	'skatu / tinhawak'	正式拼寫特殊字:/
+[FORMAL] 18-29	上衣	'lukus / latan'	正式拼寫特殊字:/
+[FORMAL] 19-02	圓形竹篩	'ʼbun'	正式拼寫特殊字:ʼ
+[MEMO?] 20-02	腳踏車	'ling_ling sya'	疑似備註字元:_
+[MEMO?] 20-03	車站	'n_gan glgan'	疑似備註字元:_
+[FORMAL] 21-11	味道(吃)	'shhya / shiya / sawkan shiya'	正式拼寫特殊字:/
+[FORMAL] 21-12	湯	'ʼyung'	正式拼寫特殊字:ʼ
+[FORMAL] 21-14	白蘿蔔	'sawpu / topu / sepu'	正式拼寫特殊字:/
+[FORMAL] 21-16	糯米(生米)	'rhkay / rahakay'	正式拼寫特殊字:/
+[FORMAL] 21-17	(白)粥	'yenʼyak'	正式拼寫特殊字:ʼ
+[FORMAL] 21-20	豬肉	'syam / suyaw bewak / suyaw baywak'	正式拼寫特殊字:/
+[FORMAL] 21-24	米糠	'paʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 22-01	白色的	'plʼux'	正式拼寫特殊字:ʼ
+[FORMAL] 22-02	黑色的	'kalux/mkalux'	正式拼寫特殊字:/
+[FORMAL] 22-03	紅色的	'tanah/mtanah'	正式拼寫特殊字:/
+[FORMAL] 22-06	咖啡色的	'menʼuraw'	正式拼寫特殊字:ʼ
+[FORMAL] 22-07	灰色的	'memung / maymung'	正式拼寫特殊字:/
+[FORMAL] 22-08	綠色的	'matasi / mtasi'	正式拼寫特殊字:/
+[FORMAL] 22-09	顏色	'bebiru / tu’iy pintasan'	正式拼寫特殊字:/’
+[FORMAL] 24-03	相同	'mtna / matana'	正式拼寫特殊字:/
+[FORMAL] 24-11	重要的	'imi / ginluwan'	正式拼寫特殊字:/
+[FORMAL] 24-12	結婚	'msu’un myanux / kikung'	正式拼寫特殊字:/’
+[FORMAL] 24-13	各色各樣	'bebiru/ana nenanu'	正式拼寫特殊字:/
+[FORMAL] 24-17	遲到	'ksu’i'	正式拼寫特殊字:’
+[FORMAL] 25-01	關上	'’mlu / ’luy'	正式拼寫特殊字:/’
+[FORMAL] 25-05	(叫人)過來	'uwah/inah'	正式拼寫特殊字:/
+[FORMAL] 25-11	走(離開)	'shri/mshri'	正式拼寫特殊字:/
+[FORMAL] 25-14	抵達	'tehuk / tayhuk'	正式拼寫特殊字:/
+[FORMAL] 25-15	送(客人)	'sgayan/smatu'	正式拼寫特殊字:/
+[FORMAL] 25-21	折返	'mbinah/msbzinah'	正式拼寫特殊字:/
+[FORMAL] 25-23	讓開	'kura / si’a / s’ay'	正式拼寫特殊字:/’
+[FORMAL] 25-24	贈送(禮物)	'sbay / bi’an'	正式拼寫特殊字:/’
+[FORMAL] 25-26	(植物的果實)掉落	'mshutaw / mshuw'	正式拼寫特殊字:/
+[FORMAL] 25-29	越溪而過	'mawyaw/gmawyaw'	正式拼寫特殊字:/
+[FORMAL] 25-30	向人家要(東西)	'psnawn / msina'	正式拼寫特殊字:/
+[FORMAL] 25-34	逛一逛	'mtlelay / mtlaylay'	正式拼寫特殊字:/
+[FORMAL] 25-36	趕上	'hlnga/hlngan'	正式拼寫特殊字:/
+[FORMAL] 25-38	分開	'msgagay / mt’alax'	正式拼寫特殊字:/’
+[FORMAL] 25-40	穿(如穿衣服)	'mlukus / klatan'	正式拼寫特殊字:/
+[FORMAL] 25-41	戴(如戴帽子)	'mkbusi/mkbubing'	正式拼寫特殊字:/
+[FORMAL] 25-43	坐著	'mtl’ung'	正式拼寫特殊字:’
+[FORMAL] 25-44	站著	'ms’rux'	正式拼寫特殊字:’
+[FORMAL] 25-45	關(門；窗)	'ʼluy'	正式拼寫特殊字:ʼ
+[FORMAL] 25-47	來過	'mnwah/’nwahan'	正式拼寫特殊字:/’
+[FORMAL] 25-49	爬行	'hmkangi ’ba rhyan'	正式拼寫特殊字:’
+[FORMAL] 25-51	拜訪	'mtayux / mita'	正式拼寫特殊字:/
+[FORMAL] 26-01	跳躍	'mstawput / mastawput'	正式拼寫特殊字:/
+[FORMAL] 26-02	跳舞	'myugi / melzin'	正式拼寫特殊字:/
+[FORMAL] 26-03	坐下	'tlʼung'	正式拼寫特殊字:ʼ
+[FORMAL] 26-04	彎腰	'mromun / mrawmun'	正式拼寫特殊字:/
+[FORMAL] 26-05	掛	'p’ aya / pyaniy'	正式拼寫特殊字:/’
+[FORMAL] 26-06	打球	'tmpak mari / mgnaw mari'	正式拼寫特殊字:/
+[FORMAL] 26-08	打(人)	'mahiy / tmpak / pakun'	正式拼寫特殊字:/
+[FORMAL] 26-09	刺	'meta / mayta'	正式拼寫特殊字:/
+[FORMAL] 26-11	跌倒	'mtakuy / matakuy'	正式拼寫特殊字:/
+[FORMAL] 26-13	推	'ruru / rmuru / sruru'	正式拼寫特殊字:/
+[FORMAL] 26-14	砍伐	'tmutu / tamutu'	正式拼寫特殊字:/
+[FORMAL] 26-16	折斷	'phgun / trxun'	正式拼寫特殊字:/
+[FORMAL] 26-17	發抖	'mlbin / malabin'	正式拼寫特殊字:/
+[FORMAL] 26-19	爬上(去)	'mkaraw / makaraw'	正式拼寫特殊字:/
+[FORMAL] 26-20	仰躺	'msrapa / masarapa / trhiya'	正式拼寫特殊字:/
+[FORMAL] 26-23	扛	'phngali / pahangali'	正式拼寫特殊字:/
+[FORMAL] 26-25	滾落	'mtawrun / mturuy'	正式拼寫特殊字:/
+[FORMAL] 26-26	撞到	'mstutu / mastutu / pstutu'	正式拼寫特殊字:/
+[FORMAL] 26-27	抱著	'gbon / gbawn'	正式拼寫特殊字:/
+[FORMAL] 26-29	挖掘	'kmwih / kwihan'	正式拼寫特殊字:/
+[FORMAL] 26-30	切	'hmobing / hmawbing'	正式拼寫特殊字:/
+[FORMAL] 26-32	藏起來	'l’ingun / lm’ing / ingun'	正式拼寫特殊字:/’
+[FORMAL] 26-33	抓(如抓到動物)	'kmyap / kyapun'	正式拼寫特殊字:/
+[FORMAL] 26-34	砍	'tmutu / tamutu'	正式拼寫特殊字:/
+[FORMAL] 26-35	揹負(物品)	'mpanga / pnganan'	正式拼寫特殊字:/
+[FORMAL] 26-36	分(東西)	'psgayun/psugun'	正式拼寫特殊字:/
+[FORMAL] 26-37	剖切	'mwak/smka'	正式拼寫特殊字:/
+[FORMAL] 26-38	綁住(已綁)	'mhun / bhlan mahun / bahalan'	正式拼寫特殊字:/
+[FORMAL] 26-39	拉	'hmuluy / hluyun hamuluy / haluyun'	正式拼寫特殊字:/
+[FORMAL] 26-40	劈(木材)	'sma’aw'	正式拼寫特殊字:’
+[FORMAL] 26-42	提著	'lmeli / le’un / lamayli'	正式拼寫特殊字:/’
+[FORMAL] 26-44	捆綁(正在)	'mhun / mahun'	正式拼寫特殊字:/
+[FORMAL] 26-45	按住	'mhut / mahut'	正式拼寫特殊字:/
+[FORMAL] 26-47	挑選	'byagan / wyagan mwayaw / wayaw'	正式拼寫特殊字:/
+[FORMAL] 26-48	散撒	'srpus/sgayang'	正式拼寫特殊字:/
+[FORMAL] 26-50	插(秧苗)	'sm’su / pinhyun'	正式拼寫特殊字:/’
+[FORMAL] 26-51	堆積	'’mutu'	正式拼寫特殊字:’
+[FORMAL] 26-52	搬運	'hmakut / hamakut'	正式拼寫特殊字:/
+[FORMAL] 26-53	拔出	'hmbyat/hbyasun'	正式拼寫特殊字:/
+[FORMAL] 26-54	攪動	'yewanan / ’mimaw'	正式拼寫特殊字:/’
+[FORMAL] 26-55	壓住	'mm’an / m’mun'	正式拼寫特殊字:/’
+[FORMAL] 26-57	握拳	'srʼun ba'	正式拼寫特殊字:ʼ
+[FORMAL] 26-58	摘取	'kmyut / kamyut'	正式拼寫特殊字:/
+[FORMAL] 26-59	晃動	's’yuy/syuy'	正式拼寫特殊字:/’
+[FORMAL] 26-63	打包	'sakuy/smakuy'	正式拼寫特殊字:/
+[FORMAL] 26-67	追捕	'hmyaw / hbyagun'	正式拼寫特殊字:/
+[FORMAL] 26-68	打碎	'g’yemun/gyemun'	正式拼寫特殊字:/’
+[FORMAL] 26-72	踩踏	'p’lan'	正式拼寫特殊字:’
+[FORMAL] 26-75	掐住	'phsun / pahasun'	正式拼寫特殊字:/
+[FORMAL] 26-76	壓制	'mm’an'	正式拼寫特殊字:’
+[FORMAL] 26-77	餵食(人)	'’mulan / sma’an'	正式拼寫特殊字:/’
+[FORMAL] 26-79	撬開	'tki’un / taki’un'	正式拼寫特殊字:/’
+[FORMAL] 26-80	(用腳)踏	'pe’un/p’lan'	正式拼寫特殊字:/’
+[FORMAL] 26-82	剝皮(植物)	'’milis / lisan'	正式拼寫特殊字:/’
+[FORMAL] 26-83	擦(如口紅；油漆)	'smom / smawn'	正式拼寫特殊字:/
+[FORMAL] 26-84	亂翻	'kka’un'	正式拼寫特殊字:’
+[FORMAL] 26-85	揉搓(衣物)	'grgan / grgun'	正式拼寫特殊字:/
+[FORMAL] 26-86	靠著	'scyahaw / tlngyan'	正式拼寫特殊字:/
+[FORMAL] 26-87	鞭打	'smilay / slayun'	正式拼寫特殊字:/
+[FORMAL] 26-92	修剪(樹的枝條)	'smiʼung'	正式拼寫特殊字:ʼ
+[FORMAL] 26-93	招手	'tpihun / tmapih / suyun'	正式拼寫特殊字:/
+[FORMAL] 26-94	剁切	'tmʼtu'	正式拼寫特殊字:ʼ
+[FORMAL] 26-95	搗	'smxu / khgu'	正式拼寫特殊字:/
+[FORMAL] 26-96	打架	'mtiri/mciri'	正式拼寫特殊字:/
+[FORMAL] 26-98	低下頭	'mromun / mrawmun'	正式拼寫特殊字:/
+[FORMAL] 26-99	拉(上來)	'hmuluy / hluyun'	正式拼寫特殊字:/
+[FORMAL] 26-103	隨意	'mhmut / kinhmut / mahamut'	正式拼寫特殊字:/
+[FORMAL] 26-104	蹲下	'tlʼung'	正式拼寫特殊字:ʼ
+[FORMAL] 27-02	吸	'ssiban / pshut'	正式拼寫特殊字:/
+[FORMAL] 27-04	吐	'mputa / puta'	正式拼寫特殊字:/
+[FORMAL] 27-08	燙到	'tlingay/tlingan'	正式拼寫特殊字:/
+[FORMAL] 27-09	噎到	's’syakan/tbsyakan'	正式拼寫特殊字:/’
+[FORMAL] 27-10	飽食	'mtngi / tngi'	正式拼寫特殊字:/
+[FORMAL] 27-11	咀嚼	'pasakani / pskani'	正式拼寫特殊字:/
+[FORMAL] 27-14	餓	's’utang / ms’utang / m’uyay'	正式拼寫特殊字:/’
+[FORMAL] 27-15	吃(東西)	'mani / kani'	正式拼寫特殊字:/
+[FORMAL] 28-01	遇到	'plmuh / pstna / mstna'	正式拼寫特殊字:/
+[FORMAL] 28-02	知道	'ba’un'	正式拼寫特殊字:’
+[FORMAL] 28-03	看	'mita / tayux / mtayux'	正式拼寫特殊字:/
+[FORMAL] 28-04	說故事	'kayal / kmayal / pin’zyu / pin’yu'	正式拼寫特殊字:/’
+[FORMAL] 28-06	閉(眼睛)	'mkmi / kmi'	正式拼寫特殊字:/
+[FORMAL] 28-07	聞(如聞味道)	'smok / smawk'	正式拼寫特殊字:/
+[FORMAL] 28-08	觸摸(物品)	'tmring / mbing'	正式拼寫特殊字:/
+[FORMAL] 28-09	邀請	'tmapih / tapih / suyun'	正式拼寫特殊字:/
+[FORMAL] 28-12	叫喚(如餵雞前會叫喚)	'hwagun / hmwaw / suyun'	正式拼寫特殊字:/
+[FORMAL] 28-13	詢問	'maʼut'	正式拼寫特殊字:ʼ
+[FORMAL] 28-16	謾罵	'msaʼang'	正式拼寫特殊字:ʼ
+[FORMAL] 28-17	觸碰(如碰觸到身體)	'ptkpah/tmring'	正式拼寫特殊字:/
+[FORMAL] 28-19	聽	'mung / pung'	正式拼寫特殊字:/
+[FORMAL] 28-20	舔	'hmimu / hmu’an'	正式拼寫特殊字:/’
+[FORMAL] 28-22	睜眼	'mkbway rozi / mkbway rawzi'	正式拼寫特殊字:/
+[FORMAL] 28-23	瞄準	'smpung / mlung'	正式拼寫特殊字:/
+[FORMAL] 28-26	觀察	'kmyaya / tayux'	正式拼寫特殊字:/
+[FORMAL] 28-28	禱告	'pzimu / innuri'	正式拼寫特殊字:/
+[FORMAL] 28-29	喜歡	'smogal / smawgal / sgalan'	正式拼寫特殊字:/
+[FORMAL] 29-01	喜愛	'smogal / smawgal'	正式拼寫特殊字:/
+[FORMAL] 29-02	害怕	'mngungu / ngungu'	正式拼寫特殊字:/
+[FORMAL] 29-03	哭	'mngilis / ngilis'	正式拼寫特殊字:/
+[FORMAL] 29-04	疼愛	'gmlyutux / sgalu / sglyutux'	正式拼寫特殊字:/
+[FORMAL] 29-05	高興	'm’as / mzimu'	正式拼寫特殊字:/’
+[FORMAL] 29-06	生氣	'mbci / mbti / to’u'	正式拼寫特殊字:/’
+[FORMAL] 29-08	嚇一跳	'minkux / kmux'	正式拼寫特殊字:/
+[FORMAL] 29-09	快樂	'm’as'	正式拼寫特殊字:’
+[FORMAL] 30-01	整理	'trʼyu'	正式拼寫特殊字:ʼ
+[FORMAL] 30-02	洗(衣物)	'mbahu / mahu / bahu'	正式拼寫特殊字:/
+[FORMAL] 30-03	工作	'mtyuwaw / mtyaw'	正式拼寫特殊字:/
+[FORMAL] 30-04	停止	'mhngi / hngi'	正式拼寫特殊字:/
+[FORMAL] 30-08	小便	'thmu / hmu'	正式拼寫特殊字:/
+[FORMAL] 30-09	睡覺	'm’abi / abi'	正式拼寫特殊字:/’
+[FORMAL] 30-11	大便	'ms’uci / ms’uti uci / uti'	正式拼寫特殊字:/’
+[FORMAL] 30-16	躺臥	'msrapa / mtgayaw'	正式拼寫特殊字:/
+[FORMAL] 30-17	做惡夢	'yaʼih spyan'	正式拼寫特殊字:ʼ
+[FORMAL] 30-18	偷竊	'mkuri / kuri'	正式拼寫特殊字:/
+[FORMAL] 30-19	煮(菜)	'tmahuk / tahuk'	正式拼寫特殊字:/
+[FORMAL] 30-20	燒(如燒稻草)	'lmom / lmawn / tlawm'	正式拼寫特殊字:/
+[FORMAL] 30-21	打哈欠	'’msuyap'	正式拼寫特殊字:’
+[FORMAL] 30-24	等待	'mnaga / naga'	正式拼寫特殊字:/
+[FORMAL] 30-25	陷獵	'tlnga / wahiy cyaw'	正式拼寫特殊字:/
+[FORMAL] 30-26	曬乾(如將衣服曬乾)	'mawgi / rmahi'	正式拼寫特殊字:/
+[FORMAL] 30-27	以杓汲水(祈使)	'hawgiy sya / hogi sya'	正式拼寫特殊字:/
+[FORMAL] 30-29	收拾(祈使，如收拾東西)	'sr’yu'	正式拼寫特殊字:’
+[FORMAL] 30-32	蓋被子	'hmilaw tapang/hlawiy tapang'	正式拼寫特殊字:/
+[FORMAL] 30-33	照起來／照明	'psyaxan / plagan psyax/ pilaw'	正式拼寫特殊字:/
+[MEMO?] 30-34	炒n (如炒花生)	'ksyus(bonaw)'	疑似備註字元:()
+[FORMAL] 30-36	蒸(如蒸飯)	'sbihan / rmngrang'	正式拼寫特殊字:/
+[FORMAL] 30-40	醃漬(祈使)	'’bugi / sbwaxiy / ’bugiy'	正式拼寫特殊字:/’
+[FORMAL] 30-41	燒焦	'tklxun / mtkalux'	正式拼寫特殊字:/
+[FORMAL] 30-43	剪(頭髮)	'sma’it / psa’it'	正式拼寫特殊字:/’
+[FORMAL] 30-44	浸泡	'’bgan / ’mbuw'	正式拼寫特殊字:/’
+[FORMAL] 30-46	掩埋	'’mukan / hng’un'	正式拼寫特殊字:/’
+[FORMAL] 30-47	替換(衣服)	't’yuw / ’myuw'	正式拼寫特殊字:/’
+[FORMAL] 30-48	鎖上	'smosu / sswan'	正式拼寫特殊字:/
+[FORMAL] 30-52	尿急	'khilan hmu / thilan hmu'	正式拼寫特殊字:/
+[FORMAL] 30-53	量測	'smpung / spngiy / spngun'	正式拼寫特殊字:/
+[FORMAL] 30-54	燃燒	'mtlom / mtlawm / msuling'	正式拼寫特殊字:/
+[FORMAL] 30-55	懸掛(祈使)	'pʼyaniy'	正式拼寫特殊字:ʼ
+[FORMAL] 30-57	飼養	'mulan/sma’an'	正式拼寫特殊字:/’
+[FORMAL] 30-60	讀書	'miru/m’was biru'	正式拼寫特殊字:/’
+[FORMAL] 30-61	喝(水)	'mnbuw / nbuw'	正式拼寫特殊字:/
+[FORMAL] 30-63	(居)住	'maki / mki'	正式拼寫特殊字:/
+[FORMAL] 30-64	唱歌	'm’uwas/m’was'	正式拼寫特殊字:/’
+[FORMAL] 31-01	死亡	'mhuʼin'	正式拼寫特殊字:ʼ
+[FORMAL] 31-02	好痛	'kinmxayan / kinmhayan'	正式拼寫特殊字:/
+[FORMAL] 31-03	受傷	'mpangih / mt’ilis'	正式拼寫特殊字:/’
+[FORMAL] 31-05	痛	'mxayan / mhayan'	正式拼寫特殊字:/
+[FORMAL] 31-09	放屁	'mt’uci / mtpik'	正式拼寫特殊字:/’
+[FORMAL] 31-10	跛腳	'pika /mpika'	正式拼寫特殊字:/
+[FORMAL] 31-11	撫養	'mlahang / kinlahang'	正式拼寫特殊字:/
+[FORMAL] 31-14	癢	'mkgak / kgak'	正式拼寫特殊字:/
+[FORMAL] 31-16	打噴嚏	'mt’acis'	正式拼寫特殊字:’
+[FORMAL] 31-17	嫁給非本族群的族人	'ms’un binah s’uli'	正式拼寫特殊字:’
+[FORMAL] 31-19	生病	'mmxayan / mhayan'	正式拼寫特殊字:/
+[FORMAL] 32-01	瘦(身形)	'khiy/mhikang'	正式拼寫特殊字:/
+[FORMAL] 32-03	輕(重量)	'hbaw / lhbaw / lhngat'	正式拼寫特殊字:/
+[FORMAL] 32-04	高(身高)	'wawi/gwagi'	正式拼寫特殊字:/
+[FORMAL] 32-05	大的	'rahu / krahu'	正式拼寫特殊字:/
+[FORMAL] 32-07	勤勞	'ngayat / ’ngyat / ’ngayat'	正式拼寫特殊字:/’
+[FORMAL] 32-08	冷	'skinut / tl’tu'	正式拼寫特殊字:/’
+[FORMAL] 32-12	冰冷	'skinut / tl’tu'	正式拼寫特殊字:/’
+[FORMAL] 32-13	悶熱	'msu’ut kinkilux / ini sbehuy'	正式拼寫特殊字:/’
+[FORMAL] 32-14	少的	'tikay / cikay'	正式拼寫特殊字:/
+[FORMAL] 32-15	酒醉	'msinuk/tbusak'	正式拼寫特殊字:/
+[FORMAL] 32-18	熟(如水果的熟)	'mhuʼin'	正式拼寫特殊字:ʼ
+[FORMAL] 32-22	髒	'mʼuraw'	正式拼寫特殊字:ʼ
+[FORMAL] 32-23	懶惰	'm’ilang'	正式拼寫特殊字:’
+[FORMAL] 32-24	乾淨	'ini kʼuraw'	正式拼寫特殊字:ʼ
+[FORMAL] 32-25	很快	'helaw / yenga'	正式拼寫特殊字:/
+[FORMAL] 32-29	累	'mbetux / betux'	正式拼寫特殊字:/
+[FORMAL] 32-30	好可憐	'seʼan balay'	正式拼寫特殊字:ʼ
+[FORMAL] 32-31	新的	'g’anus / ga’anus'	正式拼寫特殊字:/’
+[FORMAL] 32-32	舊的	'smuran / sswin'	正式拼寫特殊字:/
+[FORMAL] 32-33	近	'sobih / sawbih'	正式拼寫特殊字:/
+[FORMAL] 32-34	燙	'tmuling kinkilux / mtling kinkilux'	正式拼寫特殊字:/
+[FORMAL] 32-35	壞掉	'ya’ih / mhiri'	正式拼寫特殊字:/’
+[FORMAL] 32-36	辣	'meluh / mayluh'	正式拼寫特殊字:/
+[FORMAL] 32-38	腫	'mʼba'	正式拼寫特殊字:ʼ
+[FORMAL] 32-43	很好吃	'blay ni’un / shhya'	正式拼寫特殊字:/’
+[FORMAL] 32-44	滑	'hyuti/hyuci'	正式拼寫特殊字:/
+[FORMAL] 32-47	未成熟的(果實)	'mtelu / ini khu’in'	正式拼寫特殊字:/’
+[FORMAL] 32-49	(人)眾多	'hbayaw / khmay'	正式拼寫特殊字:/
+[FORMAL] 32-53	故意	'spyang / mnangi'	正式拼寫特殊字:/
+[FORMAL] 32-54	稀爛的	'mstmah / mstmak'	正式拼寫特殊字:/
+[FORMAL] 32-55	壯碩	'mtlokah / mtlawkah'	正式拼寫特殊字:/
+[FORMAL] 32-56	暖和	'mmli/yemli'	正式拼寫特殊字:/
+[FORMAL] 32-57	鈍的	'ini khinga / mngahaw'	正式拼寫特殊字:/
+[FORMAL] 32-58	甘甜	'sʼbing balay'	正式拼寫特殊字:ʼ
+[FORMAL] 32-59	澀澀的(味覺)	's’msa/’mpang'	正式拼寫特殊字:/’
+[FORMAL] 32-60	高瘦(身材)	'hlawax / mhikang'	正式拼寫特殊字:/
+[FORMAL] 32-61	(傾)斜	'mngzin / mngengzin'	正式拼寫特殊字:/
+[FORMAL] 32-62	軟	'mhnuk / hnuk'	正式拼寫特殊字:/
+[FORMAL] 32-63	很硬	'lokah balay / lawkah balay'	正式拼寫特殊字:/
+[FORMAL] 32-64	酸臭	'sbngi sokan / sknux'	正式拼寫特殊字:/
+[FORMAL] 32-66	滿了	'spun / spunan'	正式拼寫特殊字:/
+[FORMAL] 32-67	好好的	'inblay / inlay'	正式拼寫特殊字:/
+[FORMAL] 32-68	(空間)寬敞	'glabang/labang'	正式拼寫特殊字:/
+[FORMAL] 32-70	全濕透	'k’arus/kr’arus'	正式拼寫特殊字:/’
+[FORMAL] 32-71	慢慢	'thway / thhuway'	正式拼寫特殊字:/
+[FORMAL] 32-72	溫的(水)	'mmli/yemli'	正式拼寫特殊字:/
+[FORMAL] 32-74	長	'ruyux/’ruyux'	正式拼寫特殊字:/’
+[FORMAL] 32-76	短	'r’tung/’tung'	正式拼寫特殊字:/’
+[FORMAL] 32-78	成熟(果實)	'mtanah/mhu’in'	正式拼寫特殊字:/’
+[FORMAL] 32-80	英俊	'metumun/betunux'	正式拼寫特殊字:/
+[FORMAL] 33-01	應該	'nki/aki'	正式拼寫特殊字:/
+[FORMAL] 33-03	能夠	'thyayun / thuyay'	正式拼寫特殊字:/
+[FORMAL] 33-05	慶祝	'sps’asan / s’as'	正式拼寫特殊字:/’
+[FORMAL] 33-06	擦拭	'miʼing'	正式拼寫特殊字:ʼ
+[FORMAL] 34-03	(如何)使用…	'min/mbing'	正式拼寫特殊字:/
+[FORMAL] 34-05	幫忙	'rmaw / ragan'	正式拼寫特殊字:/
+[FORMAL] 34-08	(搖)動	'szyun / yewanan'	正式拼寫特殊字:/
+[FORMAL] 34-11	倒入	'stukun/hmzi'	正式拼寫特殊字:/
+[FORMAL] 34-12	阻擋	'ʼmihut'	正式拼寫特殊字:ʼ
+[FORMAL] 34-18	尋找	'hmkangi/hkngyun'	正式拼寫特殊字:/
+[FORMAL] 34-20	禁止	'laxiy / hmtuy / htan'	正式拼寫特殊字:/
+[FORMAL] 34-23	設置	'smi/posa'	正式拼寫特殊字:/
+[FORMAL] 34-24	開始	't’aring / aring'	正式拼寫特殊字:/’
+[FORMAL] 34-26	找碴	'tm’lih/t’leh'	正式拼寫特殊字:/’
+[FORMAL] 34-29	數(計算)	'lpgun/lmpuw'	正式拼寫特殊字:/
+[FORMAL] 34-30	(獵物掉入陷阱)陷中	'triʼun'	正式拼寫特殊字:ʼ
+[FORMAL] 34-31	撞擊某物	'stutu/tgtung'	正式拼寫特殊字:/
+[FORMAL] 34-32	旋轉	'miray / prayun'	正式拼寫特殊字:/
+[FORMAL] 34-33	圍著某物	'plingay / tlingay'	正式拼寫特殊字:/
+[FORMAL] 34-36	不客氣	'baʼa la'	正式拼寫特殊字:ʼ
+[FORMAL] 34-38	沒關係	'ini/ nway iri'	正式拼寫特殊字:/
+[FORMAL] 35-03	不是(回答用)	'’yat/iyat'	正式拼寫特殊字:/’
+[FORMAL] 35-06	不知道	'ba’aw ta/ini ba’i'	正式拼寫特殊字:/’
+[FORMAL] 36-02	正在	'ki / niya'	正式拼寫特殊字:/
+[FORMAL] 36-03	隨意(心情上)	'si say inlungan / mhmut / mahamut'	正式拼寫特殊字:/
+[FORMAL] 36-04	好的(沒問題)	'hu / asa / huw'	正式拼寫特殊字:/
+[FORMAL] 36-05	因為	'yaʼigiy'	正式拼寫特殊字:ʼ
+[FORMAL] 36-07	立即	'yanga / ihi'	正式拼寫特殊字:/
+[FORMAL] 36-09	再	'lozi / lawzi'	正式拼寫特殊字:/
+[FORMAL] 36-13	暫時	'tzinah / tnahun / t’os'	正式拼寫特殊字:/’
+[FORMAL] 36-16	所以	'lunga sa / pyanga sa/ nanu asa ru'	正式拼寫特殊字:/
+[FORMAL] 36-18	和	'ru/ki'	正式拼寫特殊字:/
+[FORMAL] 36-20	是嗎(語助詞)	'rwa/balay ga'	正式拼寫特殊字:/
+[FORMAL] 36-21	還(尚未)	'ini na/na'	正式拼寫特殊字:/
+[FORMAL] 36-22	如果	'atuni/atuna'	正式拼寫特殊字:/
+[FORMAL] 36-25	也	'uzi / uziy'	正式拼寫特殊字:/
+[FORMAL] 36-33	受格標記(各族用語)	'nku/sku'	正式拼寫特殊字:/
+[FORMAL] 36-34	屬格標記(各族用語)	'na/ni'	正式拼寫特殊字:/
+[FORMAL] 36-37	傻瓜	'nguci/nguray'	正式拼寫特殊字:/

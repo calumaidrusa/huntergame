@@ -1,0 +1,84 @@
+# 特殊字元 / 清理報表 — 邵語 (dialectId=14, lang_code=ssf)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1061,
+  "skipped_placeholder": 33,
+  "levels": {
+    "1": 252,
+    "2": 237,
+    "3": 282,
+    "4": 290
+  },
+  "cleaned": 0,
+  "with_image": 583,
+  "with_audio": 1061,
+  "apostrophe_words": 41,
+  "slash_words": 2,
+  "caret_words": 0,
+  "special_chars": {
+    "ʼ": 41,
+    "-": 14,
+    "/": 2,
+    ".": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 01-31	七十	'mapituʼun'	正式拼寫特殊字:ʼ
+[FORMAL] 02-05	我們	'ita/iamin'	正式拼寫特殊字:/
+[FORMAL] 04-04	男性長輩(祖父；外公)	'apuraʼin'	正式拼寫特殊字:ʼ
+[FORMAL] 04-05	女性長輩(祖母；外婆)	'apukiʼay'	正式拼寫特殊字:ʼ
+[FORMAL] 04-20	姊姊	'tantuqash binanauʼ az a minlhafut'	正式拼寫特殊字:ʼ
+[FORMAL] 04-24	妹妹	'shashuazi binanauʼ az a minlhafut'	正式拼寫特殊字:ʼ
+[FORMAL] 04-25	(伯父；叔叔)通稱	'panʼamaan'	正式拼寫特殊字:ʼ
+[FORMAL] 04-26	(伯母；嬸嬸；舅母)通稱	'panʼinaan'	正式拼寫特殊字:ʼ
+[FORMAL] 05-03	女孩	'binanauʼaz a azazak'	正式拼寫特殊字:ʼ
+[FORMAL] 05-07	女性	'binanauʼaz'	正式拼寫特殊字:ʼ
+[FORMAL] 05-23	外省人	'Tua-duu'	正式拼寫特殊字:-
+[FORMAL] 05-24	小姐	'binanauʼaz'	正式拼寫特殊字:ʼ
+[FORMAL] 06-32	傷口	'si-ang'	正式拼寫特殊字:-
+[FORMAL] 06-35	痰	'pashʼuzu'	正式拼寫特殊字:ʼ
+[FORMAL] 06-36	甲狀腺腫	'maraʼin a buqtur'	正式拼寫特殊字:ʼ
+[FORMAL] 08-19	鳳梨	'ung-lai'	正式拼寫特殊字:-
+[FORMAL] 08-33	胡蘿蔔	'maqulha wa sai-puu'	正式拼寫特殊字:-
+[FORMAL] 08-40	百香果	'si-sin-kuu'	正式拼寫特殊字:-
+[FORMAL] 09-05	電話	'ling-waa'	正式拼寫特殊字:-
+[FORMAL] 09-09	電腦	'tian-nau'	正式拼寫特殊字:-
+[FORMAL] 09-35	飯鍋	'pashʼafuan'	正式拼寫特殊字:ʼ
+[FORMAL] 09-51	湯匙	'kakaʼun'	正式拼寫特殊字:ʼ
+[FORMAL] 09-62	電視	'tian-sii'	正式拼寫特殊字:-
+[FORMAL] 10-11	洞穴	'maraʼin a mabraq'	正式拼寫特殊字:ʼ
+[FORMAL] 13-31	生日	'palhiʼazazakin a qali'	正式拼寫特殊字:ʼ
+[FORMAL] 14-11	左邊	'tanaʼailhi'	正式拼寫特殊字:ʼ
+[FORMAL] 14-15	(從某處)到某處	'munʼiutu'	正式拼寫特殊字:ʼ
+[FORMAL] 15-09	倉庫	'pashʼaniaminan'	正式拼寫特殊字:ʼ
+[FORMAL] 16-04	餌	'shiʼaʼail'	正式拼寫特殊字:ʼ
+[MEMO?] 16-05	槍	'put.huum'	疑似備註字元:.
+[FORMAL] 17-05	祖靈祭	'Lusʼan'	正式拼寫特殊字:ʼ
+[FORMAL] 20-01	公車	'ba-suu'	正式拼寫特殊字:-
+[FORMAL] 20-03	車站	'iaʼianan milhungqu sa barimbin'	正式拼寫特殊字:ʼ
+[FORMAL] 21-04	菜餚	'paniaʼan'	正式拼寫特殊字:ʼ
+[FORMAL] 21-14	白蘿蔔	'sai-puu'	正式拼寫特殊字:-
+[FORMAL] 21-21	麵	'tua-mii'	正式拼寫特殊字:-
+[FORMAL] 21-22	醬油	'tau-iu'	正式拼寫特殊字:-
+[FORMAL] 21-25	麵粉	'mi-huun'	正式拼寫特殊字:-
+[FORMAL] 24-12	結婚	'mara binanauʼaz / muʼayuzi'	正式拼寫特殊字:/ʼ
+[FORMAL] 25-16	逃跑	'manʼashkaz'	正式拼寫特殊字:ʼ
+[FORMAL] 25-42	出現	'muʼapaw'	正式拼寫特殊字:ʼ
+[FORMAL] 26-59	晃動	'maʼaʼuish'	正式拼寫特殊字:ʼ
+[FORMAL] 27-02	吸	'shmiʼuthʼuth'	正式拼寫特殊字:ʼ
+[FORMAL] 27-12	渴	'ishʼuqaw'	正式拼寫特殊字:ʼ
+[FORMAL] 28-05	忘記(祈使)	'inʼaura'	正式拼寫特殊字:ʼ
+[FORMAL] 30-23	烹煮(飯／肉／地瓜)	'pitʼia'	正式拼寫特殊字:ʼ
+[FORMAL] 30-28	將水排出(疏減)	'putʼuka'	正式拼寫特殊字:ʼ
+[FORMAL] 30-34	炒(如炒花生)	'kmalʼin'	正式拼寫特殊字:ʼ
+[FORMAL] 30-39	生火	'pinʼapuy'	正式拼寫特殊字:ʼ
+[FORMAL] 30-58	炒(飯菜)	'kmalʼin'	正式拼寫特殊字:ʼ
+[FORMAL] 30-59	點火	'pinʼapuy'	正式拼寫特殊字:ʼ
+[FORMAL] 31-03	受傷	'si-ang'	正式拼寫特殊字:-
+[FORMAL] 32-05	大的	'maraʼin'	正式拼寫特殊字:ʼ
+[FORMAL] 32-50	輕快	'maʼaluzʼuz'	正式拼寫特殊字:ʼ
+[FORMAL] 32-73	粗(物)	'maraʼin'	正式拼寫特殊字:ʼ
+[FORMAL] 34-32	旋轉	'minʼalash'	正式拼寫特殊字:ʼ
+[FORMAL] 36-28	都	'azʼaz'	正式拼寫特殊字:ʼ

@@ -1,0 +1,604 @@
+# 特殊字元 / 清理報表 — 鄒語 (dialectId=35, lang_code=tsu)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1088,
+  "skipped_placeholder": 6,
+  "levels": {
+    "1": 255,
+    "2": 237,
+    "3": 295,
+    "4": 301
+  },
+  "cleaned": 2,
+  "with_image": 598,
+  "with_audio": 1088,
+  "apostrophe_words": 314,
+  "slash_words": 49,
+  "caret_words": 0,
+  "special_chars": {
+    "ʉ": 317,
+    "ʼ": 217,
+    "’": 99,
+    "/": 49,
+    ".": 3,
+    "-": 2,
+    "?": 1,
+    "…": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 01-04	四	'sʉptʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-06	六	'nomʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-10	十	'maskʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-11	十一	'maskʉ veia ucni'	正式拼寫特殊字:ʉ
+[FORMAL] 01-12	十二	'maskʉ veia ueso'	正式拼寫特殊字:ʉ
+[FORMAL] 01-13	十三	'maskʉ veia uteu'	正式拼寫特殊字:ʉ
+[FORMAL] 01-14	十四	'maskʉ veia uspotʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-15	十五	'mʉskʉ veia uemo'	正式拼寫特殊字:ʉ
+[FORMAL] 01-16	十六	'maskʉ veia unmʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-17	十七	'maskʉ veia uptu'	正式拼寫特殊字:ʉ
+[FORMAL] 01-18	十八	'maskʉ veia uveo'	正式拼寫特殊字:ʉ
+[FORMAL] 01-19	十九	'maskʉ veia usio'	正式拼寫特殊字:ʉ
+[FORMAL] 01-24	二十四	'mpusku veia uspotʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-28	四十	'msʉptʉhʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-29	五十	'meemohʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-30	六十	'monmʉhʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-31	七十	'mpʉtvʉhʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-32	八十	'mvoevʉhʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-33	九十	'msiohʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 01-34	百	'se’-'	正式拼寫特殊字:-’
+[FORMAL] 01-35	一百	'seʼconia/ seʼconza'	正式拼寫特殊字:/ʼ
+[FORMAL] 01-36	兩百	'se’eicha'	正式拼寫特殊字:’
+[FORMAL] 01-38	一些	'akeʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 01-39	一次	'i’nʉskʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 01-41	種類	'mav’ov’o'	正式拼寫特殊字:’
+[FORMAL] 01-43	全部	'acʉhʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 02-02	我	'aʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 02-05	我們	'a’mia/a’mi'	正式拼寫特殊字:/’
+[FORMAL] 02-06	他們	'hin’i'	正式拼寫特殊字:’
+[FORMAL] 02-08	我們的	'nuumia/nuumza'	正式拼寫特殊字:/
+[FORMAL] 02-09	他們的	'nuuhinʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 02-11	我的	'nuuʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 02-12	他的	'nuusi/nuutaini'	正式拼寫特殊字:/
+[FORMAL] 02-13	我們(排除式)	'a’mi/a’mia'	正式拼寫特殊字:/’
+[FORMAL] 02-14	咱們(包含式)	'aʼto'	正式拼寫特殊字:ʼ
+[FORMAL] 02-18	這裡	'tanʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 02-19	那裡	'taʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 03-10	多少(歲；年)	'topioha/topzoha'	正式拼寫特殊字:/
+[FORMAL] 03-14	為什麼	'maincisʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 04-03	堂、表兄弟姐妹	'nanat’ot’ohaesa'	正式拼寫特殊字:’
+[FORMAL] 04-04	男性長輩(祖父；外公；岳父)	'akʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 04-05	女性長輩(祖母；外婆；岳母)	'baʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 04-06	親戚	'ʼoahngʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 04-07	配偶	'vcongʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 04-09	舅子	'ahngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 04-10	弟媳	'ahngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 04-11	嫂嫂	'ahngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 04-15	丈夫	'vcongʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 04-16	姻親	'ahngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 04-17	兄弟姊妹	'nanatʼotʼohaesa'	正式拼寫特殊字:ʼ
+[FORMAL] 04-18	兄長	'ohaeva no hahocngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 04-21	哥哥	'ohaeva no hahocngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 04-23	弟弟	'ohaesa no hahocngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 05-02	男孩	'oko no hahocngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 05-08	男性	'hahocngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 05-10	醫生	'leaotothomʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 05-11	老師	'lemaʼcohio'	正式拼寫特殊字:ʼ
+[FORMAL] 05-12	敵人	'hangʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 05-15	警察	'lesmoe’isi'	正式拼寫特殊字:’
+[FORMAL] 05-17	客家人	'kheʼeanga'	正式拼寫特殊字:ʼ
+[FORMAL] 05-20	青年	'yu’fafoinana'	正式拼寫特殊字:’
+[FORMAL] 05-25	學生	'letoatmopsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-02	大腿	'fainʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-07	指甲	'huʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 06-10	鼻子	'engʉcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-11	腳	'tʼango'	正式拼寫特殊字:ʼ
+[FORMAL] 06-13	頭髮	'fʼʉsʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 06-17	肚子	'bʉyo'	正式拼寫特殊字:ʉ
+[FORMAL] 06-18	乳房	'nunʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 06-19	小腿肚	'mabʉya'	正式拼寫特殊字:ʉ
+[FORMAL] 06-20	肩膀	'eiʼsi'	正式拼寫特殊字:ʼ
+[FORMAL] 06-21	下巴	'yasngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-22	背部	'fʼuhu'	正式拼寫特殊字:ʼ
+[FORMAL] 06-23	皮膚	'snʉfʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-24	胸腔/胸部	'tʼoenga'	正式拼寫特殊字:ʼ
+[FORMAL] 06-26	陰部	'kutʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 06-27	肺	'nʉtnʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-28	心臟	'tʼuhu'	正式拼寫特殊字:ʼ
+[FORMAL] 06-32	傷口	'hʼohʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 06-33	胃	'cfuʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 06-34	肝臟	'hʼonʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 06-35	痰	'cio’ʉ/czo’ʉ'	正式拼寫特殊字:/ʉ’
+[FORMAL] 06-36	甲狀腺腫	'f’iei'	正式拼寫特殊字:’
+[FORMAL] 06-37	油脂	'hʉsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-38	肋骨	'faengʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-43	腰部	'cpʉhʼo'	正式拼寫特殊字:ʉʼ
+[FORMAL] 06-45	門牙	'peecʉa'	正式拼寫特殊字:ʉ
+[FORMAL] 06-47	脖子	'sʉnʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-48	鼻涕	'ngʉcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-49	關節	'ʼvokʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 06-51	腳掌	'caphʉ no t’ango'	正式拼寫特殊字:ʉ’
+[FORMAL] 06-52	頸子	'tʉ’tona'	正式拼寫特殊字:ʉ’
+[FORMAL] 06-53	腋窩	'hʼihʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 06-54	腎臟	'pcʉyʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 06-56	毛	'mʼumʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 07-02	豬	'feʉʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 07-03	狗	'avʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 07-04	羊	'moatʉʼnʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 07-06	鳥	'zomʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 07-07	魚	'yoskʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 07-08	雞	'teoʼua'	正式拼寫特殊字:ʼ
+[FORMAL] 07-10	牛	'ʼuachumu'	正式拼寫特殊字:ʼ
+[FORMAL] 07-12	青蛙(統稱)	'fo’kunge'	正式拼寫特殊字:’
+[FORMAL] 07-20	飛鼠	'evoyʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 07-21	豹(統稱)	'eʼuho'	正式拼寫特殊字:ʼ
+[FORMAL] 07-22	水鹿	'ʼua'	正式拼寫特殊字:ʼ
+[FORMAL] 07-24	山羌	'taʼcʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 07-26	蜻蜓	'toivaʼvaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 07-32	蚊子	'moʼeocʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 07-33	頭蝨	'ʼcuu'	正式拼寫特殊字:ʼ
+[FORMAL] 07-34	蒼蠅	'yoezomʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 07-36	雄性(動物)	'hahocngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 07-37	乳豬	'oko no feʉ’ʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 07-42	蝦	'kosʼoza'	正式拼寫特殊字:ʼ
+[FORMAL] 07-44	馬	'’uma'	正式拼寫特殊字:’
+[FORMAL] 07-48	百步蛇	'baʼefkoi'	正式拼寫特殊字:ʼ
+[FORMAL] 07-51	蝸牛	'kokeutʼee'	正式拼寫特殊字:ʼ
+[FORMAL] 07-57	水鳥	'zomʉ no chumu'	正式拼寫特殊字:ʉ
+[FORMAL] 07-58	窩巢	'skuʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 07-61	眼鏡蛇	'kengfafʼoha'	正式拼寫特殊字:ʼ
+[FORMAL] 07-62	烏鴉	'tfuaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 08-01	香蕉	'cnʉmʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-05	甘蔗	'tʉfsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-06	葉子	'ehʉngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-07	甘藷	'fʼue'	正式拼寫特殊字:ʼ
+[FORMAL] 08-08	柑橘	'huvʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 08-09	花朵	'bʉvnʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-10	南瓜	'pusiahʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-13	檳榔	'fiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 08-19	鳳梨	'ʼungeai'	正式拼寫特殊字:ʼ
+[FORMAL] 08-22	桃子	'bʉnʉvhʉ no yamʼumʼa'	正式拼寫特殊字:ʉʼ
+[FORMAL] 08-23	李子	'bʉnʉvhʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-25	樹頭	'thʉcʉ no evi'	正式拼寫特殊字:ʉ
+[FORMAL] 08-26	木耳	'keetʉe'	正式拼寫特殊字:ʉ
+[FORMAL] 08-27	蕃茄	'tapeinʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 08-29	野百合	'tafiseongʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-31	葫蘆瓜	'tofʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-32	山蘇	'efohʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-35	長豆	'tahia no ceoʼʉ/tahza no ceo’ʉ'	正式拼寫特殊字:/ʉʼ’
+[FORMAL] 08-36	綠豆	'tahia no enghova/tahza no enghova'	正式拼寫特殊字:/
+[FORMAL] 08-39	豆芽	'cʉfeʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-41	山藥	'f’ueofou'	正式拼寫特殊字:’
+[FORMAL] 08-43	幼苗	'cʉfeʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-46	梅子	't’ocngoya'	正式拼寫特殊字:’
+[FORMAL] 08-48	山櫻花	'yufoyonʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 08-50	山胡椒	'maʼfʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 08-52	柚子	'huv’o maamtanʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 08-54	辣椒(通稱)	'cucʼu hicu'	正式拼寫特殊字:ʼ
+[FORMAL] 08-55	棉花	'kʉyʉpa'	正式拼寫特殊字:ʉ
+[FORMAL] 08-56	地瓜	'fʼue'	正式拼寫特殊字:ʼ
+[FORMAL] 09-01	書	'tposʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 09-06	筆	'’oyomianatmopsʉ/’oyomzanatmopsʉ'	正式拼寫特殊字:/ʉ’
+[FORMAL] 09-07	椅子	'caʼhʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 09-08	藥物	'sʼosʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 09-09	電腦	'ten-nao'	正式拼寫特殊字:-
+[FORMAL] 09-11	手錶	'huomiahie/huomzahie'	正式拼寫特殊字:/
+[FORMAL] 09-12	鐘錶	'huomiahie/huomzahie'	正式拼寫特殊字:/
+[FORMAL] 09-13	鉤子	'kosʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 09-14	細繩	'vhongʉ ci teesi'	正式拼寫特殊字:ʉ
+[FORMAL] 09-20	小刀	'fuʼfu'	正式拼寫特殊字:ʼ
+[FORMAL] 09-21	船隻	'ʼapangʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 09-25	釣竿	'yoecʉnghʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 09-28	蓋子	'fofeʉʼsʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 09-32	棉被	'paceofʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 09-38	杯子	'soetohvʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 09-42	斧頭	'peʉcngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 09-43	夾子	'skoʼeacpana'	正式拼寫特殊字:ʼ
+[FORMAL] 09-45	梗(統稱)	'pʼungu'	正式拼寫特殊字:ʼ
+[FORMAL] 09-46	鏡子	'huoʼongka'	正式拼寫特殊字:ʼ
+[FORMAL] 09-47	工具	'’otitha'	正式拼寫特殊字:’
+[FORMAL] 09-53	相片	'huʼongka'	正式拼寫特殊字:ʼ
+[FORMAL] 09-55	濾酒渣網	'tʉpʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 09-56	梳子	'koekopsʉpsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 09-58	扇子	'eopoepeana/eopoepzana'	正式拼寫特殊字:/
+[FORMAL] 09-63	水管	'poʼoyua'	正式拼寫特殊字:ʼ
+[FORMAL] 09-66	鐵釘	'sosvʉhta'	正式拼寫特殊字:ʉ
+[FORMAL] 09-67	卡在牙縫之物	'siʼoya'	正式拼寫特殊字:ʼ
+[FORMAL] 09-71	簍子	'skayʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 10-01	道路	'ceonʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 10-02	樹林	'’e’evi'	正式拼寫特殊字:’
+[FORMAL] 10-03	小溪	'vaʼhʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 10-05	沙子	'fuefu’u'	正式拼寫特殊字:’
+[FORMAL] 10-07	河流(大)	'cʼoeha'	正式拼寫特殊字:ʼ
+[FORMAL] 10-12	山腳下	'cʉhma'	正式拼寫特殊字:ʉ
+[FORMAL] 10-15	草原	'yʉn’ʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 10-16	溫泉	'’onsen'	正式拼寫特殊字:’
+[FORMAL] 11-01	下雨	'mʉchʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 11-03	月亮	'feohʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 11-04	天空	'engʉca'	正式拼寫特殊字:ʉ
+[FORMAL] 11-06	雨	'tnʉyʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 11-08	冬天	'hosoyʉma'	正式拼寫特殊字:ʉ
+[FORMAL] 11-09	夏天	'homuʼeina'	正式拼寫特殊字:ʼ
+[FORMAL] 11-10	雷	'ak’engʉca'	正式拼寫特殊字:ʉ’
+[FORMAL] 11-12	霧	'mvʉecʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 11-14	閃電	'moiʼhocʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 11-16	陰天	'mokvoʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 11-24	水患	'toolongʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 11-26	海邊	'aaskiti ne etʉpʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 11-27	秋天	'hotov’oha'	正式拼寫特殊字:’
+[FORMAL] 11-30	天黑(暗)	'voecʉvcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 12-02	窗戶	'pethʉʼta'	正式拼寫特殊字:ʉʼ
+[FORMAL] 12-04	學校	'oyonatoatmopsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 12-06	屋頂	'sofʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 12-09	廁所	'tote’ia/tote’za'	正式拼寫特殊字:/’
+[FORMAL] 12-10	柱子	'sʉesʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 12-11	石堆	'coe’a ci fatu'	正式拼寫特殊字:’
+[FORMAL] 12-12	雞寮	'emoo no teo’ua'	正式拼寫特殊字:’
+[FORMAL] 12-13	樓梯	'tai’to’tohungva'	正式拼寫特殊字:’
+[FORMAL] 12-15	牆壁	'tonghifa/tonghifza'	正式拼寫特殊字:/
+[FORMAL] 12-17	蓋屋頂	'smofʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 12-18	搭建圍籬	'mʉyʉʼpʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 13-01	明年	'ho nʉtʼʉcu'	正式拼寫特殊字:ʉʼ
+[FORMAL] 13-05	今天	'maitanʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 13-08	前天	'ne seihʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 13-09	清晨	'moseoʼohngʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 13-10	黑夜	'feʉngna'	正式拼寫特殊字:ʉ
+[FORMAL] 13-13	半夜	'taico feʉngna'	正式拼寫特殊字:ʉ
+[FORMAL] 13-15	大前天	'ne seseihʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 13-17	大後天	'ho seeseihʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 13-19	後天	'ho seihʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 13-20	上午	'tan’esi no cohiona/tan’esi no cohzona'	正式拼寫特殊字:/’
+[FORMAL] 13-21	未來	'ho noanaʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 13-22	夜	'feʉngna'	正式拼寫特殊字:ʉ
+[FORMAL] 13-23	在…年輕時	'ne mon’a foinana'	正式拼寫特殊字:’
+[FORMAL] 13-24	一下子	'akameosʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 13-25	下午	'ta’esi no cohiona/ta’esi no cohzona'	正式拼寫特殊字:/’
+[FORMAL] 13-30	現在	'mac’ʉinʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 14-01	裡面	'ʼayumona'	正式拼寫特殊字:ʼ
+[FORMAL] 14-02	在某處	'mia’unu'	正式拼寫特殊字:’
+[FORMAL] 14-13	某物之下	'f’uf’u'	正式拼寫特殊字:’
+[MEMO?] 14-15	(從某處)到某處	'uhto...'	疑似備註字元:.
+[MEMO?] 14-16	從某處	'iʼmine...'	疑似備註字元:.
+[FORMAL] 14-16	從某處	'iʼmine...'	正式拼寫特殊字:ʼ
+[FORMAL] 15-02	犁田	'ef’ongʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 15-04	種苗(動作)	'emʉm’ʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 15-06	犁	'tu’u no ef’ongʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 15-07	鐮刀	'poyave no kosʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 15-08	鋤頭(小)	'tu’u'	正式拼寫特殊字:’
+[FORMAL] 15-10	開墾	'moʼtoʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 15-13	催熟(果實)	'mʼotacʉmʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 15-14	稻草	'yasʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 16-02	矛	'mengiu/mengzu'	正式拼寫特殊字:/
+[FORMAL] 16-03	箭矢	'tʉʼsʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 16-06	獵刀	'poyave no sʉngcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 16-07	直形獵刀	'poyave no sʉngcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 16-09	石壓式陷阱	'cʉfʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 16-10	套頸式繩索陷阱	'feoe’isi'	正式拼寫特殊字:’
+[FORMAL] 16-11	籃子	'skayʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 16-12	捕鳥陷阱	'ʉsʼʉfea'	正式拼寫特殊字:ʉʼ
+[FORMAL] 17-05	祭祖	'pʼono nia maameoi'	正式拼寫特殊字:ʼ
+[FORMAL] 18-02	衣服	'yʉsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 18-03	編織	'mʉnʉvnʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 18-04	肚兜	'keoe’i/keo’i'	正式拼寫特殊字:/’
+[FORMAL] 18-05	男用耳環	'svʉyʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 18-06	女用耳環	'svʉyʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 18-13	染色	'pʼotatposai'	正式拼寫特殊字:ʼ
+[FORMAL] 18-17	布匹	'yʉteʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 18-19	傳統女上衣	'yʉsno miʼiei'	正式拼寫特殊字:ʉʼ
+[FORMAL] 18-20	傳統女裙	'tafʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 18-24	裙子	'tafʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 18-25	男用遮陰布	'psohia/psohza'	正式拼寫特殊字:/
+[FORMAL] 18-26	網袋	'keʉpʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 18-27	擋胸巾	'keoe’i/keo’i'	正式拼寫特殊字:/’
+[FORMAL] 18-29	上衣	'yʉsʉ no aoskopa'	正式拼寫特殊字:ʉ
+[FORMAL] 19-02	圓形竹簍	'skayʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 20-04	輪胎	'seʉzʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 20-05	船	'ʼapangʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 21-03	白米	'fʉesʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 21-08	蜜	'sʉhsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 21-10	油	'hʉsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 21-11	味道	'naʼausna'	正式拼寫特殊字:ʼ
+[FORMAL] 21-13	豆類	'tahia/tahza'	正式拼寫特殊字:/
+[FORMAL] 21-16	糯米	'pai hohʉʼeʉca'	正式拼寫特殊字:ʉʼ
+[FORMAL] 21-18	小米	'tonʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 21-22	醬油	'sooʼiu'	正式拼寫特殊字:ʼ
+[FORMAL] 21-23	米	'fʉesʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 21-24	米糠	'hʼisi'	正式拼寫特殊字:ʼ
+[FORMAL] 22-01	白色	'fʉecʉ’ia/fʉecʉ’za'	正式拼寫特殊字:/ʉ’
+[FORMAL] 22-02	黑色	'kuaʼonga'	正式拼寫特殊字:ʼ
+[FORMAL] 22-03	紅色	'fʉhngoya'	正式拼寫特殊字:ʉ
+[FORMAL] 22-05	黃色的	'hofʼoya'	正式拼寫特殊字:ʼ
+[FORMAL] 22-09	顏色	'pʉv’ʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 23-01	狗吠聲	'poʼeʉngnʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 24-01	聽說	'totalʉi'	正式拼寫特殊字:ʉ
+[FORMAL] 24-07	語言	'e’e'	正式拼寫特殊字:’
+[FORMAL] 24-08	力量	'tonʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 24-11	意義	'aʼaʼausna'	正式拼寫特殊字:ʼ
+[FORMAL] 24-12	結婚	'mevcongʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 24-13	各色各樣	'mavʼovʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 24-15	用途	'tiʼaʼausna'	正式拼寫特殊字:ʼ
+[FORMAL] 24-17	遲到	'pohaʼo esmi'	正式拼寫特殊字:ʼ
+[FORMAL] 25-01	關	'emʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 25-03	去那邊	'uhtaʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 25-10	走路	'coeconʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 25-13	跑 (祈使)	'peayofʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 25-14	抵達	'sʉcʼʉhʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 25-15	送(客人)	'peomani/peomamza'	正式拼寫特殊字:/
+[FORMAL] 25-16	逃跑	'toekameosʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 25-17	進入	'yʉmeʉmʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 25-23	讓開	'yose’u'	正式拼寫特殊字:’
+[FORMAL] 25-26	掉落	'supeohʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 25-27	(往)上坡	'ocʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 25-30	向人家要(東西)	'mʼene'	正式拼寫特殊字:ʼ
+[FORMAL] 25-32	走(向某個方向)	'emoʼusnu'	正式拼寫特殊字:ʼ
+[FORMAL] 25-36	趕上	'teovʼoha'	正式拼寫特殊字:ʼ
+[FORMAL] 25-37	滑倒	'smoteʉsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 25-40	穿(如穿衣服)	'sʉʼeʉsʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 25-44	站著	'yacʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 25-45	關(門；窗)	'amʉta'	正式拼寫特殊字:ʉ
+[FORMAL] 25-46	要來	'te cmʉʼho'	正式拼寫特殊字:ʉʼ
+[FORMAL] 25-47	來過	'mohcu cmʉʼho'	正式拼寫特殊字:ʉʼ
+[FORMAL] 25-48	去了	'micu uhneʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 25-50	看起來	'maisʼa mo'	正式拼寫特殊字:ʼ
+[FORMAL] 25-51	拜訪	'aopaʼto'	正式拼寫特殊字:ʼ
+[FORMAL] 26-01	跳躍	'moftiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 26-02	跳舞	'’otoli/’otole'	正式拼寫特殊字:/’
+[FORMAL] 26-04	彎腰	'mʼohkuyu'	正式拼寫特殊字:ʼ
+[FORMAL] 26-05	掛	'ngovʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 26-09	刺	'smuyuʼcu'	正式拼寫特殊字:ʼ
+[FORMAL] 26-12	踢	'mo’potʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 26-13	推	'poeʼohʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 26-14	砍伐	'tmoecʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-15	搖動	'taʉza'	正式拼寫特殊字:ʉ
+[FORMAL] 26-17	發抖	'smoʼʉeʼʉyʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 26-22	敲碎	'ez’oz’a'	正式拼寫特殊字:’
+[FORMAL] 26-25	滾落	'tmaieʼohʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 26-26	撞到	'smoftongʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-29	挖掘	'maʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 26-32	藏起來	'efʉnga'	正式拼寫特殊字:ʉ
+[FORMAL] 26-33	抓(如抓到動物)	'tʉtpʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-34	砍	'tmoecʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-38	綁住	'seo’eisi'	正式拼寫特殊字:’
+[FORMAL] 26-39	拉	'e’tʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 26-40	劈(木材)	'tʉpeʉcngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-41	扯斷	'entʉhi'	正式拼寫特殊字:ʉ
+[FORMAL] 26-43	握著	'pʉta'	正式拼寫特殊字:ʉ
+[FORMAL] 26-44	捆綁	'seo’eisi/seo’isi'	正式拼寫特殊字:/’
+[FORMAL] 26-45	按住	'hotpʉti'	正式拼寫特殊字:ʉ
+[FORMAL] 26-46	拔除(毛)	'tumʼumʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 26-50	插	'cʉ’cʉ’neni'	正式拼寫特殊字:ʉ’
+[FORMAL] 26-51	堆積	'coeʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 26-53	拔出(指植物)	'tumʼumʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 26-54	攪動	'tmauʼfu'	正式拼寫特殊字:ʼ
+[FORMAL] 26-57	握拳	'tʉʼpʉʼpʉyʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 26-59	晃動	'taʉza'	正式拼寫特殊字:ʉ
+[FORMAL] 26-60	剝(花生；豆類)	'mu’eici/mu’ici'	正式拼寫特殊字:/’
+[FORMAL] 26-62	振動	'tmaʉzʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-66	(搖)動	'taot’ova'	正式拼寫特殊字:’
+[FORMAL] 26-68	打碎	'lez’oz’a'	正式拼寫特殊字:’
+[FORMAL] 26-69	倒(下)	'oefʉʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 26-71	豎立	'p’eac’a'	正式拼寫特殊字:’
+[FORMAL] 26-72	踩踏	'pʼecihi'	正式拼寫特殊字:ʼ
+[FORMAL] 26-74	割斷	'smentʉhʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-75	掐住	'tiubziki/tiubzika'	正式拼寫特殊字:/
+[FORMAL] 26-76	壓制	'hotpʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-77	餵食	'pʼonʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 26-78	捕抓	'tʉtpʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-79	撬開	'esnunʼi/ esnunuʼzi'	正式拼寫特殊字:/ʼ
+[FORMAL] 26-80	(用腳)踏	'mʼecihi'	正式拼寫特殊字:ʼ
+[FORMAL] 26-82	剝皮	'yu’eici/yu’ici'	正式拼寫特殊字:/’
+[FORMAL] 26-84	亂翻	'aemo’a'	正式拼寫特殊字:’
+[FORMAL] 26-85	揉搓	'ta’mucmuca'	正式拼寫特殊字:’
+[FORMAL] 26-86	靠著	'yohcoyʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-87	鞭打	'ti’usna'	正式拼寫特殊字:’
+[FORMAL] 26-88	側臥	'tohʼiei'	正式拼寫特殊字:ʼ
+[FORMAL] 26-89	削	'etosʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-93	招手	'meukokosʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 26-95	搗	'meʼeni'	正式拼寫特殊字:ʼ
+[FORMAL] 26-97	擁擠	'tvaʼoyʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 26-98	低下頭	'mʼohkuyu'	正式拼寫特殊字:ʼ
+[FORMAL] 26-99	拉(上來)	'eʼteufiu/eʼteufzi'	正式拼寫特殊字:/ʼ
+[FORMAL] 26-100	(用手)挖掘	'yu’e'	正式拼寫特殊字:’
+[FORMAL] 26-101	剝樹皮	'yuʼhoʼhi'	正式拼寫特殊字:ʼ
+[FORMAL] 26-102	畫圖	'tmaʼongko'	正式拼寫特殊字:ʼ
+[FORMAL] 26-103	隨意	'mai no to’hʉngʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 26-104	蹲下	'suututʼinghi'	正式拼寫特殊字:ʼ
+[FORMAL] 26-105	起立	'yʉcʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 27-01	吃	'bonʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 27-06	吞嚥	'mʉyʉmcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 27-07	吞下	'eha’va'	正式拼寫特殊字:’
+[FORMAL] 27-08	燙到	'tmaceuʼsu'	正式拼寫特殊字:ʼ
+[FORMAL] 27-09	噎到	'ceʉni'	正式拼寫特殊字:ʉ
+[FORMAL] 27-10	飽食	'yoseʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 27-13	啃	'maʼkakoi'	正式拼寫特殊字:ʼ
+[FORMAL] 27-17	吃午餐	'ocohiona/ocohzona'	正式拼寫特殊字:/
+[FORMAL] 27-18	吃晚餐	'oyofonʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 28-01	遇到	'lʉa'	正式拼寫特殊字:ʉ
+[FORMAL] 28-05	忘記	'ta’payo’a'	正式拼寫特殊字:’
+[FORMAL] 28-06	閉(眼睛)	'mʼoyʉcʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 28-07	聞(如聞味道)	'elʉi'	正式拼寫特殊字:ʉ
+[FORMAL] 28-09	邀請	'eho’a'	正式拼寫特殊字:’
+[FORMAL] 28-10	感覺；聽懂	'taʼhongi'	正式拼寫特殊字:ʼ
+[FORMAL] 28-11	告訴	'eʉsvʉta'	正式拼寫特殊字:ʉ
+[FORMAL] 28-12	叫喚	'eohoʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 28-13	詢問	'tuocosʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 28-14	答應	'tmoemʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 28-15	相信	'tmaaʼuzo'	正式拼寫特殊字:ʼ
+[FORMAL] 28-16	謾罵	'koicʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 28-18	回應	'yut’ingi'	正式拼寫特殊字:’
+[FORMAL] 28-19	聽	'tmalʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 28-22	睜眼	'teolʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 28-24	教(如教人寫字)	'ma’cohio'	正式拼寫特殊字:’
+[FORMAL] 28-25	想	'ma’to’tohngʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 28-26	觀察	'yue’ie’ia/yu’i’ia'	正式拼寫特殊字:/’
+[FORMAL] 28-27	會	'meelʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 28-28	禱告	'’oinoli'	正式拼寫特殊字:’
+[FORMAL] 28-29	喜歡	'ʉmnʉa'	正式拼寫特殊字:ʉ
+[FORMAL] 29-01	喜愛	'ʉmnʉa'	正式拼寫特殊字:ʉ
+[FORMAL] 29-04	疼愛	'ngohia/ngohza'	正式拼寫特殊字:/
+[FORMAL] 29-05	高興；開心	'kokaekaebʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 29-06	生氣	'sʉʼno'	正式拼寫特殊字:ʉʼ
+[FORMAL] 29-07	愛護	'aʉlʉlʉa'	正式拼寫特殊字:ʉ
+[FORMAL] 29-08	嚇一跳	'yohiʉ/yohzʉ'	正式拼寫特殊字:/ʉ
+[FORMAL] 29-09	快樂	'kokaekaebʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 30-01	整理	'tasucia/tasucza'	正式拼寫特殊字:/
+[FORMAL] 30-03	工作	'yaahioai/yaahioa'	正式拼寫特殊字:/
+[FORMAL] 30-05	浪費	'auhi’hisi'	正式拼寫特殊字:’
+[FORMAL] 30-06	起床	'yʉcʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 30-07	再見(如互道再見)	'huvahiʼsio'	正式拼寫特殊字:ʼ
+[FORMAL] 30-09	睡覺	'oengʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 30-11	大便	'te’i'	正式拼寫特殊字:’
+[FORMAL] 30-12	休息	'amiocni/amzocni'	正式拼寫特殊字:/
+[FORMAL] 30-13	睏(想睡覺)	'soehʉpʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 30-14	打掃	'tusiʼngi'	正式拼寫特殊字:ʼ
+[FORMAL] 30-15	學習	'aʉsvʉsvʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 30-18	偷竊	'meoʼeoi'	正式拼寫特殊字:ʼ
+[FORMAL] 30-19	煮	'peiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 30-23	烹煮	'peiʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 30-29	收拾(祈使，如收拾東西)	'ateopʼʉcʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 30-30	碾(米)	'me’eni'	正式拼寫特殊字:’
+[FORMAL] 30-32	蓋被子	'maceofʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 30-36	蒸(如蒸飯)	'pofʉheonga'	正式拼寫特殊字:ʉ
+[FORMAL] 30-37	種植	'emʉmʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 30-41	燒焦	'hoʼongʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 30-42	照顧	'aʉt’ʉcʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 30-43	剪(頭髮)	'toʼsiʼsi'	正式拼寫特殊字:ʼ
+[FORMAL] 30-46	掩埋	'emufʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 30-47	替換(衣服)	'aʉe'	正式拼寫特殊字:ʉ
+[FORMAL] 30-48	鎖上	'pomʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 30-50	燒(如燒獵物的毛)	'sumʼumʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 30-51	剝葉	'toa ehʉngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 30-52	尿急	'na’no mici sifu'	正式拼寫特殊字:’
+[FORMAL] 30-53	量測	'svʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 30-54	燃燒	'yuniou/yunzou'	正式拼寫特殊字:/
+[FORMAL] 30-55	懸掛(祈使)	'ngovʼeni'	正式拼寫特殊字:ʼ
+[FORMAL] 30-57	飼養	'aʉtʼʉcʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 30-60	讀書	'tmopsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 30-62	(用鋤具)挖掘	'maʼe'	正式拼寫特殊字:ʼ
+[FORMAL] 30-63	(居)住	'ʼoyona'	正式拼寫特殊字:ʼ
+[FORMAL] 31-02	好痛	'naʼno congo'	正式拼寫特殊字:ʼ
+[FORMAL] 31-03	受傷	'alolongʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 31-04	遺失	'payoʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 31-07	懷孕(動物類)	'nganghoʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 31-09	放屁	'miebocʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 31-10	跛腳	'yoci’ci’o'	正式拼寫特殊字:’
+[FORMAL] 31-11	撫養	'aʉt’ʉcʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 31-13	疤	'’epi'	正式拼寫特殊字:’
+[FORMAL] 31-14	癢	'soeʼosʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 31-15	打瞌睡	'mʼoutʼutʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 31-17	嫁給非本族群的族人	'uhno h’unano cou'	正式拼寫特殊字:’
+[FORMAL] 31-18	痠痛	'afʼʉfʼʉehʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 31-19	生病	'tmaʼcongo'	正式拼寫特殊字:ʼ
+[FORMAL] 31-20	化膿	'fʉʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 32-01	瘦(身形)	'kʉehoi'	正式拼寫特殊字:ʉ
+[FORMAL] 32-02	重(重量)	'ecvʉhʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-03	輕(重量)	'sopʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 32-06	矮(身高)	'cʉecʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-08	冷	'soyʉmʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-10	多	'manʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 32-12	冰冷	'coheʉceʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-13	悶熱	'mʉʉbʉvni'	正式拼寫特殊字:ʉ
+[FORMAL] 32-15	酒醉	'hafsʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-17	濕的	'noeʼʉcʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 32-19	厚的	'ocmʉyʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-22	髒	'caʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 32-23	懶惰	'lueʼamamia/lueʼamamza'	正式拼寫特殊字:/ʼ
+[FORMAL] 32-27	胖(身形)	'noyʉnʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-32	舊的	'noanaʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 32-33	近	'cumʼu'	正式拼寫特殊字:ʼ
+[FORMAL] 32-36	辣	'sʉmʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-38	腫	'yuofeoʼʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 32-39	彎曲	'kengiu/kengzu'	正式拼寫特殊字:/
+[FORMAL] 32-40	久的	'nona’o'	正式拼寫特殊字:’
+[FORMAL] 32-41	瞎	'bʉkngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-42	毒	'mahi’o/mahiz’o'	正式拼寫特殊字:/’
+[FORMAL] 32-44	滑	'mafeʉesʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-45	苦	'mayʉmʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-47	未成熟的(果實)	'oʼvoyʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 32-49	(人)眾多	'botngonʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-50	輕快	'yoefʉhta'	正式拼寫特殊字:ʉ
+[FORMAL] 32-51	酸	'masʉecʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-54	稀爛的	'anio’ʉ/anzoʼʉ'	正式拼寫特殊字:/ʉʼ’
+[FORMAL] 32-55	壯碩	'yʉʉlʉlʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-57	鈍的	'aʼngʉʼngʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 32-58	甘甜	'cohʉmʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-59	澀澀的(味覺)	'macʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 32-61	(傾)斜	'miʼiei'	正式拼寫特殊字:ʼ
+[FORMAL] 32-62	軟	'noeʼinʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 32-63	硬	'kʉhtosʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-64	餿臭(指食物)	'nakocnʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-65	直	'sʉngcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-66	滿了	'ngangcʉngcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-67	好好的(小心;謹慎)	'bumemealʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-69	正確	'emio/emzo'	正式拼寫特殊字:/
+[FORMAL] 32-70	濕透	'aucunu noeʼʉcʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 32-71	慢慢	'aupopoha’o'	正式拼寫特殊字:’
+[FORMAL] 32-73	粗(物)	'kahkʉmnʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-74	長	'tacvohʼi'	正式拼寫特殊字:ʼ
+[FORMAL] 32-75	細	'vhongʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-76	短	'nanʉhtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-77	炎熱	'muʼei'	正式拼寫特殊字:ʼ
+[FORMAL] 32-78	成熟(果實)	'tacʉmʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-79	滿滿	'ngangcʉngcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 32-80	英俊	'mʉʉlʉlʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 33-01	應該	'’antee'	正式拼寫特殊字:’
+[FORMAL] 33-03	能夠	'meelʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 33-04	可能	'asonʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 34-01	摺疊	'tmaipupsuʼhu'	正式拼寫特殊字:ʼ
+[FORMAL] 34-05	幫忙	'toʼusnu'	正式拼寫特殊字:ʼ
+[FORMAL] 34-06	(有東西)附著	'cʉnghʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 34-07	混以某物	'atvohʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 34-08	被(搖)動的	'taotʼova'	正式拼寫特殊字:ʼ
+[FORMAL] 34-09	刷除;塗掉	'saapayoʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 34-10	依賴	'noeʼocʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 34-11	倒入	'ho’usni'	正式拼寫特殊字:’
+[FORMAL] 34-12	阻擋	'tomʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 34-14	聲響	'mʉmʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 34-15	超過	'asaʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 34-16	崩落	'eʉskʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 34-20	禁止	'tomʉtʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 34-22	剩下	'angʼosʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 34-23	設置	'm’eac’ʉ'	正式拼寫特殊字:ʉ’
+[FORMAL] 34-25	完成	'aepʉngʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 34-26	找碴	'’afeo’fu’u'	正式拼寫特殊字:’
+[FORMAL] 34-28	找到	'elʉa'	正式拼寫特殊字:ʉ
+[FORMAL] 34-29	數(計算)	'tasvʉta'	正式拼寫特殊字:ʉ
+[FORMAL] 34-30	(獵物掉入陷阱)陷中	'mumio/mumzo'	正式拼寫特殊字:/
+[FORMAL] 34-31	撞擊某物	'smoftongʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 34-35	謝謝	'ʼaveoveoyʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 34-37	沒有	'ukʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 34-38	沒關係	'teav’a tee'	正式拼寫特殊字:’
+[FORMAL] 35-01	不要	'ʼote'	正式拼寫特殊字:ʼ
+[FORMAL] 35-02	不可以	'tev’a'	正式拼寫特殊字:’
+[FORMAL] 35-03	不是(回答用)	'oʼasaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 35-04	沒有(表擁有的否定詞)	'ukʼasaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 35-05	不要(祈使句用)	'ʼotesaʼa'	正式拼寫特殊字:ʼ
+[FORMAL] 35-06	不知道	'o’te cohivi'	正式拼寫特殊字:’
+[FORMAL] 36-01	真的	'aʼʉmtʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 36-02	正在	'seolʉa'	正式拼寫特殊字:ʉ
+[FORMAL] 36-03	隨意	'maino ʼtohʉngʉ'	正式拼寫特殊字:ʉʼ
+[FORMAL] 36-04	好(指沒問題)	'ʼuatee'	正式拼寫特殊字:ʼ
+[FORMAL] 36-05	因為	'moʼso'	正式拼寫特殊字:ʼ
+[FORMAL] 36-09	再	'iʼvaho'	正式拼寫特殊字:ʼ
+[FORMAL] 36-10	只有	'mocʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 36-13	暫時(離開一下)	'akameosʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 36-14	從不	'oʼamosola'	正式拼寫特殊字:ʼ
+[FORMAL] 36-15	不該	'o’antes’a'	正式拼寫特殊字:’
+[FORMAL] 36-16	所以	'ko’ko'	正式拼寫特殊字:’
+[FORMAL] 36-17	經常	'asngʉcʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 36-19	偶爾	'aasvʉtʉ'	正式拼寫特殊字:ʉ
+[MEMO?] 36-20	是嗎(語助詞)	'zou?/mio?'	疑似備註字元:?
+[FORMAL] 36-20	是嗎(語助詞)	'zou?/mio?'	正式拼寫特殊字:/
+[MEMO?] 36-21	還(尚未)	'...n’a'	疑似備註字元:.
+[FORMAL] 36-21	還(尚未)	'...n’a'	正式拼寫特殊字:’
+[FORMAL] 36-23	很	'naʼno'	正式拼寫特殊字:ʼ
+[FORMAL] 36-24	如此	'maicacʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 36-28	都	'acʉhʉ'	正式拼寫特殊字:ʉ
+[FORMAL] 36-29	僅僅	'mocʼo'	正式拼寫特殊字:ʼ
+[FORMAL] 36-30	雖然	'eʼvono'	正式拼寫特殊字:ʼ
+[FORMAL] 36-32	主格標記(各族用語)	'’e/si/ta/’o/na/co'	正式拼寫特殊字:/’
+[FORMAL] 36-33	斜格標記(各族用語)	'ta/to/no/nca/ne'	正式拼寫特殊字:/
+[FORMAL] 36-34	屬格標記(各族用語)	'ta/to/no/nca'	正式拼寫特殊字:/
+[MEMO?] 36-35	在(這裡)	'yon…'	疑似備註字元:…

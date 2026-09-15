@@ -1,0 +1,75 @@
+# 特殊字元 / 清理報表 — 雅美語 (dialectId=42, lang_code=tao)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1022,
+  "skipped_placeholder": 72,
+  "levels": {
+    "1": 254,
+    "2": 226,
+    "3": 261,
+    "4": 281
+  },
+  "cleaned": 3,
+  "with_image": 554,
+  "with_audio": 1022,
+  "apostrophe_words": 0,
+  "slash_words": 36,
+  "caret_words": 0,
+  "special_chars": {
+    "/": 36,
+    ")": 2,
+    "(": 2,
+    "…": 2,
+    ".": 2,
+    "幣": 1,
+    "錢": 1,
+    "用": 1,
+    "-": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[MEMO?] 01-35	一百	'asa ranaw(錢幣用)'	疑似備註字元:()幣用錢
+[MEMO?] 02-20	(像)這樣	'(akmey)ori'	疑似備註字元:()
+[FORMAL] 06-54	腎臟	'mao / vato'	正式拼寫特殊字:/
+[FORMAL] 07-03	狗	'ino / agsa'	正式拼寫特殊字:/
+[FORMAL] 07-05	貓	'koza / cito'	正式拼寫特殊字:/
+[FORMAL] 07-25	蟑螂	'vasaw / ipes'	正式拼寫特殊字:/
+[FORMAL] 07-54	老鷹	'manai / kangkang'	正式拼寫特殊字:/
+[FORMAL] 07-63	幼犬	'anak no ino / agsa'	正式拼寫特殊字:/
+[FORMAL] 09-50	瓶子	'valanga/tagow'	正式拼寫特殊字:/
+[FORMAL] 09-65	鐵鎚	'popokpok / papatok'	正式拼寫特殊字:/
+[FORMAL] 11-16	陰天	'meyyavong / makehep'	正式拼寫特殊字:/
+[FORMAL] 11-25	飛魚季	'rayyon / rayon'	正式拼寫特殊字:/
+[FORMAL] 11-28	彩虹	'rangirang / nanirang'	正式拼寫特殊字:/
+[FORMAL] 12-05	石頭	'vato / veysen'	正式拼寫特殊字:/
+[FORMAL] 13-10	黑暗	'meysari / maseyrem'	正式拼寫特殊字:/
+[MEMO?] 14-13	某物之下	'teyrahem no …'	疑似備註字元:…
+[FORMAL] 21-01	米飯	'mogis / mojis'	正式拼寫特殊字:/
+[FORMAL] 21-03	白米	'mogis / mojis'	正式拼寫特殊字:/
+[FORMAL] 22-02	黑色	'mavaheng / masirem'	正式拼寫特殊字:/
+[FORMAL] 25-05	(叫人)過來	'ai / kaiyanong'	正式拼寫特殊字:/
+[FORMAL] 25-18	翻倒	'maglo/mazba'	正式拼寫特殊字:/
+[FORMAL] 25-20	趕走	'tovoin/angay rana'	正式拼寫特殊字:/
+[FORMAL] 25-31	倒(水)	'iglo/ibokbok'	正式拼寫特殊字:/
+[FORMAL] 26-35	揹負(物品)	'mirara / apidan'	正式拼寫特殊字:/
+[FORMAL] 26-71	豎立	'patneken / isogat'	正式拼寫特殊字:/
+[FORMAL] 26-83	擦(如口紅；油漆)	'linasan/meycikibizi/raphesen'	正式拼寫特殊字:/
+[FORMAL] 26-90	捻線	'manoved / apowasen'	正式拼寫特殊字:/
+[FORMAL] 27-10	飽食	'mavaon/mabsoy'	正式拼寫特殊字:/
+[FORMAL] 28-21	交代(事情)	'ipanci / nitaid'	正式拼寫特殊字:/
+[FORMAL] 30-26	曬乾(如將衣服曬乾)	'teyrain / makang'	正式拼寫特殊字:/
+[FORMAL] 30-38	釣魚	'mangna/mamasil'	正式拼寫特殊字:/
+[FORMAL] 30-59	點火	'paciscisan / mapowtong'	正式拼寫特殊字:/
+[FORMAL] 31-01	死亡	'mawakwak/mazakat'	正式拼寫特殊字:/
+[FORMAL] 31-16	打噴嚏	'mivavanan / mibabacing'	正式拼寫特殊字:/
+[FORMAL] 32-25	很快	'maksez / mageza'	正式拼寫特殊字:/
+[FORMAL] 32-48	偷偷地	'mangarakaram / jimapacita'	正式拼寫特殊字:/
+[FORMAL] 32-50	動作輕快、俐落	'masaksak / mazigton'	正式拼寫特殊字:/
+[FORMAL] 32-59	壞掉的臘肉	'man-gaw'	正式拼寫特殊字:-
+[MEMO?] 32-67	小心翼翼的.....	'ya makapya a.....'	疑似備註字元:.
+[MEMO?] 33-05	慶祝	'abneken…'	疑似備註字元:…
+[FORMAL] 35-03	不是(回答用)	'beken / ta ori'	正式拼寫特殊字:/
+[MEMO?] 36-14	從不	'ya abo pa...'	疑似備註字元:.
+[FORMAL] 36-37	講不聽、聽不懂	'ji yonongi / ji amaot'	正式拼寫特殊字:/

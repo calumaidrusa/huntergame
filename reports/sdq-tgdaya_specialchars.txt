@@ -1,0 +1,34 @@
+# 特殊字元 / 清理報表 — 都達語 (dialectId=15, lang_code=sdq-tgdaya)
+# 統計
+{
+  "total_xml": 1094,
+  "valid": 1093,
+  "skipped_placeholder": 1,
+  "levels": {
+    "1": 255,
+    "2": 237,
+    "3": 299,
+    "4": 302
+  },
+  "cleaned": 1,
+  "with_image": 602,
+  "with_audio": 1093,
+  "apostrophe_words": 0,
+  "slash_words": 5,
+  "caret_words": 0,
+  "special_chars": {
+    "/": 5,
+    ")": 1,
+    "(": 1,
+    "?": 1
+  }
+}
+
+# 逐筆（CLEAN=備註滲入已清理 / SPECIAL=保留的正式拼寫特殊字 / EMPTY=清理後為空）
+[FORMAL] 02-20	(像)這樣	'so kiya/so ni'	正式拼寫特殊字:/
+[FORMAL] 03-10	多少(歲；物)	'piya/kngkawas'	正式拼寫特殊字:/
+[FORMAL] 04-07	配偶(先生/太太)	'snaw/qridin'	正式拼寫特殊字:/
+[FORMAL] 05-13	長官	'qbsuran/bukung'	正式拼寫特殊字:/
+[FORMAL] 05-19	閩南人	'Plmukan/Tmukan'	正式拼寫特殊字:/
+[MEMO?] 26-06	玩(球)	'ppulah(boru)'	疑似備註字元:()
+[MEMO?] 36-20	是嗎(語助詞)	'kiya hu?'	疑似備註字元:?

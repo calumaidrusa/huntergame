@@ -1,0 +1,1120 @@
+{
+  "ami-nanshi": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 301
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 99,
+    "slash_words": 16,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 88,
+      "/": 16,
+      "’": 11,
+      ".": 2,
+      ")": 1,
+      "(": 1,
+      ":": 1,
+      "…": 1,
+      "-": 1
+    }
+  },
+  "ami-siwkolan": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 260,
+    "slash_words": 179,
+    "caret_words": 215,
+    "special_chars": {
+      "ʼ": 243,
+      "^": 215,
+      "/": 179,
+      "-": 19,
+      "’": 17,
+      ":": 7,
+      ",": 3,
+      "…": 2,
+      ".": 2,
+      ")": 1,
+      "(": 1
+    }
+  },
+  "ami-coastal": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 262,
+    "slash_words": 161,
+    "caret_words": 3,
+    "special_chars": {
+      "ʼ": 193,
+      "/": 161,
+      "’": 69,
+      "^": 3,
+      ":": 3,
+      ")": 2,
+      "數": 2,
+      "(": 2,
+      "物": 1,
+      "人": 1,
+      "…": 1
+    }
+  },
+  "ami-malan": {
+    "total_xml": 1094,
+    "valid": 1091,
+    "skipped_placeholder": 3,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 297,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1091,
+    "apostrophe_words": 210,
+    "slash_words": 89,
+    "caret_words": 14,
+    "special_chars": {
+      "ʼ": 149,
+      "/": 89,
+      "’": 61,
+      "^": 14,
+      ":": 3,
+      ",": 3,
+      "-": 2,
+      ">": 1,
+      "<": 1,
+      "'": 1,
+      "…": 1,
+      ")": 1,
+      "(": 1
+    }
+  },
+  "ami-hengchun": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 298,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 278,
+    "slash_words": 132,
+    "caret_words": 13,
+    "special_chars": {
+      "ʼ": 261,
+      "/": 132,
+      "’": 16,
+      "^": 13,
+      ")": 4,
+      "(": 4,
+      ";": 3,
+      "…": 3,
+      ",": 3,
+      "孩": 1,
+      "小": 1,
+      "帶": 1,
+      "\\": 1,
+      "揹": 1,
+      ":": 1,
+      "'": 1,
+      "紅": 1,
+      "口": 1,
+      ".": 1
+    }
+  },
+  "tay-squliq": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 55,
+    "slash_words": 86,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 86,
+      "ʼ": 32,
+      "’": 23,
+      "_": 3,
+      "?": 1
+    }
+  },
+  "tay-culi": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 168,
+    "slash_words": 480,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 480,
+      "’": 118,
+      "ʼ": 51,
+      "_": 5,
+      ")": 1,
+      "(": 1
+    }
+  },
+  "tay-mnawyan": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 2,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 358,
+    "slash_words": 321,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 321,
+      "ʼ": 250,
+      "’": 113,
+      ".": 9,
+      "…": 4,
+      ")": 3,
+      "(": 3,
+      ">": 1,
+      "<": 1
+    }
+  },
+  "tay-mabtalah": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 410,
+    "slash_words": 76,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 366,
+      "ṟ": 217,
+      "/": 76,
+      "’": 45,
+      "_": 8,
+      "'": 3,
+      ".": 2,
+      ")": 1,
+      "(": 1
+    }
+  },
+  "tay-skikun": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 3,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 33,
+    "slash_words": 128,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 128,
+      "ʼ": 26,
+      "’": 9,
+      ")": 2,
+      "(": 2,
+      ".": 2,
+      "_": 1
+    }
+  },
+  "tay-yilan-culi": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 2,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 241,
+    "slash_words": 777,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 777,
+      "’": 216,
+      "ʼ": 25
+    }
+  },
+  "xsy": {
+    "total_xml": 1094,
+    "valid": 1089,
+    "skipped_placeholder": 5,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 296,
+      "4": 300
+    },
+    "cleaned": 2,
+    "with_image": 598,
+    "with_audio": 1089,
+    "apostrophe_words": 519,
+    "slash_words": 71,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 507,
+      ":": 261,
+      "/": 71,
+      "’": 12,
+      "-": 2,
+      "ː": 1
+    }
+  },
+  "ssf": {
+    "total_xml": 1094,
+    "valid": 1061,
+    "skipped_placeholder": 33,
+    "levels": {
+      "1": 252,
+      "2": 237,
+      "3": 282,
+      "4": 290
+    },
+    "cleaned": 0,
+    "with_image": 583,
+    "with_audio": 1061,
+    "apostrophe_words": 41,
+    "slash_words": 2,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 41,
+      "-": 14,
+      "/": 2,
+      ".": 1
+    }
+  },
+  "sdq-tgdaya": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 0,
+    "slash_words": 5,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 5,
+      ")": 1,
+      "(": 1,
+      "?": 1
+    }
+  },
+  "sdq-tkdaya": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 2,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 0,
+    "slash_words": 7,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 7,
+      ")": 1,
+      "(": 1,
+      ".": 1,
+      "…": 1
+    }
+  },
+  "sdq-truku": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 0,
+    "slash_words": 7,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 7,
+      ")": 6,
+      "(": 6,
+      "…": 1
+    }
+  },
+  "bnn-takituduh": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 320,
+    "slash_words": 10,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 320,
+      "/": 10,
+      "-": 1,
+      ";": 1
+    }
+  },
+  "bnn-takbanuaz": {
+    "total_xml": 1094,
+    "valid": 1091,
+    "skipped_placeholder": 3,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 297,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1091,
+    "apostrophe_words": 383,
+    "slash_words": 275,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 363,
+      "/": 275,
+      "'": 18,
+      "’": 14,
+      "-": 3,
+      "褲": 1,
+      "女": 1,
+      "男": 1,
+      ")": 1,
+      "(": 1,
+      "?": 1
+    }
+  },
+  "bnn-takivatan": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 195,
+    "slash_words": 164,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 195,
+      "/": 164,
+      ")": 1,
+      "(": 1
+    }
+  },
+  "bnn-takitakbanuad": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 19,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 164,
+    "slash_words": 292,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 292,
+      "ʼ": 164,
+      "-": 2,
+      ".": 2,
+      "，": 1,
+      "；": 1,
+      "數": 1,
+      "：": 1,
+      "備": 1,
+      "複": 1,
+      "前": 1,
+      "單": 1,
+      "為": 1,
+      "後": 1,
+      "註": 1,
+      ")": 1,
+      "(": 1,
+      "?": 1
+    }
+  },
+  "bnn-isbukun": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 118,
+    "slash_words": 53,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 116,
+      "/": 53,
+      ">": 2,
+      "<": 2,
+      "’": 2,
+      "-": 1
+    }
+  },
+  "pwn-east": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 0,
+    "slash_words": 55,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 55,
+      "…": 5,
+      ")": 1,
+      "(": 1,
+      "-": 1
+    }
+  },
+  "pwn-north": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 298,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 250,
+    "slash_words": 53,
+    "caret_words": 0,
+    "special_chars": {
+      "’": 249,
+      "/": 53,
+      "…": 6,
+      "'": 1,
+      "-": 1
+    }
+  },
+  "pwn-central": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 220,
+    "slash_words": 250,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 250,
+      "’": 220,
+      "…": 4,
+      "-": 1
+    }
+  },
+  "pwn-south": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 2,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 44,
+    "slash_words": 233,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 233,
+      "’": 44,
+      "…": 6,
+      "-": 1
+    }
+  },
+  "dru-budai": {
+    "total_xml": 1094,
+    "valid": 1091,
+    "skipped_placeholder": 3,
+    "levels": {
+      "1": 256,
+      "2": 236,
+      "3": 297,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 602,
+    "with_audio": 1091,
+    "apostrophe_words": 166,
+    "slash_words": 10,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 155,
+      "’": 12,
+      "/": 10,
+      "；": 9,
+      ",": 1,
+      ".": 1
+    }
+  },
+  "dru-wutai": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 0,
+    "slash_words": 17,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 17,
+      "…": 7,
+      ".": 3,
+      "物": 1,
+      "動": 1,
+      "~": 1,
+      "?": 1
+    }
+  },
+  "dru-tanan": {
+    "total_xml": 1094,
+    "valid": 1092,
+    "skipped_placeholder": 2,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 298,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1092,
+    "apostrophe_words": 0,
+    "slash_words": 7,
+    "caret_words": 0,
+    "special_chars": {
+      "-": 8,
+      "/": 7,
+      ")": 3,
+      "(": 3,
+      "…": 1
+    }
+  },
+  "dru-teldreka": {
+    "total_xml": 1094,
+    "valid": 1091,
+    "skipped_placeholder": 3,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 296,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 599,
+    "with_audio": 1091,
+    "apostrophe_words": 295,
+    "slash_words": 41,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 292,
+      "/": 41,
+      "’": 3,
+      "…": 3,
+      ")": 1,
+      "(": 1,
+      ".": 1,
+      "~": 1
+    }
+  },
+  "dru-maga": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 298,
+      "4": 302
+    },
+    "cleaned": 3,
+    "with_image": 602,
+    "with_audio": 1093,
+    "apostrophe_words": 0,
+    "slash_words": 36,
+    "caret_words": 0,
+    "special_chars": {
+      "ɨ": 560,
+      "é": 171,
+      "/": 36,
+      ";": 1,
+      ")": 1,
+      "(": 1
+    }
+  },
+  "dru-mantauran": {
+    "total_xml": 1094,
+    "valid": 1092,
+    "skipped_placeholder": 2,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 297,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 602,
+    "with_audio": 1092,
+    "apostrophe_words": 429,
+    "slash_words": 4,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 401,
+      "’": 24,
+      ")": 12,
+      "(": 12,
+      "'": 6,
+      "/": 4,
+      "-": 4,
+      ";": 2,
+      "?": 1
+    }
+  },
+  "trv": {
+    "total_xml": 1094,
+    "valid": 1092,
+    "skipped_placeholder": 2,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 297,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 600,
+    "with_audio": 1092,
+    "apostrophe_words": 0,
+    "slash_words": 8,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 8,
+      ")": 6,
+      "(": 6,
+      "-": 2,
+      "!": 1,
+      "?": 1
+    }
+  },
+  "ckv": {
+    "total_xml": 1094,
+    "valid": 1070,
+    "skipped_placeholder": 24,
+    "levels": {
+      "1": 256,
+      "2": 236,
+      "3": 282,
+      "4": 296
+    },
+    "cleaned": 0,
+    "with_image": 594,
+    "with_audio": 1070,
+    "apostrophe_words": 11,
+    "slash_words": 28,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 28,
+      "ʼ": 11,
+      ".": 5,
+      "-": 4,
+      "…": 1
+    }
+  },
+  "tsu": {
+    "total_xml": 1094,
+    "valid": 1088,
+    "skipped_placeholder": 6,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 295,
+      "4": 301
+    },
+    "cleaned": 2,
+    "with_image": 598,
+    "with_audio": 1088,
+    "apostrophe_words": 314,
+    "slash_words": 49,
+    "caret_words": 0,
+    "special_chars": {
+      "ʉ": 317,
+      "ʼ": 217,
+      "’": 99,
+      "/": 49,
+      ".": 3,
+      "-": 2,
+      "?": 1,
+      "…": 1
+    }
+  },
+  "xnb": {
+    "total_xml": 1094,
+    "valid": 1086,
+    "skipped_placeholder": 8,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 294,
+      "4": 299
+    },
+    "cleaned": 1,
+    "with_image": 601,
+    "with_audio": 1086,
+    "apostrophe_words": 283,
+    "slash_words": 0,
+    "caret_words": 0,
+    "special_chars": {
+      "ʉ": 334,
+      "ʼ": 272,
+      "’": 11
+    }
+  },
+  "sxr": {
+    "total_xml": 1094,
+    "valid": 1092,
+    "skipped_placeholder": 2,
+    "levels": {
+      "1": 255,
+      "2": 237,
+      "3": 298,
+      "4": 302
+    },
+    "cleaned": 0,
+    "with_image": 601,
+    "with_audio": 1092,
+    "apostrophe_words": 161,
+    "slash_words": 2,
+    "caret_words": 0,
+    "special_chars": {
+      "ʉ": 407,
+      "ʼ": 156,
+      "’": 5,
+      "人": 2,
+      "+": 2,
+      "名": 2,
+      "/": 2,
+      "-": 2,
+      "…": 1,
+      ")": 1,
+      "(": 1
+    }
+  },
+  "pyu-nanwang": {
+    "total_xml": 1094,
+    "valid": 1090,
+    "skipped_placeholder": 4,
+    "levels": {
+      "1": 255,
+      "2": 236,
+      "3": 299,
+      "4": 300
+    },
+    "cleaned": 0,
+    "with_image": 601,
+    "with_audio": 1090,
+    "apostrophe_words": 2,
+    "slash_words": 17,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 17,
+      ".": 7,
+      "…": 4,
+      ")": 3,
+      "(": 3,
+      "ʼ": 2,
+      ";": 1,
+      "；": 1
+    }
+  },
+  "pyu-katratripul": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 298,
+      "4": 302
+    },
+    "cleaned": 11,
+    "with_image": 601,
+    "with_audio": 1093,
+    "apostrophe_words": 277,
+    "slash_words": 22,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 236,
+      "’": 41,
+      ";": 23,
+      "/": 22,
+      ")": 6,
+      "(": 6,
+      "∕": 5,
+      ".": 4,
+      "…": 3,
+      "'": 3,
+      "待": 2,
+      "確": 2,
+      "認": 2,
+      "ē": 1,
+      ",": 1
+    }
+  },
+  "pyu-west": {
+    "total_xml": 1094,
+    "valid": 1093,
+    "skipped_placeholder": 1,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 301
+    },
+    "cleaned": 0,
+    "with_image": 601,
+    "with_audio": 1093,
+    "apostrophe_words": 294,
+    "slash_words": 159,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 282,
+      "/": 159,
+      "’": 12,
+      "-": 6,
+      "ē": 3,
+      ";": 2,
+      ")": 1,
+      "(": 1,
+      ".": 1,
+      "'": 1
+    }
+  },
+  "pyu-jianhe": {
+    "total_xml": 1094,
+    "valid": 1094,
+    "skipped_placeholder": 0,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 299,
+      "4": 302
+    },
+    "cleaned": 4,
+    "with_image": 602,
+    "with_audio": 1094,
+    "apostrophe_words": 272,
+    "slash_words": 49,
+    "caret_words": 0,
+    "special_chars": {
+      "ʼ": 203,
+      "’": 70,
+      "/": 49,
+      ".": 8,
+      "…": 6,
+      "ē": 3,
+      "-": 2,
+      "?": 2,
+      "'": 1
+    }
+  },
+  "tao": {
+    "total_xml": 1094,
+    "valid": 1022,
+    "skipped_placeholder": 72,
+    "levels": {
+      "1": 254,
+      "2": 226,
+      "3": 261,
+      "4": 281
+    },
+    "cleaned": 3,
+    "with_image": 554,
+    "with_audio": 1022,
+    "apostrophe_words": 0,
+    "slash_words": 36,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 36,
+      ")": 2,
+      "(": 2,
+      "…": 2,
+      ".": 2,
+      "幣": 1,
+      "錢": 1,
+      "用": 1,
+      "-": 1
+    }
+  },
+  "szy": {
+    "total_xml": 1094,
+    "valid": 1090,
+    "skipped_placeholder": 4,
+    "levels": {
+      "1": 256,
+      "2": 237,
+      "3": 295,
+      "4": 302
+    },
+    "cleaned": 1,
+    "with_image": 601,
+    "with_audio": 1090,
+    "apostrophe_words": 110,
+    "slash_words": 249,
+    "caret_words": 0,
+    "special_chars": {
+      "/": 249,
+      "ʼ": 68,
+      "’": 41,
+      ")": 3,
+      "(": 3,
+      "∕": 1,
+      ";": 1,
+      "'": 1,
+      ".": 1
+    }
+  }
+}
