@@ -56,7 +56,7 @@
   } catch (e) { /* 判定失敗就留在桌機版，不擋使用者 */ }
 })();
 </script>
-<title>族語獵人 CINUNAN</title>
+<title>族語獵人 cinunan</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════
@@ -2831,7 +2831,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
        顯示: 頁面載入時若 localStorage 沒有有效 JWT（checkAuthOnLoad()）。
        隱藏: 登入/註冊成功後（showTitleScreen()）。 -->
   <div id="authScreen">
-    <img class="auth-plaque" src="/images/ui/login-title-plaque-cinunan.png?v=1" alt="族語獵人 CINUNAN">
+    <img class="auth-plaque" src="/images/ui/login-title-plaque-cinunan-lowercase.png?v=20261002" alt="族語獵人 cinunan">
     <!-- §任務B：族別下拉（取代原「太魯閣語 · TRUKU LANGUAGE」牌子）。
          由 populateLangSelects() 用 /api/languages 動態填 42 語別；
          onLangChange() 更新 G.lang + localStorage + 清詞彙快取。
@@ -2887,7 +2887,7 @@ body.typing-active #answerHintToggle { display:inline-flex; }
          改成單張 <img> 後兩頁 logo 一致、無溢出裁切問題。#titleSub / #welcomeMsg 仍由
          JS(refreshLangUi / showTitleScreen) 動態更新，保留在 logo 下方。 -->
     <div class="title-header">
-      <img class="title-plaque-img" src="/images/ui/login-title-plaque-cinunan.png?v=1" alt="族語獵人 CINUNAN">
+      <img class="title-plaque-img" src="/images/ui/login-title-plaque-cinunan-lowercase.png?v=20261002" alt="族語獵人 cinunan">
       <!-- §任務C：副標依當前語別動態填（refreshLangUi 寫 #titleSub.textContent）；預設太魯閣語。 -->
       <div class="title-sub" id="titleSub">太魯閣語學習 · TRUKU VOCABULARY</div>
       <div class="title-sub" id="welcomeMsg" style="font-size:9px;color:#FFE566;letter-spacing:1px;margin-top:3px;"></div>
@@ -4398,7 +4398,7 @@ function buildPracticeLogText() {
     + `${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
   const lines = [];
-  lines.push('族語獵人 CINUNAN 練習紀錄');
+  lines.push('族語獵人 cinunan 練習紀錄');
   lines.push(`玩家：${player}　關卡：${label}　日期：${dateStr}`);
   lines.push(`分數：${G.score}　擊殺：${G.kills}　正確率：${acc}%`);
   lines.push('');
